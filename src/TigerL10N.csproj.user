@@ -7,7 +7,21 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Control\CheckFileTree.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="NewProjectWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Control\CheckFileTree.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="MainWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="NewProjectWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
