@@ -17,6 +17,8 @@ namespace TigerL10N.Biz
         string LastOpenFolder { get; set; }
         string LastSaveFolder { get; set; }
         string LastSaveFile { get; set; }
+
+        string LastL18NFile { get; set; }
         
         #endregion
 

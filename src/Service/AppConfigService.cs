@@ -12,28 +12,24 @@ namespace TigerL10N.Service
 {
     public static class AppConfigService
     {
-        public static IAppConfig? Settings=null;
+        public static IAppConfig Settings;
         private const string ConfigFile = "app.json";
 
         static AppConfigService()
         {
-            Init_Setting();
-        }
-
-        private static void Init_Setting()
-        {
             Settings = new ConfigurationBuilder<IAppConfig>()
                 //.UseAppConfig() // readonly
-                                //.UseInMemoryDictionary() // volatile
-                                //.UseEnvironmentVariables() // runtime
-                                //.UseIniFile(filePath)
+                //.UseInMemoryDictionary() // volatile
+                //.UseEnvironmentVariables() // runtime
+                //.UseIniFile(filePath)
                 .UseJsonFile(ConfigFile)
                 .Build();
         }
 
-        public static void ClearMemory()
+        private static void Init_Setting()
         {
-            Settings = null;
+
         }
+
     }
 }

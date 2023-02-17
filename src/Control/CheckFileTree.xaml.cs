@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Prism.Mvvm;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,9 +27,13 @@ namespace TigerL10N.Control
             InitializeComponent();
         }
 
-        public void SetItem()
+        public static readonly DependencyProperty TreeSourceProperty = DependencyProperty.Register(
+            nameof(TreeSource), typeof(List<GoItemNode>), typeof(CheckFileTree), 
+            new PropertyMetadata(new List<GoItemNode>()));
+        public List<GoItemNode> TreeSource
         {
-            this.thisTree.ItemsSource = CheckFileTreeModel.SetTree("Top Level");
+            get => (List<GoItemNode>)GetValue(TreeSourceProperty); 
+            set => SetValue(TreeSourceProperty, value); 
         }
     }
 }

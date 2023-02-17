@@ -14,8 +14,8 @@ namespace TigerL10N.Biz
     {
         public StringParser()
         {
-            named_rsc.Add("", "");
-            group_rsc.Add("", "R");
+            _namedRsc.Add("", "");
+            _groupRsc.Add("", "R");
         }
 
         public StringParser ParseFile(string filename)
@@ -147,21 +147,21 @@ namespace GSCM.FP.Common.UIL
             return this;
         }
 
-        private string _rscFilename;
+        private string _rscFilename="";
         public StringParser SetResourceFile(string resourceFile)
         {
             _rscFilename = resourceFile;
             return this;
         }
 
-        private string src_filename;
+        private string src_filename="";
         public StringParser SetSourceFile(string SourceFile)
         {
             src_filename = SourceFile;
             return this;
         }
 
-        private string src_foldername;
+        private string src_foldername = "";
         public StringParser SetFolder(string Folder)
         {
             src_foldername = Folder;
@@ -183,15 +183,15 @@ namespace GSCM.FP.Common.UIL
             return this;
         }
 
-        string backup_suffix = "." + DateTime.Now.ToString("yyyyMMddHHmmm") + ".bak";
-        Dictionary<string, string> named_rsc = new Dictionary<string, string>(); // resource : resource_key
-        Dictionary<string, string> group_rsc = new Dictionary<string, string>(); //
+        string _backupSuffix = "." + DateTime.Now.ToString("yyyyMMddHHmmm") + ".bak";
+        private readonly Dictionary<string, string> _namedRsc = new Dictionary<string, string>(); // resource : resource_key
+        private readonly Dictionary<string, string> _groupRsc = new Dictionary<string, string>(); //
 
         public bool RunParser()
         {
             if (_createNewResource)
             {
-                BuildResourceDictionary(_rscFilename, named_rsc, group_rsc);
+                BuildResourceDictionary(_rscFilename, _namedRsc, _groupRsc);
 
             }
 
@@ -206,21 +206,21 @@ namespace GSCM.FP.Common.UIL
                 else
                 {
                     _rscFilename = "c:\\test.cs";
-                    backup_suffix = "";
+                    _backupSuffix = "";
                 }
             }
-            CreateResourceFile(_rscFilename, backup_suffix, named_rsc, group_rsc);
+            CreateResourceFile(_rscFilename, _backupSuffix, _namedRsc, _groupRsc);
             if (!_folderConversion)
             {
-                ProcessSrcFile(src_filename, backup_suffix, named_rsc, group_rsc);
+                ProcessSrcFile(src_filename, _backupSuffix, _namedRsc, _groupRsc);
             }
             else
             {
-                ProcessFolder(src_foldername, backup_suffix, named_rsc, group_rsc);
+                ProcessFolder(src_foldername, _backupSuffix, _namedRsc, _groupRsc);
             }
 
-            BuildResourceDictionary(_rscFilename, named_rsc, group_rsc);
-            CreateResourceFile(_rscFilename, backup_suffix, named_rsc, group_rsc);
+            BuildResourceDictionary(_rscFilename, _namedRsc, _groupRsc);
+            CreateResourceFile(_rscFilename, _backupSuffix, _namedRsc, _groupRsc);
             return true;
         }
 

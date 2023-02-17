@@ -10,7 +10,10 @@
     <Compile Update="Control\CheckFileTree.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="NewProjectWindow.xaml.cs">
+    <Compile Update="Control\TextBoxExt.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\NewProjectDlg.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -18,10 +21,13 @@
     <Page Update="Control\CheckFileTree.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="MainWindow.xaml">
+    <Page Update="Control\TextBoxExt.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="NewProjectWindow.xaml">
+    <Page Update="Views\MainWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\NewProjectDlg.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
