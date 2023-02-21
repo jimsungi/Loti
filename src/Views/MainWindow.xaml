@@ -1,0 +1,159 @@
+﻿<Window x:Class="TigerL10N.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:prism="http://prismlibrary.com/"
+        prism:ViewModelLocator.AutoWireViewModel="True"
+        xmlns:local="clr-namespace:TigerL10N"
+        xmlns:ViewModels="clr-namespace:TigerL10N.ViewModels"
+        xmlns:control="clr-namespace:TigerL10N.Control"
+         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance ViewModels:MainWindowViewModel}"
+        Title="{Binding ProjectMenuName}" Height="450" Width="800">
+    <TabControl Grid.Column="1" Grid.Row="3">
+        <TabItem Header="New UI">
+            <Grid Background="#FFE5E5E5">
+<Grid.RowDefinitions>
+    <RowDefinition Height="20"></RowDefinition>
+    <RowDefinition Height="150"></RowDefinition>
+    <RowDefinition Height="20*"></RowDefinition>
+                    <RowDefinition Height="20*"></RowDefinition>
+                    <RowDefinition Height="100"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20*"></ColumnDefinition>
+                    <ColumnDefinition Width="5"></ColumnDefinition>
+                    <ColumnDefinition Width="20*"></ColumnDefinition>
+                    <ColumnDefinition Width="5"></ColumnDefinition>
+                    <ColumnDefinition Width="500"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Menu Grid.Row="0" Grid.ColumnSpan="3" Height="20">
+                    <MenuItem Height="20" Header="{Binding ProjectMenuName}">
+                        <MenuItem.Items>
+                            <MenuItem Header="New Project..." Command ="{Binding NewProjectCmd}"></MenuItem>
+                            <MenuItem Header="Open Project..." Command="{Binding OpenProjectCmd}"></MenuItem>
+                            <MenuItem Header="Save Project..." Command="{Binding SaveProjectCmd}"></MenuItem>
+                            <MenuItem Header="Close Project" Command="{Binding CloseProjectCmd}"></MenuItem>
+                        </MenuItem.Items>
+                    </MenuItem>
+                </Menu>
+
+                <StackPanel Grid.Row="5" Grid.ColumnSpan="3" Orientation="Vertical">
+                    <StackPanel>
+                        <Button Command="{Binding CreateAutoPrepareFilesCmd}">Create Translate File Automatic (Use machine option)</Button>
+                    </StackPanel>
+                    <StackPanel>
+                        <Button Command="{Binding CreateEffectPrepareFilesCmd}" >Create Translate File Effectively (You need select something)</Button>
+                    </StackPanel>
+                    <StackPanel>
+                        <Button Command="{Binding ApplyTranslateFilesCmd}">Apply your translation</Button>
+                    </StackPanel>
+                    <StackPanel>
+                        <Button Command="{Binding MakeMultiLanguageVersionCmd}">Make your multi-language version</Button>
+                    </StackPanel>
+                    <StackPanel>
+                        <Button Command="{Binding MakeOneLanguageVersionCmd}">Make your working version</Button>
+                    </StackPanel>
+
+                </StackPanel>
+                
+                <StackPanel Grid.Row="1" Grid.ColumnSpan="3" Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Width="100">Project Name:</Label>
+                        <TextBox Width="150" Text="{Binding ProjectName}"></TextBox>
+                    </StackPanel>
+                    <Label>Where translated file located:</Label>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Width="100">Project Path</Label>
+                        <TextBox Width="150" Text="{Binding ProjectPath}"></TextBox>
+                    </StackPanel>
+                    <Label>Files you will translate:</Label>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Width="100">Target Path:</Label>
+                        <TextBox Width="150" Text="{Binding RawPath}"></TextBox>
+                    </StackPanel>
+                    <Label>dsadfsdf</Label>
+                    <Label>dsadfsdf</Label>
+                </StackPanel>
+
+                <Label Grid.Column="0" Grid.Row="2"> Translations:</Label>
+                <control:CheckFileTree Margin="0,20,0,0" Grid.Column="0" x:Name="sourceTree" TreeSource="{Binding SourceTreeData }"   Grid.ColumnSpan="1" Grid.Row="2" Grid.RowSpan="2" ></control:CheckFileTree>
+                <Label Grid.Column="2" Grid.Row="2">Raw File List:</Label>
+                <StackPanel Height="20"  Grid.Column="2" Grid.Row="2"  HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
+                    <Button Width="50" Margin="5,0,5,0" Command="{Binding SaveTargetSetsCmd}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock>Save</TextBlock>
+                            <iconPacks:PackIconMaterial Kind="File"
+                                 VerticalAlignment="Center"
+                                 HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Width="50" Margin="5,0,5,0"  Command="{Binding ClearTargetSetsCmd}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock>Clear</TextBlock>
+                            <iconPacks:PackIconMaterial Kind="File"
+                                 VerticalAlignment="Center"
+                                 HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <CheckBox IsChecked="{Binding IsTargetChecked}">Hide Uncheck</CheckBox>
+                </StackPanel>
+                <DataGrid  Margin="0,20,0,0" Grid.Column="2"  Grid.ColumnSpan="1" Grid.Row="2" Grid.RowSpan="2" ></DataGrid>
+
+                <control:CheckFileTree  Margin="0,20,0,0" Grid.Column="2"  Grid.ColumnSpan="1" Grid.Row="2" Grid.RowSpan="2"  x:Name="projectTree" TreeSource="{Binding TargetTreeData }"  ></control:CheckFileTree>
+<!--
+                <control:TextBoxExt Width="100" Height="100" Grid.Column="1" Grid.Row="2" BigText="{Binding BaGo}"></control:TextBoxExt>
+                <ToggleButton Grid.Column="1" Grid.Row="1" x:Name="TogglePopupButton" Height="30" Width="150" HorizontalAlignment="Left">
+                    <StackPanel>
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <Run Text="Is button toggled? " />
+                            <Run Text="{Binding IsChecked, ElementName=TogglePopupButton}" />
+                        </TextBlock>
+
+                        <Popup Name="myPopup" IsOpen="{Binding IsChecked, ElementName=TogglePopupButton}">
+                            <Border BorderThickness="1">
+                                <TextBlock Name="myPopupText" Background="LightBlue" Foreground="Blue" Padding="30">
+                                    Popup Text
+                                </TextBlock>
+                            </Border>
+                        </Popup>
+                    </StackPanel>
+                </ToggleButton>
+                -->
+            </Grid>
+        </TabItem>
+        <TabItem Header="Old UI">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="87*"/>
+                    <RowDefinition Height="88*"/>
+                    <RowDefinition Height="75*"/>
+                    <RowDefinition Height="184*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="190*"/>
+                    <ColumnDefinition Width="413*"/>
+                    <ColumnDefinition Width="197*"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="txtSrcFile" Grid.Column="1" Grid.ColumnSpan="2"></TextBox>
+                <TextBox x:Name="txtTarFile" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"></TextBox>
+                <TextBox x:Name="txtSrcFolder" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"></TextBox>
+
+                <Button Grid.Row="0" Click="Button_Click">Select Source File</Button>
+                <Button Grid.Row="1" Click="Button_Click_1">Select Target File</Button>
+                <Button Grid.Row="2" Click="Button_Click_2">Select Source Folder</Button>
+                <StackPanel Grid.Row="3">
+                    <CheckBox x:Name="chkReplace" >Replace</CheckBox>
+                    <CheckBox x:Name="chkNoread" >Do not read</CheckBox>
+
+                    <Separator></Separator>
+                    <Button Grid.Row="3" Click="Button_Click_3" >Run</Button>
+                </StackPanel>
+
+            </Grid>
+        </TabItem>
+    </TabControl>
+
+</Window>

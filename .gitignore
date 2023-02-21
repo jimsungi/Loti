@@ -1,3 +1,7 @@
 /src/bin
 /src/obj
 /.vs
+/CSharpParser/bin
+/CSharpParser/obj
+/TigerL10N/bin
+/TigerL10N/obj
