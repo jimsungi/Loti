@@ -193,8 +193,8 @@ namespace TigerL10N.Service
 
     public class ProjectFile
     {
-        string FileName="";
-        bool Include=true;
+        //string FileName="";
+        //bool Include=true;
 
     }
 }

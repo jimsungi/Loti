@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualBasic;
+﻿using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.Editor;
+using Microsoft.VisualBasic;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -332,7 +334,7 @@ namespace TigerL10N.Biz
 
                             if (!option.HasL10NDesigner)
                             {
-                                XmlNode itemGroup = null;
+                                XmlNode? itemGroup = null;
                                 List<XmlNode> item_groups = FindElement(root, 0, "ItemGroup", "Compile");
                                 if (item_groups?.Count > 0)
                                 {
@@ -342,6 +344,7 @@ namespace TigerL10N.Biz
                                 {
                                     itemGroup = doc.CreateElement("ItemGroup");
                                 }
+                                if(itemGroup!=null)
                                 {
                                     XmlElement compileTag = doc.CreateElement("Compile");
                                     compileTag.SetAttribute("Update", "L10N\\L10N.Designer.cs");
@@ -360,8 +363,8 @@ namespace TigerL10N.Biz
 
                                     }
                                     itemGroup.AppendChild(compileTag);
+                                    root.AppendChild(itemGroup);
                                 }
-                                root.AppendChild(itemGroup);
                                 string? NewDesignerFile = Path.GetDirectoryName(ChildTargetFile);
                                 if (NewDesignerFile != null)
                                 {
@@ -378,7 +381,7 @@ namespace TigerL10N.Biz
 
                             if (!option.HasL10NResource)
                             {
-                                XmlNode itemGroup = null;
+                                XmlNode? itemGroup = null;
                                 List<XmlNode> item_groups = FindElement(root, 0, "ItemGroup", "EmbeddedResource");
                                 if (item_groups?.Count > 0)
                                 {
@@ -388,6 +391,7 @@ namespace TigerL10N.Biz
                                 {
                                     itemGroup = doc.CreateElement("ItemGroup");
                                 }
+                                if(itemGroup !=null)
                                 {
                                     XmlElement embeddedResrc = doc.CreateElement("EmbeddedResource");
                                     embeddedResrc.SetAttribute("Update", "L10N\\L10N.resx");
@@ -401,8 +405,8 @@ namespace TigerL10N.Biz
                                         embeddedResrc.AppendChild(lastGenOutput);
                                     }
                                     itemGroup.AppendChild(embeddedResrc);
+                                    root.AppendChild(itemGroup);
                                 }
-                                root.AppendChild(itemGroup);
                                 string? NewDesignerFile = Path.GetDirectoryName(ChildTargetFile);
                                 if (NewDesignerFile != null)
                                 {
@@ -440,7 +444,20 @@ namespace TigerL10N.Biz
                 {
                     if(option.IsPrepare==true)
                     {
+                        StringParser p = StringParseService.CreateParser2()
+    .SetResourceFile(ChildSourceFile)
+    .RunParser()
+    .SaveTempFile(ChildTargetFile);
 
+                        //parsers.Add(ChildSourceFile, p);
+                        //replaces.Add(ChildSourceFile, ChildTargetFile);
+                    }
+                    else
+                    {
+//                        StringParser p = StringParseService.CreateParser2()
+//.SetResourceFile(ChildSourceFile)
+//.SetReferenceResult(parsers, replaces)
+//.SaveTmpSource();
                     }
                 }
                 else
@@ -453,6 +470,8 @@ namespace TigerL10N.Biz
             }
         }
 
+        Dictionary<string, StringParser> parsers = new Dictionary<string, StringParser>();
+        Dictionary<string, string> replaces = new Dictionary<string, string>();
         private void CreateNewDesignerFile(string filenmae,string Pjmainclass, string Pjnamespace)
         {
             string content = @"
@@ -741,13 +760,19 @@ namespace " + Pjmainclass + @" {
         // 각 A 태그의 B 태그 목록을 가져옵니다.
         foreach (XmlNode aNode in aNodeList)
         {
-            XmlNodeList bNodeList = aNode.SelectNodes(bTagName);
+                if (aNode != null)
+                {
+                    XmlNodeList? bNodeList = aNode.SelectNodes(bTagName);
 
-            // 각 B 태그의 텍스트를 bList에 추가합니다.
-            foreach (XmlNode bNode in bNodeList)
-            {
-                bList.Add(bNode.InnerText);
-            }
+                    if (bNodeList != null)
+                    {
+                        // 각 B 태그의 텍스트를 bList에 추가합니다.
+                        foreach (XmlNode bNode in bNodeList)
+                        {
+                            bList.Add(bNode.InnerText);
+                        }
+                    }
+                }
         }
 
         return bList;

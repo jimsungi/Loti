@@ -10,7 +10,12 @@ namespace TigerL10N.Service
 
     public class StringParseService
     {
-        public static StringParser CreateParser()
+        public static StringParserOrg CreateParser()
+        {
+            StringParserOrg instance = new();
+            return instance;
+        }
+        public static StringParser CreateParser2()
         {
             StringParser instance = new();
             return instance;

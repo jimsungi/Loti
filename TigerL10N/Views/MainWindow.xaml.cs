@@ -107,9 +107,6 @@ namespace TigerL10N.Views
                 .SetFolderConversion(bFolderConversion)
                 .SetCreateNewResource(bCreateNewResource)
                 .RunParser();
-
-
-
         }
 
     }

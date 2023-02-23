@@ -23,7 +23,7 @@ namespace TigerL10N.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
-
+        #region property
         private string? _baGo="";
         public string BaGo
         {
@@ -56,14 +56,14 @@ namespace TigerL10N.ViewModels
             get => _projectMenuName ??= "";
             set => SetProperty(ref _projectMenuName, value);
         }
-
+        #endregion
+        #region Delegate Command
         private DelegateCommand? _newProjectCommandCmd = null;
 
         public DelegateCommand NewProjectCmd =>
             _newProjectCommandCmd ??= new DelegateCommand(NewProjectCommandFunc);
-
+        
         private string message = "......";
-
         void NewProjectCommandFunc()
         {
             //BaGo = "dddddxx";
@@ -78,11 +78,13 @@ namespace TigerL10N.ViewModels
                 }
             });
         }
+        #endregion
 
+        #region Service
         private IContainerProvider _ic;
     //    private IContainerRegistry _icRegistry;
         private IDialogService _dialogService;
-
+        #endregion
 
         public MainWindowViewModel(IContainerProvider ic, IDialogService dialogService)
         {
@@ -93,7 +95,7 @@ namespace TigerL10N.ViewModels
   //          _icRegistry.RegisterDialog<NewProjectDialog, NewProjectDialogViewModel>("NewProject");
         }
 
-
+        #region Delegate Command
         private DelegateCommand? _saveProjectCmd = null;
         public DelegateCommand SaveProjectCmd =>
             _saveProjectCmd ??= new DelegateCommand(SaveProjectFunc);
@@ -167,21 +169,6 @@ namespace TigerL10N.ViewModels
         }
 
 
-        private bool? _isTargetChecked=false;
-        public bool IsTargetChecked
-        {
-            get => _isTargetChecked ??= false;
-            set {
-                L10NProject? c = ProjectManageService.GetCurrentProject();
-                if (c != null)
-                {
-                    TargetTreeData = ProjectManageService.ListFileTree(c, c.RawPath, value);
-                }
-                SetProperty(ref _isTargetChecked, value); 
-            }
-        }
-
-
         private DelegateCommand? _clearTargetSetsCmd = null;
         public DelegateCommand ClearTargetSetsCmd =>
             _clearTargetSetsCmd ??= new DelegateCommand(ClearTargetSetsFunc);
@@ -198,6 +185,24 @@ namespace TigerL10N.ViewModels
         {
             // throw new NotImplementException();
         }
+
+        #endregion
+
+        #region property
+        private bool? _isTargetChecked=false;
+        public bool IsTargetChecked
+        {
+            get => _isTargetChecked ??= false;
+            set {
+                L10NProject? c = ProjectManageService.GetCurrentProject();
+                if (c != null)
+                {
+                    TargetTreeData = ProjectManageService.ListFileTree(c, c.RawPath, value);
+                }
+                SetProperty(ref _isTargetChecked, value); 
+            }
+        }
+
 
 
 
@@ -225,20 +230,8 @@ namespace TigerL10N.ViewModels
             get => _projectPath ??= "";
             set => SetProperty(ref _projectPath, value);
         }
+        #endregion
 
-        //private AModel? _srcFiles;
-        //public AModel? SrcFiles
-        //{
-        //    get => _srcFiles;
-        //    set => SetProperty(ref _srcFiles, value);
-        //}
-
-        //private AModel? _transFiles;
-        //public AModel? TransFiles
-        //{
-        //    get => _transFiles;
-        //    set => SetProperty(ref _transFiles, value);
-        //}
         #region Translation Commands
 
         /// <summary>

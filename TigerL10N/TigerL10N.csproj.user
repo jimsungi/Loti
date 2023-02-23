@@ -13,6 +13,9 @@
     <Compile Update="Control\TextBoxExt.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Control\TransEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\NewProjectDlg.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -22,6 +25,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Control\TextBoxExt.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Control\TransEditor.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\MainWindow.xaml">
