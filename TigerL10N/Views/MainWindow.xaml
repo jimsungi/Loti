@@ -11,7 +11,7 @@
          xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance ViewModels:MainWindowViewModel}"
-        Title="{Binding ProjectMenuName}" Height="450" Width="800">
+        Title="{Binding ProjectMenuName}" Height="450" Width="1500">
     <TabControl Grid.Column="1" Grid.Row="3">
         <TabItem Header="New UI">
             <Grid Background="#FFE5E5E5">
@@ -23,11 +23,11 @@
                     <RowDefinition Height="100"></RowDefinition>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="20*"></ColumnDefinition>
-                    <ColumnDefinition Width="5"></ColumnDefinition>
-                    <ColumnDefinition Width="20*"></ColumnDefinition>
+                    <ColumnDefinition Width="500"></ColumnDefinition>
                     <ColumnDefinition Width="5"></ColumnDefinition>
                     <ColumnDefinition Width="500"></ColumnDefinition>
+                    <ColumnDefinition Width="5"></ColumnDefinition>
+                    <ColumnDefinition Width="500*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <Menu Grid.Row="0" Grid.ColumnSpan="3" Height="20">
                     <MenuItem Height="20" Header="{Binding ProjectMenuName}">
@@ -103,15 +103,22 @@
                 <DataGrid  Margin="0,20,0,0" Grid.Column="2"  Grid.ColumnSpan="1" Grid.Row="2" Grid.RowSpan="2" ></DataGrid>
 
                 <control:CheckFileTree  Margin="0,20,0,0" Grid.Column="2"  Grid.ColumnSpan="1" Grid.Row="2" Grid.RowSpan="2"  x:Name="projectTree" TreeSource="{Binding TargetTreeData }"  ></control:CheckFileTree>
-                <control:TransEditor  Margin="0,20,0,0" Grid.Column="4"  Grid.ColumnSpan="1" Grid.Row="0" Grid.RowSpan="4"  x:Name="projectTr"  ></control:TransEditor>
-                <ListView Grid.Column="4" Grid.Row="4" ItemsSource="{Binding LocalizationSource}" >
+                <control:TransEditor Word="{Binding SelectedWord}" Margin="0,20,0,0" Grid.Column="4"  Grid.ColumnSpan="1" Grid.Row="0" Grid.RowSpan="4"  x:Name="projectTr"  ></control:TransEditor>
+                <ListView Grid.Column="4" Grid.Row="4" ItemsSource="{Binding LocalizationSource}" SelectedIndex="{Binding LocalizedWord}"  >
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="Value" Width="150" DisplayMemberBinding="{Binding Value1}" />
-                            <GridViewColumn Header="Control" Width="150">
+                            <GridViewColumn Header="File" Width="150" DisplayMemberBinding="{Binding FileName}" />
+                            <GridViewColumn Header="Text" Width="150">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Label>ddddd</Label>
+                                        <Label Content="{Binding SourceString}"></Label>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="ID" Width="150">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Label Content="{Binding TargetId}"></Label>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>

@@ -41,7 +41,7 @@ namespace TigerL10N.ViewModels
         }
 
 
-
+        // Per Stage Localization Source Words
         private List<WordItem>? _localizationSource;
         public List<WordItem>? LocalizationSource
         {
@@ -50,6 +50,38 @@ namespace TigerL10N.ViewModels
         }
 
 
+        /// <summary>
+        /// Selected Index of selected word to translate
+        /// </summary>
+
+        private int? _localizedWord=0;
+        public int? LocalizedWord
+        {
+            get => _localizedWord;
+            set
+            {
+                SetProperty(ref _localizedWord, value);
+                ShowSelected();
+            }
+        }
+
+
+        private WordItem? _selectedWord;
+        public WordItem? SelectedWord
+        {
+            get => _selectedWord;
+            set => SetProperty(ref _selectedWord, value);
+        }
+
+
+        void ShowSelected()
+        {
+            if(LocalizationSource!=null && LocalizedWord >= 0)
+            {
+                if(LocalizationSource.Count >LocalizedWord)
+                    SelectedWord = LocalizationSource[LocalizedWord.Value];
+            }
+        }
 
         private List<GoItemNode>? _targetTreeData;
         public List<GoItemNode>? TargetTreeData
@@ -289,12 +321,26 @@ namespace TigerL10N.ViewModels
                 project.DirOneFileProc(RawPath, project.OneLangPath, PO);
                 PO.IsPrepare = false;
                 project.DirOneFileProc(RawPath, project.OneLangPath, PO);
+
+                List<WordItem> items = new List<WordItem>();
                 foreach(KeyValuePair<string,StringParser> p in project.Parsers)
                 {
                     string f = p.Key;
                     StringParser sp = p.Value;
+                    foreach(StringParser.L eachFileLn in sp.RawStringResultsOfAll)
+                    {
+                        WordItem item = new WordItem()
+                        {
+                            FileName = f,
+                            SourceString = eachFileLn.Org,
+                            TargetId = eachFileLn.AutoKey
+                        };
+                        items.Add(item);
+                    }
+                    
+
                 }
-                //this.LocalizationSource = proejct.pa
+                this.LocalizationSource = items;
 
             }
             //Directory.CreateDirectory(RawPath);

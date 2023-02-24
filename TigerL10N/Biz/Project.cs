@@ -449,8 +449,8 @@ namespace TigerL10N.Biz
     .RunParser()
     .SaveTempFile(ChildTargetFile);
 
-                        parsers.Add(ChildSourceFile, p);
-                        replaces.Add(ChildSourceFile, ChildTargetFile);
+                        Parsers.Add(ChildSourceFile, p);
+                        Replaces.Add(ChildSourceFile, ChildTargetFile);
                     }
                     else
                     {

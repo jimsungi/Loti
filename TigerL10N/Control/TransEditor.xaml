@@ -20,14 +20,14 @@
         </Grid.ColumnDefinitions>
         <Label>Reference :</Label>
         <Label Grid.Column="2">Information :</Label>
-        <TextBox Margin="2,30,5,5"></TextBox>
+        <TextBox Margin="2,30,5,5" Text="{Binding Path=Word.FileName, ElementName=teEdit}"></TextBox>
         <StackPanel Margin="2,30,5,5" Grid.Column="3" Background="White">
             <StackPanel Orientation="Horizontal">
                 <Label>Language:</Label>
-                <Label>Korea to English</Label>
+                <Label Content="{Binding Path=Word.FileName, ElementName=teEdit}"></Label>
             </StackPanel>
         </StackPanel>
-        <TextBox Margin="2" IsReadOnly="True" MinLines="50" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"/>
-        <TextBox Margin="2" MinLines="50" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"/>
+        <TextBox Text="{Binding Path=Word.SourceString, ElementName=teEdit}" Margin="2"  IsReadOnly="True" MinLines="50" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"/>
+        <TextBox Text="{Binding Path=Word.TargetId, ElementName=teEdit}" Margin="2" MinLines="50" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"/>
     </Grid>
 </UserControl>

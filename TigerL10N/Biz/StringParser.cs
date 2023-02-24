@@ -398,7 +398,7 @@ namespace GSCM.FP.Common.UIL
     {
         public void AddID(string txt, string skey, string fileName, TextLocation? start, TextLocation? end)
         {
-            _rawId.Add(new L
+            RawIDResultsOfAll.Add(new L
                 {
                 Org= txt,
                 F = fileName,
@@ -425,7 +425,7 @@ namespace GSCM.FP.Common.UIL
             string n = GetText(lines, k);
             k.Org = n; 
 
-            _rawRev.Add(k);
+            RawStringResultsOfAll.Add(k);
             if (!_strDic.ContainsKey(n))
                 _strDic.Add(n, skey);
             if(!_strRevDic.ContainsKey(skey))
@@ -682,8 +682,8 @@ namespace GSCM.FP.Common.UIL
         //private readonly Dictionary<string, L> _namedRsc = new Dictionary<string, L>(); // resource : resource_key
         //private readonly Dictionary<string, L> _groupRsc = new Dictionary<string, L>(); //
 
-        private readonly List<L> _rawId = new List<L>();
-        private readonly List<L> _rawRev = new List<L>();
+        public List<L> RawIDResultsOfAll = new List<L>();
+        public List<L> RawStringResultsOfAll = new List<L>();
 
         private readonly Dictionary<string, string> _idDic = new Dictionary<string, string>(); // resource : resource_key
         private readonly Dictionary<string, string> _idRevDic = new Dictionary<string, string>(); // resource : resource_key
@@ -732,7 +732,7 @@ namespace GSCM.FP.Common.UIL
             //src_txt = src_txt.Replace("@\"\"", "string.Empty");
             //src_txt = src_txt.Replace("\"\"", "string.Empty");
             int i = 0;
-            foreach (L eachRaw in _rawRev)
+            foreach (L eachRaw in RawStringResultsOfAll)
             {
                 eachRaw.AutoKey = string.Format("G.auto_{0}", i++);
                 src_txt = ReplaceFirstOccurence(src_txt, eachRaw.Org, eachRaw.AutoKey, eachRaw);

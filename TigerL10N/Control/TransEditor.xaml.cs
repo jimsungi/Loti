@@ -24,5 +24,14 @@ namespace TigerL10N.Control
         {
             InitializeComponent();
         }
+
+        public static readonly DependencyProperty WordProperty = DependencyProperty.Register(
+            nameof(Word), typeof(WordItem), typeof(TransEditor),
+            new PropertyMetadata(new WordItem()));
+        public WordItem Word
+        {
+            get => (WordItem)GetValue(WordProperty);
+            set => SetValue(WordProperty, value);
+        }
     }
 }
