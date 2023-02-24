@@ -41,6 +41,16 @@ namespace TigerL10N.ViewModels
         }
 
 
+
+        private List<WordItem>? _localizationSource;
+        public List<WordItem>? LocalizationSource
+        {
+            get => _localizationSource;
+            set => SetProperty(ref _localizationSource, value);
+        }
+
+
+
         private List<GoItemNode>? _targetTreeData;
         public List<GoItemNode>? TargetTreeData
         {
@@ -279,6 +289,12 @@ namespace TigerL10N.ViewModels
                 project.DirOneFileProc(RawPath, project.OneLangPath, PO);
                 PO.IsPrepare = false;
                 project.DirOneFileProc(RawPath, project.OneLangPath, PO);
+                foreach(KeyValuePair<string,StringParser> p in project.Parsers)
+                {
+                    string f = p.Key;
+                    StringParser sp = p.Value;
+                }
+                //this.LocalizationSource = proejct.pa
 
             }
             //Directory.CreateDirectory(RawPath);

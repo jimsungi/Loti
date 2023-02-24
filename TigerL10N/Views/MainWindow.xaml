@@ -103,7 +103,23 @@
                 <DataGrid  Margin="0,20,0,0" Grid.Column="2"  Grid.ColumnSpan="1" Grid.Row="2" Grid.RowSpan="2" ></DataGrid>
 
                 <control:CheckFileTree  Margin="0,20,0,0" Grid.Column="2"  Grid.ColumnSpan="1" Grid.Row="2" Grid.RowSpan="2"  x:Name="projectTree" TreeSource="{Binding TargetTreeData }"  ></control:CheckFileTree>
-<!--
+                <control:TransEditor  Margin="0,20,0,0" Grid.Column="4"  Grid.ColumnSpan="1" Grid.Row="0" Grid.RowSpan="4"  x:Name="projectTr"  ></control:TransEditor>
+                <ListView Grid.Column="4" Grid.Row="4" ItemsSource="{Binding LocalizationSource}" >
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Value" Width="150" DisplayMemberBinding="{Binding Value1}" />
+                            <GridViewColumn Header="Control" Width="150">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Label>ddddd</Label>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+
+                </ListView>
+                <!--
                 <control:TextBoxExt Width="100" Height="100" Grid.Column="1" Grid.Row="2" BigText="{Binding BaGo}"></control:TextBoxExt>
                 <ToggleButton Grid.Column="1" Grid.Row="1" x:Name="TogglePopupButton" Height="30" Width="150" HorizontalAlignment="Left">
                     <StackPanel>

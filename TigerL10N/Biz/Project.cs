@@ -449,8 +449,8 @@ namespace TigerL10N.Biz
     .RunParser()
     .SaveTempFile(ChildTargetFile);
 
-                        //parsers.Add(ChildSourceFile, p);
-                        //replaces.Add(ChildSourceFile, ChildTargetFile);
+                        parsers.Add(ChildSourceFile, p);
+                        replaces.Add(ChildSourceFile, ChildTargetFile);
                     }
                     else
                     {
@@ -470,8 +470,8 @@ namespace TigerL10N.Biz
             }
         }
 
-        Dictionary<string, StringParser> parsers = new Dictionary<string, StringParser>();
-        Dictionary<string, string> replaces = new Dictionary<string, string>();
+        public Dictionary<string, StringParser> Parsers = new Dictionary<string, StringParser>();
+        public Dictionary<string, string> Replaces = new Dictionary<string, string>();
         private void CreateNewDesignerFile(string filenmae,string Pjmainclass, string Pjnamespace)
         {
             string content = @"
