@@ -434,8 +434,8 @@ namespace GSCM.FP.Common.UIL
 
         public StringParser()
         {
-            AddID("", "", "", null, null);
-            AddStr("", "G","",null, null);
+            //AddID("", "", "", null, null);
+            //AddStr("", "G","",null, null);
         }
 
         string _rscText="";

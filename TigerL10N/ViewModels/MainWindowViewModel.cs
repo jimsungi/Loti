@@ -18,6 +18,7 @@ using TigerL10N.Service;
 using TigerL10N.Views;
 using TigerL10N.Biz;
 using Unity;
+using System.Windows.Controls;
 
 namespace TigerL10N.ViewModels
 {
@@ -200,6 +201,8 @@ namespace TigerL10N.ViewModels
 
 
 
+
+
         private DelegateCommand? _closeProjectCommandCmd = null;
 
         public DelegateCommand CloseProjectCommandCmd =>
@@ -327,20 +330,82 @@ namespace TigerL10N.ViewModels
                 {
                     string f = p.Key;
                     StringParser sp = p.Value;
+
+                   
                     foreach(StringParser.L eachFileLn in sp.RawStringResultsOfAll)
                     {
+                        int lines = CountLines(eachFileLn.Org);
+
+                        bool useAuto = true;
+                        bool ignore = false;
+                        bool asId = false;
+                        string targetString = "";
+                        string org_string = eachFileLn.Org.Substring(1, eachFileLn.Org.Length - 2);
+                        string code = OneOfCode(org_string);
+                        string prev_ref = "";
+                        string next_ref = "";
+                        string current_ref = "";
+                      
+                        
+                        int s = eachFileLn!=null ? eachFileLn.S.Value.Line : 0;
+                        int e  = eachFileLn != null ? eachFileLn.E.Value.Line : 0;
+                        if (s != 0 && e != 0)
+                        {
+                            int ss = s - 8;
+                            int ee = e + 8;
+                            if (ss < 1)
+                                ss = 1;
+                            string[] _lines = File.ReadAllLines(f);
+                            if (ee > _lines.Length)
+                                ee = _lines.Length;
+                            for(int i=ss; i<s; i++ )
+                            {
+                                prev_ref +="\r\n" + _lines[i - 1];
+                            }
+                            for (int k = s; k <= e; k++)
+                            {
+                                if (k != s)
+                                    current_ref += "\r\n";
+                                current_ref += _lines[k-1];
+
+                            }
+                            for (int j=e+1; j<ee; j++)
+                            {
+                                next_ref += _lines[j - 1] +"\r\n";
+                            }
+
+                        }
+
+                        if (lines > 1)
+                        {
+                            ignore = true;
+                        }
+                        else if(code !="")
+                        {
+                            targetString = code;
+                            asId = true;
+                        }
                         WordItem item = new WordItem()
                         {
                             FileName = f,
                             SourceString = eachFileLn.Org,
-                            TargetId = eachFileLn.AutoKey
+                            TargetString = targetString,
+                            TargetId = eachFileLn.AutoKey,
+                            UseAuto= useAuto,
+                            Ignore= ignore,
+                            AsId=asId,
+                            PrevRef = prev_ref,
+                            NextRef = next_ref,
+                            CurrentRef = current_ref
                         };
                         items.Add(item);
                     }
                     
 
                 }
-                this.LocalizationSource = items;
+
+                List<WordItem> sortedByName = items.OrderBy(w => w.SourceString).ToList();
+                this.LocalizationSource = sortedByName;
 
             }
             //Directory.CreateDirectory(RawPath);
@@ -350,6 +415,36 @@ namespace TigerL10N.ViewModels
         }
 
 
+public static string ReadNthLine(string filePath, int n)
+    {
+        string[] lines = File.ReadAllLines(filePath);
+        if (n < 1 || n > lines.Length)
+        {
+            throw new ArgumentException("n is out of range");
+        }
+        return lines[n - 1];
+    }
+
+    public static string OneOfCode(string codeCandidate)
+        {
+            switch(codeCandidate)
+            {
+                case "": return "string.Empty";
+                case "<": return "G.Lo";
+                case ">": return "G.Le";
+                case " ": return "G.space";
+                case "\r\n": return "G.line";
+                case "\t": return "G.tab";
+                case "(": return "G.Qo";
+                case ")": return "G.Qe";
+            }
+            return string.Empty;
+        }
+
+        public static int CountLines(string inputString)
+        {
+            return inputString.Split('\n').Length;
+        }
         class IgnoreOption
         {
             public List<string> IgnoreFiles = new List<string>();
