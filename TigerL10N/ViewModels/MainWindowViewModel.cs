@@ -19,6 +19,7 @@ using TigerL10N.Views;
 using TigerL10N.Biz;
 using Unity;
 using System.Windows.Controls;
+using System.Windows;
 
 namespace TigerL10N.ViewModels
 {
@@ -31,6 +32,8 @@ namespace TigerL10N.ViewModels
             get => _baGo ??= "";
             set => SetProperty(ref _baGo, value);
         }
+
+        
 
 
 
@@ -62,7 +65,7 @@ namespace TigerL10N.ViewModels
             set
             {
                 SetProperty(ref _localizedWord, value);
-                ShowSelected();
+                ShowSelected();             
             }
         }
 
@@ -201,7 +204,24 @@ namespace TigerL10N.ViewModels
 
 
 
+        private DelegateCommand? _workDoneTriggerCmd = null;
+        public DelegateCommand WorkDoneTriggerCmd =>
+            _workDoneTriggerCmd ??= new DelegateCommand(WorkDoneTriggerFunc);
+        void WorkDoneTriggerFunc()
+        {
+            // throw new NotImplementException();
+        }
 
+
+
+        public void MyUserControl_My(object sender, RoutedEventArgs e)
+        {
+            MyEventArgs args = e as MyEventArgs;
+            if (args != null)
+            {
+                //messageTextBlock.Text = args.Message;
+            }
+        }
 
         private DelegateCommand? _closeProjectCommandCmd = null;
 
@@ -293,7 +313,7 @@ namespace TigerL10N.ViewModels
             L10NProject? cu = ProjectManageService.GetCurrentProject();
             if(cu == null)
             {
-                if(MessageBox.Show("You need project. Do you want to create one?", "Warning", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes) 
+                if(System.Windows.Forms.MessageBox.Show("You need project. Do you want to create one?", "Warning", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes) 
                 {
                     NewProjectCommandFunc();
                 }
@@ -586,4 +606,6 @@ public static string ReadNthLine(string filePath, int n)
 
         #endregion Translation Commands
     }
+
+
 }

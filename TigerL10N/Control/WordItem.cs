@@ -74,6 +74,25 @@ namespace TigerL10N.Control
         }
 
 
+        private DelegateCommand<string>? _specialKeyCmd = null;
+        public DelegateCommand<string> SpecialKeyCmd =>
+            _specialKeyCmd ??= new DelegateCommand<string>(SpecialKeyFunc);
+        void SpecialKeyFunc(string param)
+        {
+            // throw new NotImplementException();
+        }
+
+
+        private DelegateCommand? _useAutoCmd = null;
+        public DelegateCommand UseAutoCmd =>
+            _useAutoCmd ??= new DelegateCommand(UseAutoFunc);
+        void UseAutoFunc()
+        {
+            UseAuto = !UseAuto;
+        }
+
+
+
         private DelegateCommand? _ignoreCmd = null;
         public DelegateCommand IgnoreCmd =>
             _ignoreCmd ??= new DelegateCommand(IgnoreFunc);

@@ -4,9 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TigerL10N.Control"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"        
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              x:Name="teEdit">
+    <UserControl.Resources>
+        <local:KeyEventArgsConverter x:Key="KeyEventArgsConverter" />
+    </UserControl.Resources>
     <Grid Background="Wheat">
         <Grid.RowDefinitions>
             <RowDefinition Height="200*"/>
@@ -41,6 +45,26 @@
         <StackPanel Margin="2" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Background="White">
             <TextBox Text="{Binding Path=Word.SourceString, ElementName=teEdit}" Margin="2"  IsReadOnly="True" MinLines="50" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"/>
         </StackPanel>
-        <TextBox Text="{Binding Path=Word.TargetId, ElementName=teEdit}" Margin="2" MinLines="50" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"/>
+        <Grid Margin="2" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Background="White">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="10*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <StackPanel Margin="2" Grid.Column="0" Background="White">
+                <TextBox Text="{Binding Path=Word.SourceString, ElementName=teEdit}" Margin="2" x:Name="txtE"  Keyboard.PreviewKeyDown="txtE_PreviewKeyDown"  MinLines="50">
+         
+                </TextBox>
+            </StackPanel>
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Center"  VerticalAlignment="Stretch" Background="Black"  ShowsPreview="True" Width="5"></GridSplitter>
+            <StackPanel Margin="2" Grid.Column="2" Background="White" Orientation="Horizontal">
+                <Button Width="50">jj</Button>
+                <Button Width="50">jj</Button>
+                <Button Width="50">jj</Button>
+                <Button Width="50">jj</Button>
+            </StackPanel>
+        </Grid>
+       
+        
     </Grid>
 </UserControl>

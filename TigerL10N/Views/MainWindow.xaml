@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:TigerL10N"
+    xmlns:avalondock="https://github.com/Dirkster99/AvalonDock"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:prism="http://prismlibrary.com/"
     Title="{Binding ProjectMenuName}"
@@ -17,81 +18,83 @@
     mc:Ignorable="d">
     <TabControl Grid.Row="3" Grid.Column="1">
         <TabItem Header="New UI">
-            <Grid Background="#FFE5E5E5">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="20" />
-                    <RowDefinition Height="150" />
-                    <RowDefinition Height="20*" />
-                    <RowDefinition Height="20*" />
-                    <RowDefinition Height="100" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="500*" />
-                    <ColumnDefinition Width="5" />
-                    <ColumnDefinition Width="500*" />
-                    <ColumnDefinition Width="5" />
-                    <ColumnDefinition Width="1000*" />
-                </Grid.ColumnDefinitions>
-                <Menu
+            <avalondock:DockingManager x:Name="dockingManager" AllowMixedOrientation="True">
+                <avalondock:LayoutRoot>
+                    <avalondock:LayoutPanel Orientation="Horizontal">
+                        <avalondock:LayoutDocumentPaneGroup>
+                            <avalondock:LayoutDocumentPane>
+                                <avalondock:LayoutDocument Title="Manager">
+                                    <DockPanel>
+                                        <ToolBarPanel DockPanel.Dock="Top">
+                                            <Menu
                     Grid.Row="0"
                     Grid.ColumnSpan="3"
                     Height="20">
-                    <MenuItem Height="20" Header="{Binding ProjectMenuName}">
-                        <MenuItem.Items>
-                            <MenuItem Command="{Binding NewProjectCmd}" Header="New Project..." />
-                            <MenuItem Command="{Binding OpenProjectCmd}" Header="Open Project..." />
-                            <MenuItem Command="{Binding SaveProjectCmd}" Header="Save Project..." />
-                            <MenuItem Command="{Binding CloseProjectCmd}" Header="Close Project" />
-                        </MenuItem.Items>
-                    </MenuItem>
-                </Menu>
-
-                <StackPanel
-                    Grid.Row="5"
-                    Grid.ColumnSpan="3"
+                                                <MenuItem Height="20" Header="{Binding ProjectMenuName}">
+                                                    <MenuItem.Items>
+                                                        <MenuItem Command="{Binding NewProjectCmd}" Header="New Project..." />
+                                                        <MenuItem Command="{Binding OpenProjectCmd}" Header="Open Project..." />
+                                                        <MenuItem Command="{Binding SaveProjectCmd}" Header="Save Project..." />
+                                                        <MenuItem Command="{Binding CloseProjectCmd}" Header="Close Project" />
+                                                    </MenuItem.Items>
+                                                </MenuItem>
+                                            </Menu>
+                                        </ToolBarPanel>
+                                        <Grid DockPanel.Dock="Top">
+                                            <DockPanel>
+                                                <Grid DockPanel.Dock="Left">
+                                                    <StackPanel
+                    
                     Orientation="Vertical">
-                    <StackPanel>
-                        <Button Command="{Binding CreateAutoPrepareFilesCmd}">Create Translate File Automatic (Use machine option)</Button>
-                    </StackPanel>
-                    <StackPanel>
-                        <Button Command="{Binding CreateEffectPrepareFilesCmd}">Create Translate File Effectively (You need select something)</Button>
-                    </StackPanel>
-                    <StackPanel>
-                        <Button Command="{Binding ApplyTranslateFilesCmd}">Apply your translation</Button>
-                    </StackPanel>
-                    <StackPanel>
-                        <Button Command="{Binding MakeMultiLanguageVersionCmd}">Make your multi-language version</Button>
-                    </StackPanel>
-                    <StackPanel>
-                        <Button Command="{Binding MakeOneLanguageVersionCmd}">Make your working version</Button>
-                    </StackPanel>
+                                                        <StackPanel>
+                                                            <Button Command="{Binding CreateAutoPrepareFilesCmd}">Create Translate File Automatic (Use machine option)</Button>
+                                                        </StackPanel>
+                                                        <StackPanel>
+                                                            <Button Command="{Binding CreateEffectPrepareFilesCmd}">Create Translate File Effectively (You need select something)</Button>
+                                                        </StackPanel>
+                                                        <StackPanel>
+                                                            <Button Command="{Binding ApplyTranslateFilesCmd}">Apply your translation</Button>
+                                                        </StackPanel>
+                                                        <StackPanel>
+                                                            <Button Command="{Binding MakeMultiLanguageVersionCmd}">Make your multi-language version</Button>
+                                                        </StackPanel>
+                                                        <StackPanel>
+                                                            <Button Command="{Binding MakeOneLanguageVersionCmd}">Make your working version</Button>
+                                                        </StackPanel>
 
-                </StackPanel>
+                                                    </StackPanel>
 
-                <StackPanel
+                                                </Grid>
+                                            </DockPanel>
+                                        </Grid>
+                                        <Grid DockPanel.Dock="Top" Margin="0,20,0,0">
+                                            <StackPanel
                     Grid.Row="1"
                     Grid.ColumnSpan="3"
                     Orientation="Vertical">
-                    <StackPanel Orientation="Horizontal">
-                        <Label Width="100">Project Name:</Label>
-                        <TextBox Width="150" Text="{Binding ProjectName}" />
-                    </StackPanel>
-                    <Label>Where translated file located:</Label>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Width="100">Project Path</Label>
-                        <TextBox Width="150" Text="{Binding ProjectPath}" />
-                    </StackPanel>
-                    <Label>Files you will translate:</Label>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Width="100">Target Path:</Label>
-                        <TextBox Width="150" Text="{Binding RawPath}" />
-                    </StackPanel>
-                    <Label>dsadfsdf</Label>
-                    <Label>dsadfsdf</Label>
-                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Label Width="100">Project Name:</Label>
+                                                    <TextBox Width="150" Text="{Binding ProjectName}" />
+                                                </StackPanel>
+                                                <Label>Where translated file located:</Label>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Label Width="100">Project Path</Label>
+                                                    <TextBox Width="150" Text="{Binding ProjectPath}" />
+                                                </StackPanel>
+                                                <Label>Files you will translate:</Label>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Label Width="100">Target Path:</Label>
+                                                    <TextBox Width="150" Text="{Binding RawPath}" />
+                                                </StackPanel>
+                                                <Label>dsadfsdf</Label>
+                                                <Label>dsadfsdf</Label>
+                                            </StackPanel>
+                                        </Grid>
+                                        <DockPanel DockPanel.Dock="Top">
 
-                <Label Grid.Row="2" Grid.Column="0">Translations:</Label>
-                <control:CheckFileTree
+                                            <StackPanel DockPanel.Dock="Left">
+                                                <Label Grid.Row="2" Grid.Column="0">Translations:</Label>
+                                                <control:CheckFileTree
                     x:Name="sourceTree"
                     Grid.Row="2"
                     Grid.RowSpan="2"
@@ -99,48 +102,44 @@
                     Grid.ColumnSpan="1"
                     Margin="0,20,0,0"
                     TreeSource="{Binding SourceTreeData}" />
-                <Label Grid.Row="2" Grid.Column="2">Raw File List:</Label>
-                <StackPanel
+                                            </StackPanel>
+                                            <StackPanel DockPanel.Dock="Left">                                                  
+                                                <Label Grid.Row="2" Grid.Column="2">Raw File List:</Label>
+
+                                                <StackPanel
                     Grid.Row="2"
                     Grid.Column="2"
                     Height="20"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
                     Orientation="Horizontal">
-                    <Button
+                                                    <Button
                         Width="50"
                         Margin="5,0,5,0"
                         Command="{Binding SaveTargetSetsCmd}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock>Save</TextBlock>
-                            <iconPacks:PackIconMaterial
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock>Save</TextBlock>
+                                                            <iconPacks:PackIconMaterial
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Kind="File" />
-                        </StackPanel>
-                    </Button>
-                    <Button
+                                                        </StackPanel>
+                                                    </Button>
+                                                    <Button
                         Width="50"
                         Margin="5,0,5,0"
                         Command="{Binding ClearTargetSetsCmd}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock>Clear</TextBlock>
-                            <iconPacks:PackIconMaterial
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock>Clear</TextBlock>
+                                                            <iconPacks:PackIconMaterial
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Kind="File" />
-                        </StackPanel>
-                    </Button>
-                    <CheckBox IsChecked="{Binding IsTargetChecked}">Hide Uncheck</CheckBox>
-                </StackPanel>
-                <DataGrid
-                    Grid.Row="2"
-                    Grid.RowSpan="2"
-                    Grid.Column="2"
-                    Grid.ColumnSpan="1"
-                    Margin="0,20,0,0" />
-
-                <control:CheckFileTree
+                                                        </StackPanel>
+                                                    </Button>
+                                                    <CheckBox IsChecked="{Binding IsTargetChecked}">Hide Uncheck</CheckBox>
+                                                </StackPanel>
+                                                <control:CheckFileTree
                     x:Name="projectTree"
                     Grid.Row="2"
                     Grid.RowSpan="2"
@@ -148,96 +147,126 @@
                     Grid.ColumnSpan="1"
                     Margin="0,20,0,0"
                     TreeSource="{Binding TargetTreeData}" />
-                <ListView
-                    Grid.Row="0"
-                    Grid.RowSpan="2"
-                    Grid.Column="4"
+
+                                            </StackPanel>
+                                        </DockPanel>
+                                        <Grid DockPanel.Dock="Top">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="20*"></ColumnDefinition>
+                                                <ColumnDefinition Width="20*"></ColumnDefinition>
+                                                <ColumnDefinition Width="20*"></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="20*"></RowDefinition>
+                                                <RowDefinition Height="20*"></RowDefinition>
+                                                <RowDefinition Height="20*"></RowDefinition>
+                                            </Grid.RowDefinitions>
+
+
+
+
+
+
+                                    
+                                        </Grid>
+
+                                    </DockPanel>
+                                </avalondock:LayoutDocument>
+                            </avalondock:LayoutDocumentPane>
+                            <avalondock:LayoutDocumentPane>
+                                <avalondock:LayoutDocument Title="Translation">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="20*"></ColumnDefinition>
+                                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                            <ColumnDefinition Width="20"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="20*"></RowDefinition>
+                                            <RowDefinition Height="Auto"></RowDefinition>
+                                            <RowDefinition Height="20*"></RowDefinition>
+                                        </Grid.RowDefinitions>
+
+                                        <ListView
+                    Grid.Row="2"
+                    Grid.RowSpan="1"
+                    Grid.Column="0"
                     ItemsSource="{Binding LocalizationSource}"
                     SelectedIndex="{Binding LocalizedWord}">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn
+                                            <ListView.View>
+                                                <GridView>
+                                                    <GridViewColumn
                                 Width="150"
                                 DisplayMemberBinding="{Binding SourceString}"
                                 Header="Source" />
-                            <GridViewColumn
+                                                    <GridViewColumn
                                 Width="150"
                                 DisplayMemberBinding="{Binding TargetString}"
                                 Header="Target" />
-                            <GridViewColumn Width="62" Header="Use Auto">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button ToolTip="True if you want to accept machine option"
+                                                    <GridViewColumn Width="62" Header="Use Auto">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <Button ToolTip="True if you want to accept machine option"
                                             Width="50"
                                             Command="{Binding UseAutoCmd}"
                                             Content="{Binding Mode=TwoWay, Path=UseAuto}" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn Width="62" Header="Ignore">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button ToolTip="True if this item is not translated, used as format or something"
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
+                                                    <GridViewColumn Width="62" Header="Ignore">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <Button ToolTip="True if this item is not translated, used as format or something"
                                             Width="50"
                                             Command="{Binding IgnoreCmd}"
                                             Content="{Binding Mode=TwoWay, Path=Ignore}" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn Width="62" Header="As ID">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
+                                                    <GridViewColumn Width="62" Header="As ID">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <Button
                                             Width="50" ToolTip="True if this item is not translated, used as id"
                                             Command="{Binding AsIdCmd}"
                                             Content="{Binding Mode=TwoWay, Path=AsId}" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
+                                                    <GridViewColumn
                                 Width="70"
                                 DisplayMemberBinding="{Binding TargetId}"
                                 Header="ID" />
-                            <GridViewColumn
+                                                    <GridViewColumn
                                 Width="150"
                                 DisplayMemberBinding="{Binding ShortFileName}"
                                 Header="File" />
-                            <GridViewColumn
+                                                    <GridViewColumn
                                 Width="150"
                                 DisplayMemberBinding="{Binding FileName}"
                                 Header="Path" />
-                        </GridView>
-                    </ListView.View>
+                                                </GridView>
+                                            </ListView.View>
 
-                </ListView>
-                <control:TransEditor
-                    x:Name="projectTr"
-                    Grid.Row="2"
-                    Grid.RowSpan="3"
-                    Grid.Column="4"
+                                        </ListView>
+                                        <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch"  VerticalAlignment="Center" Background="Black"  ShowsPreview="True" Height="5"></GridSplitter>
+                                        <control:TransEditor
+                                            Worder="{Binding CreateEffectPrepareFilesCmd}"
+                    x:Name="projectTr2"
+                    Grid.Row="0"
                     Grid.ColumnSpan="1"
                     Margin="0,20,0,0"
                     Word="{Binding SelectedWord}" />
-                <!--
-                <control:TextBoxExt Width="100" Height="100" Grid.Column="1" Grid.Row="2" BigText="{Binding BaGo}"></control:TextBoxExt>
-                <ToggleButton Grid.Column="1" Grid.Row="1" x:Name="TogglePopupButton" Height="30" Width="150" HorizontalAlignment="Left">
-                    <StackPanel>
-                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <Run Text="Is button toggled? " />
-                            <Run Text="{Binding IsChecked, ElementName=TogglePopupButton}" />
-                        </TextBlock>
-
-                        <Popup Name="myPopup" IsOpen="{Binding IsChecked, ElementName=TogglePopupButton}">
-                            <Border BorderThickness="1">
-                                <TextBlock Name="myPopupText" Background="LightBlue" Foreground="Blue" Padding="30">
-                                    Popup Text
-                                </TextBlock>
-                            </Border>
-                        </Popup>
-                    </StackPanel>
-                </ToggleButton>
-                -->
-            </Grid>
+                                    </Grid>
+                                </avalondock:LayoutDocument>
+                            </avalondock:LayoutDocumentPane>
+                        </avalondock:LayoutDocumentPaneGroup>
+                      
+                    </avalondock:LayoutPanel>
+                 
+                </avalondock:LayoutRoot>
+            </avalondock:DockingManager>
+ 
         </TabItem>
         <TabItem Header="Old UI">
             <Grid>
