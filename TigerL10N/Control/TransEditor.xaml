@@ -14,54 +14,74 @@
     <Grid Background="Wheat">
         <Grid.RowDefinitions>
             <RowDefinition Height="200*"/>
+            <RowDefinition Height="5"/>
             <RowDefinition Height="50*"/>
+            <RowDefinition Height="5"/>
             <RowDefinition Height="50*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50*"/>
-            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="5"/>
             <ColumnDefinition Width="50*"/>
         </Grid.ColumnDefinitions>
         <Label>Reference :</Label>
+        <ScrollViewer Margin="2,30,5,5" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1">
+        <StackPanel  Background="White">
+            <TextBox Text="{Binding Path=Word.PrevRef, ElementName=teEdit}" Background="LightGray" Margin="2"  MinLines="1"   IsReadOnly="True"  Grid.Row="0" Grid.Column="0"/>
+            <RichTextBox>
+                <FlowDocument>
+                    <Paragraph>
+                        <Run Text="{Binding Path=Word.CurrentRef, ElementName=teEdit}"></Run>
+                    </Paragraph>
+                </FlowDocument>
+            </RichTextBox>
+            <TextBox Text="{Binding Path=Word.NextRef, ElementName=teEdit}" Background="LightGray" Margin="2"  MinLines="1"  IsReadOnly="True"  Grid.Row="0" Grid.Column="0"/>
+        </StackPanel>
+        </ScrollViewer>
+        <GridSplitter Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" ResizeDirection="Columns"  VerticalAlignment="Stretch"   ShowsPreview="True"></GridSplitter>
         <Label Grid.Column="2">Information :</Label>
-        <StackPanel Margin="2,30,5,5" Grid.Column="3" Background="White">
+        <StackPanel Margin="2,30,5,5" Grid.Column="2" Background="White">
             <StackPanel Orientation="Horizontal">
                 <Label>Language:</Label>
                 <Label Content="{Binding Path=Word.FileName, ElementName=teEdit}"></Label>
             </StackPanel>
         </StackPanel>
-        <StackPanel Margin="2" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Background="White">
-            <TextBox Text="{Binding Path=Word.PrevRef, ElementName=teEdit}" Background="LightGray" Margin="2"  MinLines="1"   IsReadOnly="True"  Grid.Row="0" Grid.Column="0"/>
-            <RichTextBox>
-                <FlowDocument>
-                    <Paragraph>
-                        <Run Text="{Binding Path=Word.CurrentRef, ElementName=teEdit}"></Run></Paragraph> 
 
+        <GridSplitter Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="20" HorizontalAlignment="Stretch" ResizeDirection="Rows"  VerticalAlignment="Stretch"   ShowsPreview="True"></GridSplitter>
 
-                </FlowDocument>
-            </RichTextBox>
-            <TextBox Text="{Binding Path=Word.NextRef, ElementName=teEdit}" Background="LightGray" Margin="2"  MinLines="1"  IsReadOnly="True"  Grid.Row="0" Grid.Column="0"/>         
+        <StackPanel Margin="2" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Background="Wheat">
+            <TextBox Text="{Binding Path=Word.SourceString, ElementName=teEdit}" Margin="2"  IsReadOnly="True" MinLines="50" BorderBrush="Wheat" Background="Wheat" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" TextChanged="TextBox_TextChanged"/>
         </StackPanel>
-        <StackPanel Margin="2" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Background="White">
-            <TextBox Text="{Binding Path=Word.SourceString, ElementName=teEdit}" Margin="2"  IsReadOnly="True" MinLines="50" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"/>
-        </StackPanel>
-        <Grid Margin="2" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Background="White">
+        <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="Brown"  Content="{Binding Path=Word.TargetId, ElementName=teEdit}"></Label>
+        <GridSplitter Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Height="20" HorizontalAlignment="Stretch" ResizeDirection="Rows"  VerticalAlignment="Stretch"   ShowsPreview="True" Background="Red"></GridSplitter>
+        <Grid Margin="2" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Background="White">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="20*"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="10*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="10*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <StackPanel Margin="2" Grid.Column="0" Background="White">
-                <TextBox Text="{Binding Path=Word.SourceString, ElementName=teEdit}" Margin="2" x:Name="txtE"  Keyboard.PreviewKeyDown="txtE_PreviewKeyDown"  MinLines="50">
-         
+            <ScrollViewer Margin="2" Grid.Column="0" Background="White">
+                <TextBox Text="{Binding Path=Word.TargetString, ElementName=teEdit}" AcceptsReturn="True" Margin="2" x:Name="txtE"  Keyboard.PreviewKeyDown="txtE_PreviewKeyDown" BorderBrush="White" MinLines="50">
+                </TextBox>
+            </ScrollViewer>
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Center"  VerticalAlignment="Stretch" ShowsPreview="True" Width="5"></GridSplitter>
+            <StackPanel Margin="2" Grid.Column="2" Background="White">
+                <TextBox Text="{Binding Path=Word.FindalId, ElementName=teEdit}" Margin="2" x:Name="txtEc"  Keyboard.PreviewKeyDown="txtE_PreviewKeyDown" BorderBrush="White" MinLines="50">
                 </TextBox>
             </StackPanel>
-            <GridSplitter Grid.Column="1" HorizontalAlignment="Center"  VerticalAlignment="Stretch" Background="Black"  ShowsPreview="True" Width="5"></GridSplitter>
-            <StackPanel Margin="2" Grid.Column="2" Background="White" Orientation="Horizontal">
-                <Button Width="50">jj</Button>
-                <Button Width="50">jj</Button>
-                <Button Width="50">jj</Button>
-                <Button Width="50">jj</Button>
+            <GridSplitter Grid.Column="3" HorizontalAlignment="Center"  VerticalAlignment="Stretch" ShowsPreview="True" Width="5"></GridSplitter>
+            <StackPanel Margin="3" Grid.Column="4" Background="White" Orientation="Vertical">
+                <StackPanel Orientation="Horizontal">
+                    <Button Click="Button_Click" Width="100" Height="20" Margin="2">Apply All(Ctrl+A)</Button>
+                    <Button Click="Button_Click_1" Width="100" Height="20" Margin="2">As ID(Ctrl+I)</Button>
+                    <Button Click="Button_Click_2" Width="50" Height="20" Margin="2"></Button>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Button Click="Button_Click_3" Width="90" Height="20" Margin="2">Ignore(Ctrl+I)</Button>
+                    <Button Click="Button_Click_4" Width="120" Height="20" Margin="2">Next(Shift+Enter)</Button>
+                </StackPanel>
             </StackPanel>
         </Grid>
        

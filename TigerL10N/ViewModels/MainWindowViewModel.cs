@@ -209,9 +209,74 @@ namespace TigerL10N.ViewModels
             _workDoneTriggerCmd ??= new DelegateCommand(WorkDoneTriggerFunc);
         void WorkDoneTriggerFunc()
         {
+            LocalizedWord += 1;
+            //SelectedWord = SelectedWord + 1;
             // throw new NotImplementException();
         }
 
+
+        private DelegateCommand? _movePrevCmd = null;
+        public DelegateCommand MovePrevCmd =>
+            _movePrevCmd ??= new DelegateCommand(MovePrevFunc);
+        void MovePrevFunc()
+        {
+            if(LocalizedWord > 0)
+                LocalizedWord -= 1;
+            // throw new NotImplementException();
+        }
+
+
+        private DelegateCommand? _asIdCmd = null;
+        public DelegateCommand AsIdCmd =>
+            _asIdCmd ??= new DelegateCommand(AsIdFunc);
+        void AsIdFunc()
+        {
+            // throw new NotImplementException();
+        }
+
+
+
+        private DelegateCommand? _ignoreCmd = null;
+        public DelegateCommand IgnoreCmd =>
+            _ignoreCmd ??= new DelegateCommand(IgnoreFunc);
+        void IgnoreFunc()
+        {
+            // throw new NotImplementException();
+        }
+
+
+        private DelegateCommand? _applyAllCmd = null;
+        public DelegateCommand ApplyAllCmd =>
+            _applyAllCmd ??= new DelegateCommand(ApplyAllFunc);
+        void ApplyAllFunc()
+        {
+            if (SelectedWord != null)
+            {
+                WordItem sItem = SelectedWord;
+                if (LocalizationSource != null)
+                {
+                    foreach (WordItem eachWord in LocalizationSource)
+                    {
+                        //if (eachWord != sItem)
+                        {
+                            if(sItem.SourceString == eachWord.SourceString)
+                            {
+                                eachWord.Dirty = true;
+                                eachWord.TargetId = sItem.TargetId;
+                                eachWord.TargetString = sItem.TargetString;
+                                eachWord.FindalId = sItem.FindalId;
+
+                                eachWord.UseAuto = sItem.UseAuto;
+                                eachWord.Ignore = sItem.Ignore;
+                                eachWord.AsId = sItem.AsId;
+                            }
+                        }
+                    }
+                }
+            }
+           
+            // throw new NotImplementException();
+        }
 
 
         public void MyUserControl_My(object sender, RoutedEventArgs e)
@@ -321,6 +386,7 @@ namespace TigerL10N.ViewModels
             }
             //CreateFolders();
             CreateFiles(cu);
+            LocalizedWord = 0;
             //LoadFiles();
         }
 
@@ -360,7 +426,14 @@ namespace TigerL10N.ViewModels
                         bool ignore = false;
                         bool asId = false;
                         string targetString = "";
-                        string org_string = eachFileLn.Org.Substring(1, eachFileLn.Org.Length - 2);
+                        string finalId = "";
+                        string raw_string = eachFileLn.Org;
+                        int org_len = raw_string.Length;
+                        string org_string = string.Empty;
+                        if (raw_string.StartsWith("@"))
+                            org_string = raw_string.Substring(2, org_len - 3);
+                        else
+                            org_string = raw_string.Substring(1, org_len - 2);
                         string code = OneOfCode(org_string);
                         string prev_ref = "";
                         string next_ref = "";
@@ -402,13 +475,19 @@ namespace TigerL10N.ViewModels
                         }
                         else if(code !="")
                         {
-                            targetString = code;
+                            targetString = org_string;
+                            finalId = code;
                             asId = true;
+                        }
+                        else
+                        {
+                            targetString = org_string;
                         }
                         WordItem item = new WordItem()
                         {
                             FileName = f,
                             SourceString = eachFileLn.Org,
+                            FindalId = finalId,
                             TargetString = targetString,
                             TargetId = eachFileLn.AutoKey,
                             UseAuto= useAuto,
@@ -426,6 +505,10 @@ namespace TigerL10N.ViewModels
 
                 List<WordItem> sortedByName = items.OrderBy(w => w.SourceString).ToList();
                 this.LocalizationSource = sortedByName;
+                foreach(WordItem eachWord in sortedByName)
+                {
+                    eachWord.init = true;
+                }
 
             }
             //Directory.CreateDirectory(RawPath);

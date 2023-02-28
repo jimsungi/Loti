@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Prism.Commands;
 using Prism.Mvvm;
+using TigerL10N.Service;
 
 namespace TigerL10N.Control
 {
@@ -108,15 +109,108 @@ namespace TigerL10N.Control
         {
             UseAuto = !UseAuto;
         }
+    
+        /// <summary>
+        /// There is any touch alreay, you can refer this value as edited 
+        /// </summary>
+        private bool? _dirty=false;
+        public bool Dirty
+        {
+            get => _dirty ??= false;
+            set
+            {
+                if (!init)
+                    return;
+                SetProperty(ref _dirty, value);
+                StatusColor = "red";
+            }
+        }
+
+
+        /// <summary>
+        /// Show Editing Status, it support 
+        /// init : white
+        /// dirty : gray
+        /// </summary>
+        private string? _statusColor="white";
+        public string StatusColor
+        {
+            get
+            {
+                bool dirty = Dirty;
+                if (dirty)
+                    return "lightgray";
+                return "white";
+            }
+            set
+            {
+                string acolor = "white";
+                if (Dirty)
+                    acolor = "lightgray";
+                SetProperty(ref _statusColor, acolor);
+            }
+        }
+
+        public bool init = false;
 
         private string? _targetString;
         public string TargetString
         {
             get => _targetString ??= "";
-            set => SetProperty(ref _targetString, value);
+            set
+            {                
+                SetProperty(ref _targetString, value);
+                if(UseAuto && !string.IsNullOrWhiteSpace(TargetId))
+                {
+                    if (_targetString != null)
+                    {
+                        FindalId = LocService.GetRecommandID(SourceString, true);
+                    }
+                    Dirty = true;
+                }
+                if (!string.IsNullOrWhiteSpace(_targetString))
+                {
+                    if (UseAuto)
+                        UseAuto = false;
+                    if (AsId)
+                        AsId = false;
+                    if (Ignore)
+                        Ignore = false;
+                    Dirty = true;
+                }
+            }
         }
 
 
+        private string? _findalId;
+        public string FindalId
+        {
+            get => _findalId ??= "";
+            set => SetProperty(ref _findalId, value);
+        }
+
+        private Dictionary<string, string> LanguageStringDict = new Dictionary<string, string>();
+
+
+        private string? _targetLanguage;
+        public string TargetLanguage
+        {
+            get => _targetLanguage ??= "";
+            set => SetProperty(ref _targetLanguage, value);
+        }
+
+
+
+        public bool AcceptReturn
+        {
+            get  { return !MultiLine;}
+        }
+
+
+        public bool MultiLine
+        {
+            get { return TargetString.Contains("\r\n"); }
+        }
 
 
         private string? _fileName;

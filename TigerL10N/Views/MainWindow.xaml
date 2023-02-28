@@ -24,8 +24,22 @@
                         <avalondock:LayoutDocumentPaneGroup>
                             <avalondock:LayoutDocumentPane>
                                 <avalondock:LayoutDocument Title="Manager">
-                                    <DockPanel>
-                                        <ToolBarPanel DockPanel.Dock="Top">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="20*"></ColumnDefinition>
+                                            <ColumnDefinition Width="5"></ColumnDefinition>
+                                            <ColumnDefinition Width="20*"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="30"></RowDefinition>
+                                            <RowDefinition Height="200*"></RowDefinition>
+                                            <RowDefinition Height="5"></RowDefinition>
+                                            <RowDefinition Height="200*"></RowDefinition>
+                                            <RowDefinition Height="5"></RowDefinition>
+                                            <RowDefinition Height="200*"></RowDefinition>
+                                            <RowDefinition Height="5"></RowDefinition>
+                                        </Grid.RowDefinitions>
+                                        <ToolBarPanel Grid.Row="0" Background="Beige">
                                             <Menu
                     Grid.Row="0"
                     Grid.ColumnSpan="3"
@@ -40,38 +54,37 @@
                                                 </MenuItem>
                                             </Menu>
                                         </ToolBarPanel>
-                                        <Grid DockPanel.Dock="Top">
-                                            <DockPanel>
-                                                <Grid DockPanel.Dock="Left">
-                                                    <StackPanel
+                                        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="3">
+                                                <Grid >
+                                                <Label>Project Command </Label>
+                                                    <StackPanel Margin="0,20,0,0" Background="Wheat"
                     
                     Orientation="Vertical">
-                                                        <StackPanel>
+                                                        <StackPanel Margin="5">
                                                             <Button Command="{Binding CreateAutoPrepareFilesCmd}">Create Translate File Automatic (Use machine option)</Button>
                                                         </StackPanel>
-                                                        <StackPanel>
+                                                        <StackPanel Margin="5">
                                                             <Button Command="{Binding CreateEffectPrepareFilesCmd}">Create Translate File Effectively (You need select something)</Button>
                                                         </StackPanel>
-                                                        <StackPanel>
+                                                        <StackPanel Margin="5">
                                                             <Button Command="{Binding ApplyTranslateFilesCmd}">Apply your translation</Button>
                                                         </StackPanel>
-                                                        <StackPanel>
+                                                        <StackPanel Margin="2">
                                                             <Button Command="{Binding MakeMultiLanguageVersionCmd}">Make your multi-language version</Button>
                                                         </StackPanel>
-                                                        <StackPanel>
+                                                        <StackPanel Margin="2">
                                                             <Button Command="{Binding MakeOneLanguageVersionCmd}">Make your working version</Button>
                                                         </StackPanel>
 
                                                     </StackPanel>
 
                                                 </Grid>
-                                            </DockPanel>
                                         </Grid>
-                                        <Grid DockPanel.Dock="Top" Margin="0,20,0,0">
-                                            <StackPanel
-                    Grid.Row="1"
-                    Grid.ColumnSpan="3"
-                    Orientation="Vertical">
+
+                                        <GridSplitter Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Height="5" HorizontalAlignment="Stretch"  VerticalAlignment="Center" ShowsPreview="True"></GridSplitter>
+                                        <Grid Grid.Row="3"  Grid.Column="0" Grid.ColumnSpan="3" Margin="3,3,3,3" Background="Beige">
+                                            <Label>Project Information</Label>
+                                            <StackPanel Margin="0,30,0,0"   Orientation="Vertical">
                                                 <StackPanel Orientation="Horizontal">
                                                     <Label Width="100">Project Name:</Label>
                                                     <TextBox Width="150" Text="{Binding ProjectName}" />
@@ -90,25 +103,23 @@
                                                 <Label>dsadfsdf</Label>
                                             </StackPanel>
                                         </Grid>
-                                        <DockPanel DockPanel.Dock="Top">
+                                        <GridSplitter DockPanel.Dock="Top" Grid.Row="4" Grid.ColumnSpan="3" HorizontalAlignment="Stretch"  VerticalAlignment="Center" ShowsPreview="True" Height="5"></GridSplitter>
+                                        <Grid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="20*"></ColumnDefinition>
+                                                <ColumnDefinition Width="5"></ColumnDefinition>
+                                                <ColumnDefinition Width="20*"></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+                                            <GridSplitter DockPanel.Dock="Top" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center"  VerticalAlignment="Stretch"   ShowsPreview="True" Width="5"></GridSplitter>
 
-                                            <StackPanel DockPanel.Dock="Left">
-                                                <Label Grid.Row="2" Grid.Column="0">Translations:</Label>
-                                                <control:CheckFileTree
+                                            <Label Grid.Row="0" Grid.Column="0">Translations:</Label>
+                                                <control:CheckFileTree Grid.Row="0" Grid.Column="0"
                     x:Name="sourceTree"
-                    Grid.Row="2"
-                    Grid.RowSpan="2"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="1"
                     Margin="0,20,0,0"
                     TreeSource="{Binding SourceTreeData}" />
-                                            </StackPanel>
-                                            <StackPanel DockPanel.Dock="Left">                                                  
-                                                <Label Grid.Row="2" Grid.Column="2">Raw File List:</Label>
-
-                                                <StackPanel
-                    Grid.Row="2"
-                    Grid.Column="2"
+                                            <Label Grid.Row="2" Grid.Column="2">Raw File List:</Label>
+                                        
+                                                <StackPanel Grid.Row="1" Grid.Column="2"
                     Height="20"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
@@ -148,29 +159,11 @@
                     Margin="0,20,0,0"
                     TreeSource="{Binding TargetTreeData}" />
 
-                                            </StackPanel>
-                                        </DockPanel>
-                                        <Grid DockPanel.Dock="Top">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="20*"></ColumnDefinition>
-                                                <ColumnDefinition Width="20*"></ColumnDefinition>
-                                                <ColumnDefinition Width="20*"></ColumnDefinition>
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="20*"></RowDefinition>
-                                                <RowDefinition Height="20*"></RowDefinition>
-                                                <RowDefinition Height="20*"></RowDefinition>
-                                            </Grid.RowDefinitions>
-
-
-
-
-
-
-                                    
+                                        
                                         </Grid>
+                                       
 
-                                    </DockPanel>
+                                    </Grid>
                                 </avalondock:LayoutDocument>
                             </avalondock:LayoutDocumentPane>
                             <avalondock:LayoutDocumentPane>
@@ -187,7 +180,20 @@
                                             <RowDefinition Height="20*"></RowDefinition>
                                         </Grid.RowDefinitions>
 
-                                        <ListView
+                                        <control:TransEditor
+                                            NextCmd="{Binding WorkDoneTriggerCmd}" 
+                                            PrevCmd="{Binding MovePrevCmd}" 
+                                            AsIdCmd="{Binding AsIdCmd}"
+                                            ApplyAllCmd="{Binding ApplyAllCmd}"
+                                            IgnoreCmd="{Binding IgnoreCmd}"
+                    x:Name="projectTr2"
+                    Grid.Row="0"
+                    Grid.ColumnSpan="1"
+                    Margin="5,20,5,5"
+                    Word="{Binding SelectedWord}" />
+                                        <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch"  VerticalAlignment="Center"   ShowsPreview="True" Height="5"></GridSplitter>
+                                        <ListView Margin="5,10,5,5" x:Name="listview"
+                                                  SelectionChanged="ListView_SelectionChanged" MouseDoubleClick="listview_MouseDoubleClick" KeyDown="listview_KeyDown"
                     Grid.Row="2"
                     Grid.RowSpan="1"
                     Grid.Column="0"
@@ -196,13 +202,25 @@
                                             <ListView.View>
                                                 <GridView>
                                                     <GridViewColumn
-                                Width="150"
-                                DisplayMemberBinding="{Binding SourceString}"
-                                Header="Source" />
+                               
+                                Header="Source" >
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <Grid  Background="{Binding StatusColor}">
+                                                                    <TextBlock Text="{Binding SourceString}" />
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+
+                                                    </GridViewColumn>
                                                     <GridViewColumn
                                 Width="150"
                                 DisplayMemberBinding="{Binding TargetString}"
                                 Header="Target" />
+                                                    <GridViewColumn
+                                Width="100"
+                                DisplayMemberBinding="{Binding FindalId}"
+                                Header="Id" />
                                                     <GridViewColumn Width="62" Header="Use Auto">
                                                         <GridViewColumn.CellTemplate>
                                                             <DataTemplate>
@@ -249,14 +267,7 @@
                                             </ListView.View>
 
                                         </ListView>
-                                        <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch"  VerticalAlignment="Center" Background="Black"  ShowsPreview="True" Height="5"></GridSplitter>
-                                        <control:TransEditor
-                                            Worder="{Binding CreateEffectPrepareFilesCmd}"
-                    x:Name="projectTr2"
-                    Grid.Row="0"
-                    Grid.ColumnSpan="1"
-                    Margin="0,20,0,0"
-                    Word="{Binding SelectedWord}" />
+
                                     </Grid>
                                 </avalondock:LayoutDocument>
                             </avalondock:LayoutDocumentPane>

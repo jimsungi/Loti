@@ -38,51 +38,132 @@ namespace TigerL10N.Control
             set => SetValue(WordProperty, value);
         }
 
-        public static readonly DependencyProperty WorderProperty = DependencyProperty.Register(
-    nameof(Worder), typeof(DelegateCommand), typeof(TransEditor),
-    new PropertyMetadata(new DelegateCommand(DymmyCmd)));
-        public DelegateCommand Worder
+        #region Registered Delegate Command Property
+        public static readonly DependencyProperty ApplyAllCmdProperty = DependencyProperty.Register(
+    nameof(ApplyAllCmd), typeof(DelegateCommand), typeof(TransEditor),
+    new PropertyMetadata(new DelegateCommand(DummyCmdProperty)));
+        public DelegateCommand ApplyAllCmd
         {
-            get => (DelegateCommand)GetValue(WorderProperty);
-            set => SetValue(WorderProperty, value);
+            get => (DelegateCommand)GetValue(ApplyAllCmdProperty);
+            set => SetValue(ApplyAllCmdProperty, value);
         }
 
-        static void DymmyCmd()
+        public static readonly DependencyProperty IgnoreCmdProperty = DependencyProperty.Register(
+nameof(IgnoreCmd), typeof(DelegateCommand), typeof(TransEditor),
+new PropertyMetadata(new DelegateCommand(DummyCmdProperty)));
+        public DelegateCommand IgnoreCmd
         {
+            get => (DelegateCommand)GetValue(IgnoreCmdProperty);
+            set => SetValue(IgnoreCmdProperty, value);
+        }
 
+        public static readonly DependencyProperty AsIdCmdProperty = DependencyProperty.Register(
+nameof(AsIdCmd), typeof(DelegateCommand), typeof(TransEditor),
+new PropertyMetadata(new DelegateCommand(DummyCmdProperty)));
+        public DelegateCommand AsIdCmd
+        {
+            get => (DelegateCommand)GetValue(AsIdCmdProperty);
+            set => SetValue(AsIdCmdProperty, value);
+        }
+
+        public static readonly DependencyProperty NextCmdProperty = DependencyProperty.Register(
+nameof(NextCmd), typeof(DelegateCommand), typeof(TransEditor),
+new PropertyMetadata(new DelegateCommand(DummyCmdProperty)));
+        public DelegateCommand NextCmd
+        {
+            get => (DelegateCommand)GetValue(NextCmdProperty);
+            set => SetValue(NextCmdProperty, value);
+        }
+
+        public static readonly DependencyProperty PrevCmdProperty = DependencyProperty.Register(
+nameof(PrevCmd), typeof(DelegateCommand), typeof(TransEditor),
+new PropertyMetadata(new DelegateCommand(DummyCmdProperty)));
+        public DelegateCommand PrevCmd
+        {
+            get => (DelegateCommand)GetValue(PrevCmdProperty);
+            set => SetValue(PrevCmdProperty, value);
+        }
+
+        static void DummyCmdProperty()
+        {
             // throw new NotImplementException();
         }
+        #endregion
 
-        private DelegateCommand<string>? _specialKeyCmd = null;
-        public DelegateCommand<string> SpecialKeyCmd =>
-            _specialKeyCmd ??= new DelegateCommand<string>(SpecialKeyFunc);
-        void SpecialKeyFunc(string param)
-        {
-            if(param == "Shift+Enter")
-            {
-                System.Windows.Forms.MessageBox.Show("ssss");
-            }
-            // throw new NotImplementException();
-        }
 
         private void txtE_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
+            if (Word == null)
+                return;
             if(e.Key == Key.Enter && e.KeyboardDevice.Modifiers == ModifierKeys.Shift)
             {
-                //System.Windows.Forms.MessageBox.Show("Enter + Shift");
-                MyEventArgs args = new MyEventArgs(MyEvent, this, "Hello, world!");
-                Worder.Execute();
-                RaiseEvent(args);
+                NextCmd.Execute();
+                e.Handled = true;
             }
+            else if(e.Key == Key.Down)
+            {
+                NextCmd.Execute();
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Up)
+            {
+                PrevCmd.Execute();
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Enter && !Word.SourceString.Contains("\r\n"))
+            {
+                NextCmd.Execute();
+                e.Handled = true;
+            }
+            else if(e.Key== Key.A && e.KeyboardDevice.Modifiers == ModifierKeys.Shift)
+            {
+                ApplyAllCmd.Execute();
+                e.Handled = true;
+            }
+            else if (e.Key == Key.I && e.KeyboardDevice.Modifiers == ModifierKeys.Shift)
+            {
+                IgnoreCmd.Execute();
+                e.Handled = true;
+            }
+            else if (e.Key == Key.U && e.KeyboardDevice.Modifiers == ModifierKeys.Shift)
+            {
+                AsIdCmd.Execute();
+                e.Handled = true;
+            }
+
         }
 
-        public static readonly RoutedEvent MyEvent = EventManager.RegisterRoutedEvent(
-      "My", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(TransEditor));
 
-        public event RoutedEventHandler My
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            add { AddHandler(MyEvent, value); }
-            remove { RemoveHandler(MyEvent, value); }
+
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            //Apply All(Ctrl+A)<
+
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 

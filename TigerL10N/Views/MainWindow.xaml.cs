@@ -109,5 +109,45 @@ namespace TigerL10N.Views
                 .RunParser();
         }
 
+        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //ListView? s = sender as ListView;
+            if(listview != null)
+            { 
+            if (e.AddedItems.Count > 0)
+            {
+
+                ListViewItem item = listview.ItemContainerGenerator.ContainerFromIndex(listview.SelectedIndex) as ListViewItem;
+                if (item != null)
+                {
+                    item.Focus();
+                    item.BringIntoView();
+                }
+            }
+            }
+        }
+
+        private void listview_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                // 선택된 항목이 있다면
+                if (listview.SelectedItem != null)
+                {
+                    // TextBox나 다른 컨트롤로 포커스를 이동시키기
+                    Keyboard.Focus(projectTr2.txtE);
+                }
+            }
+        }
+
+        private void listview_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            // 선택된 항목이 있다면
+            if (listview.SelectedItem != null)
+            {
+                // TextBox나 다른 컨트롤로 포커스를 이동시키기
+                Keyboard.Focus(projectTr2.txtE);
+            }
+        }
     }
 }
