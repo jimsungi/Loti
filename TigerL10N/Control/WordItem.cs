@@ -159,16 +159,15 @@ namespace TigerL10N.Control
             get => _targetString ??= "";
             set
             {                
-                SetProperty(ref _targetString, value);
-                if(UseAuto && !string.IsNullOrWhiteSpace(TargetId))
+                string set_value = value;
+                
+                if(_targetString == set_value)
                 {
-                    if (_targetString != null)
-                    {
-                        FindalId = LocService.GetRecommandID(SourceString, true);
-                    }
+                    // accept current value
+                    SetProperty(ref _targetString, value);
                     Dirty = true;
                 }
-                if (!string.IsNullOrWhiteSpace(_targetString))
+                else  if (!string.IsNullOrWhiteSpace(_targetString))
                 {
                     if (UseAuto)
                         UseAuto = false;
@@ -183,7 +182,7 @@ namespace TigerL10N.Control
 
 
         private string? _findalId;
-        public string FindalId
+        public string FinalId
         {
             get => _findalId ??= "";
             set => SetProperty(ref _findalId, value);

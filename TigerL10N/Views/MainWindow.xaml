@@ -181,7 +181,7 @@
                                         </Grid.RowDefinitions>
 
                                         <control:TransEditor
-                                            NextCmd="{Binding WorkDoneTriggerCmd}" 
+                                            NextCmd="{Binding MoveNextCmd}" 
                                             PrevCmd="{Binding MovePrevCmd}" 
                                             AsIdCmd="{Binding AsIdCmd}"
                                             ApplyAllCmd="{Binding ApplyAllCmd}"
@@ -215,11 +215,19 @@
                                                     </GridViewColumn>
                                                     <GridViewColumn
                                 Width="150"
-                                DisplayMemberBinding="{Binding TargetString}"
-                                Header="Target" />
+                                Header="Target" >
+
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <Grid  Background="{Binding StatusColor}">
+                                                                    <TextBlock Text="{Binding TargetString}" />
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
                                                     <GridViewColumn
                                 Width="100"
-                                DisplayMemberBinding="{Binding FindalId}"
+                                DisplayMemberBinding="{Binding FinalId}"
                                 Header="Id" />
                                                     <GridViewColumn Width="62" Header="Use Auto">
                                                         <GridViewColumn.CellTemplate>

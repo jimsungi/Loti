@@ -26,7 +26,7 @@ namespace TigerL10N.Service
         public static List<string> IdKey = new List<string>();
         public static List<string> StringKey = new List<string>();
 
-        public static string GetRecommandID(string recommandID, bool id)
+        public static string GetRecommandID(string recommandID, bool id, bool notToMakeduplicate = true)
         {
             List<string> source_list = null;
 
@@ -80,10 +80,13 @@ namespace TigerL10N.Service
                 key_str = "_";
 
             string base_str = key_str;
-            int i = 0;
-            while(source_list.Contains(base_str))
+            if (notToMakeduplicate)
             {
-                base_str = string.Format("{0}_{1}", key_str, i++);
+                int i = 0;
+                while (source_list.Contains(base_str))
+                {
+                    base_str = string.Format("{0}_{1}", key_str, i++);
+                }
             }
             source_list.Add(base_str);
             return "G." +base_str;

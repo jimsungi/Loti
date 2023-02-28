@@ -204,11 +204,15 @@ namespace TigerL10N.ViewModels
 
 
 
-        private DelegateCommand? _workDoneTriggerCmd = null;
-        public DelegateCommand WorkDoneTriggerCmd =>
-            _workDoneTriggerCmd ??= new DelegateCommand(WorkDoneTriggerFunc);
-        void WorkDoneTriggerFunc()
+        private DelegateCommand? _moveNextCmd = null;
+        public DelegateCommand MoveNextCmd =>
+            _moveNextCmd ??= new DelegateCommand(MoveNextCmdFunc);
+        void MoveNextCmdFunc()
         {
+            if (SelectedWord != null)
+            {
+                SelectedWord.TargetString = SelectedWord.TargetString;
+            }
             LocalizedWord += 1;
             //SelectedWord = SelectedWord + 1;
             // throw new NotImplementException();
@@ -264,7 +268,7 @@ namespace TigerL10N.ViewModels
                                 eachWord.Dirty = true;
                                 eachWord.TargetId = sItem.TargetId;
                                 eachWord.TargetString = sItem.TargetString;
-                                eachWord.FindalId = sItem.FindalId;
+                                eachWord.FinalId = sItem.FinalId;
 
                                 eachWord.UseAuto = sItem.UseAuto;
                                 eachWord.Ignore = sItem.Ignore;
@@ -472,6 +476,7 @@ namespace TigerL10N.ViewModels
                         if (lines > 1)
                         {
                             ignore = true;
+                            targetString = org_string;
                         }
                         else if(code !="")
                         {
@@ -482,12 +487,13 @@ namespace TigerL10N.ViewModels
                         else
                         {
                             targetString = org_string;
+                            finalId = LocService.GetRecommandID(eachFileLn.Org, true, false);
                         }
                         WordItem item = new WordItem()
                         {
                             FileName = f,
                             SourceString = eachFileLn.Org,
-                            FindalId = finalId,
+                            FinalId = finalId,
                             TargetString = targetString,
                             TargetId = eachFileLn.AutoKey,
                             UseAuto= useAuto,
@@ -509,6 +515,8 @@ namespace TigerL10N.ViewModels
                 {
                     eachWord.init = true;
                 }
+                LocService.IdKey.Clear();
+                LocService.StringKey.Clear();
 
             }
             //Directory.CreateDirectory(RawPath);
