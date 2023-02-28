@@ -24,7 +24,8 @@ Big Idea
 
 Small things
 
-* Version things ... Is there any library or code or tools. If code or anything, it can be integrated.
-* Shortcut works into ListView of resource editor
+* Version things ... Is there any library or code or tools. If code or anything, it can be integrated.(-)
+* Shortcut works into ListView of resource editor (o)
 * Need way of 1) add / 2) remove / 3) copy / 4) select Language easier. 
-
+* Your Id library can be loaded into id library and reused.
+* Your Id library can be saved as Global library (and there might be a way to use default Id Library)
