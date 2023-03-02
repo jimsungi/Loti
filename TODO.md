@@ -29,3 +29,5 @@ Small things
 * Need way of 1) add / 2) remove / 3) copy / 4) select Language easier. 
 * Your Id library can be loaded into id library and reused.
 * Your Id library can be saved as Global library (and there might be a way to use default Id Library)
+* Need some ".tmp" files. If any *.tmp file exists need some warning
+* L10N folder OK. resource name would be l.resx
