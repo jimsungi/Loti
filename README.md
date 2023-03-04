@@ -25,6 +25,25 @@ Idears
 - L10N Bridge or middlewear : languages from static L10N resource, runtime L10N resource, database L10N resource
 - L10N Bridge or middlewear : buffering / priority
 
+Special Key
+- Editing Box
+-- Shift + Enter / Move to Next translation item in the list
+-- Down Arrow / Move to Next translation item in the list
+-- Up Arrow / Move to Prev translation item in the list
+-- Enter / Move to Next translation item (one line item)
+-- Shift + A / Apply same result with same source
+-- Shift + I / ignore toggle
+-- Shift + U / AsIs toggle
+-- Shift + I / Auto toggle
+
+- Translation item list view
+-- Enter / Move to Next translation item
+-- Shift + A / Apply same result with same source
+-- Shift + I / ignore toggle
+-- Shift + U / AsIs toggle
+-- Shift + I / Auto toggle
+
+
 돈버는중인 프로젝트에서 갑자기 다국어버전이 필요하다고 해서... 프레임워크 설계한 양반은 다국어버전 고려하지 않았는데다 관리자는 번역을 외부업체에 맡기는 방법이나 절차를 고려하지 않고 있는 상황이다. 일단 내 시간을 절약하기 위해 프레임워크들 찾아봤는데, 행복하게 시간을 절약할 방법은 없는 것 같다. 일단 프로젝트 특성에 맡게 짧은 코드를 짰는데... 관리자가 갑자기 포기했다. 
 
 아이디어 몇가지 나온 김에 쓸만한 툴 (TigerOCR 번역하려니 귀찮아서)을 만들어 볼 생각이다. 소스에서 리소스 만들어 놓고, 리소스 쓸 수 있게 소스를 수정한 다음, 번역을 쓱 맡긴다. 그리고는 번역 안된 버전을 다시 만들 수 있으면 좋겠다. (그럴려면 리소스 만들고 컴파일 버전 소스 만든 다음에, 여기에서 원래 소스가 100% 똑같이 나와야 하니까 신경쓸게 많지만, 코딩 작업은 행복해 질 것이다.)
@@ -34,4 +53,3 @@ Idears
 Library
 - For Folder Open Dialog  https://github.com/ookii-dialogs/ookii-dialogs-wpf (https://www.ookii.org/software/dialogs/)
 - ConfigNet for easy user setting https://github.com/aloneguid/config
-
