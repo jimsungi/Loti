@@ -154,14 +154,14 @@ namespace GSCM.FP.Common.UIL
             return this;
         }
 
-        private string _rscFilename="";
+        private string _rscFilename = "";
         public StringParserOrg SetResourceFile(string resourceFile)
         {
             _rscFilename = resourceFile;
             return this;
         }
 
-        private string src_filename="";
+        private string src_filename = "";
         public StringParserOrg SetSourceFile(string SourceFile)
         {
             src_filename = SourceFile;
@@ -233,7 +233,7 @@ namespace GSCM.FP.Common.UIL
 
         void ProcessSrcFile(string src_filename, string backup_suffix, Dictionary<string, string> dictRsc, Dictionary<string, string> grpRsc)
         {
-            string tmp_filename = src_filename + ".tmp";
+            string tmp_filename = src_filename + ".ltmp";
 
             if (!string.IsNullOrWhiteSpace(backup_suffix))
             {
@@ -399,13 +399,13 @@ namespace GSCM.FP.Common.UIL
         public void AddID(string txt, string skey, string fileName, TextLocation? start, TextLocation? end)
         {
             RawIDResultsOfAll.Add(new L
-                {
-                Org= txt,
+            {
+                Org = txt,
                 F = fileName,
-                    S = start,
-                    E = end,
-                    Key = skey
-                }); 
+                S = start,
+                E = end,
+                Key = skey
+            });
             if (!_idDic.ContainsKey(txt))
                 _idDic.Add(txt, skey);
             if (!_idRevDic.ContainsKey(skey))
@@ -423,12 +423,12 @@ namespace GSCM.FP.Common.UIL
                 Key = skey
             };
             string n = GetText(lines, k);
-            k.Org = n; 
+            k.Org = n;
 
             RawStringResultsOfAll.Add(k);
             if (!_strDic.ContainsKey(n))
                 _strDic.Add(n, skey);
-            if(!_strRevDic.ContainsKey(skey))
+            if (!_strRevDic.ContainsKey(skey))
                 _strRevDic.Add(skey, n);
         }
 
@@ -438,7 +438,7 @@ namespace GSCM.FP.Common.UIL
             //AddStr("", "G","",null, null);
         }
 
-        string _rscText="";
+        string _rscText = "";
         public StringParser SetResourceText(string rscText)
         {
             _rscText = rscText;
@@ -448,10 +448,65 @@ namespace GSCM.FP.Common.UIL
         string _srcFileName = "";
         public StringParser SetResourceFile(string filename)
         {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             _srcFileName = filename;
-            _rscText = File.ReadAllText(filename);
+            _rscText = ReadTextFile(filename);
+            using (StreamWriter writer = new StreamWriter(filename, false, Encoding.UTF8))
+            {
+                writer.Write(_rscText);
+            }
+            //string test = ReadTextFile2(filename);
             return this;
         }
+
+
+
+
+        public static string ReadTextFile(string filePath)
+        {
+            int euckrCodepage = 51949;
+
+            System.Text.Encoding utf8 = System.Text.Encoding.UTF8;
+
+            System.Text.Encoding euckr = System.Text.Encoding.GetEncoding(euckrCodepage);
+
+
+
+            string[] readText = File.ReadAllLines(filePath, euckr);
+
+            int line = readText.Length;
+
+            string curLine;
+
+            byte[] utf8Bytes;
+
+            string decodedStringByUTF8;
+
+            for (int i = 0; i < line; i++)
+
+            {
+
+                curLine = readText[i];
+
+                utf8Bytes = utf8.GetBytes(curLine);
+
+                decodedStringByUTF8 = utf8.GetString(utf8Bytes);
+
+                readText[i] = decodedStringByUTF8;
+
+            }
+            string ret = string.Empty;
+            for (int i = 0; i < readText.Length; i++)
+            {
+                if (i != 0)
+                    ret += "\r\n" + readText[i];
+                else
+                    ret += readText[i];
+            }
+
+            return ret;
+        }
+
 
         public StringParser ParseSource()
         {
@@ -466,7 +521,7 @@ namespace GSCM.FP.Common.UIL
             var document = new StringBuilderDocument(_rscText);
             var syntaxTree = SyntaxTree.Parse(document, document.FileName);
 
-            foreach(var node in syntaxTree.Members )
+            foreach (var node in syntaxTree.Members)
             {
                 RecRec(node);
             }
@@ -477,22 +532,22 @@ namespace GSCM.FP.Common.UIL
         string ProjectNamespace = "";
         public void RecRec(AstNode node)
         {
-            string nodeRole = node.Role.ToString()??"";
+            string nodeRole = node.Role.ToString() ?? "";
             string nodeString = node.ToString();
-            if(node.IsNull)
+            if (node.IsNull)
             {
 
             }
             string first = "";
-            if(node.FirstChild!=null)
+            if (node.FirstChild != null)
                 first = node.FirstChild.ToString();
             // Meet using - skip using
             if (node.FirstChild != null && node.FirstChild.NodeType == NodeType.Token && first == "using")
                 return;
-            if(node is  PrimitiveExpression )
+            if (node is PrimitiveExpression)
             {
                 PrimitiveExpression nodej = (PrimitiveExpression)node;
-                string nodeValue = nodej.Value.ToString()??"";
+                string nodeValue = nodej.Value.ToString() ?? "";
                 if (nodej.Value is string)
                 {
                     AddStr(nodeValue, nodeValue, _srcFileName, node.StartLocation, node.EndLocation);
@@ -500,24 +555,24 @@ namespace GSCM.FP.Common.UIL
             }
             if (node.NodeType == NodeType.Expression)
             {
-                if(nodeRole == "Expression" && node.HasChildren == false)
+                if (nodeRole == "Expression" && node.HasChildren == false)
                 {
                     //AddStr(nodeString, nodeString);
                 }
-                else if( nodeRole =="Expression")
+                else if (nodeRole == "Expression")
                 {
                     //
                 }
                 else
                 {
 
-                }    
+                }
             }
-            if(node.NodeType == NodeType.Unknown)
+            if (node.NodeType == NodeType.Unknown)
             {
                 if (nodeRole == "Member")
                 {
-                    
+
                 }
                 else
                 {
@@ -530,26 +585,26 @@ namespace GSCM.FP.Common.UIL
             {
                 if (node.Role == Roles.Identifier)
                 {
-                    if (!string.IsNullOrWhiteSpace(_refNamespace) && nodeString =="App")
+                    if (!string.IsNullOrWhiteSpace(_refNamespace) && nodeString == "App")
                     {
                         ProjectNamespace = _refNamespace;
                         _refNamespace = "";
                     }
                 }
-                else if(nodeRole== "Member")
-                {
-                    
-                }
-                else if(nodeRole == "{")
+                else if (nodeRole == "Member")
                 {
 
                 }
-                else if(nodeRole == "Modifier")
+                else if (nodeRole == "{")
+                {
+
+                }
+                else if (nodeRole == "Modifier")
                 {
 
                 }
             }
-            if(nodeString == "namespace" && node.NodeType == NodeType.Token)
+            if (nodeString == "namespace" && node.NodeType == NodeType.Token)
             {
                 _refNamespace = nodeString;
                 return;
@@ -572,7 +627,7 @@ namespace GSCM.FP.Common.UIL
                 if (!Group.Contains(vv))
                     Group.Add(vv);
             }
-            string tmp_filename = resource_filename + ".tmp";
+            string tmp_filename = resource_filename + ".ltmp";
             if (!string.IsNullOrWhiteSpace(backup_suffix))
             {
                 File.Copy(resource_filename, resource_filename + backup_suffix, true);
@@ -666,7 +721,7 @@ namespace GSCM.FP.Common.UIL
         }
 
         string _backupSuffix = "." + DateTime.Now.ToString("yyyyMMddHHmmm") + ".bak";
-        
+
         public class L
         {
             public string Org = "";
@@ -677,6 +732,7 @@ namespace GSCM.FP.Common.UIL
             public TextLocation? E;
             public string? F;
             public int lineDelta = 0;
+            public string TmpFile = "";
         }
 
         //private readonly Dictionary<string, L> _namedRsc = new Dictionary<string, L>(); // resource : resource_key
@@ -725,26 +781,27 @@ namespace GSCM.FP.Common.UIL
         string[] lines;
         public StringParser SaveTempFile(string targetFileName)
         {
-            string tmpFileName = targetFileName + ".tmp";
+            string tmpFileName = targetFileName + ".ltmp";
             string src_txt = _rscText;
 
 
             //src_txt = src_txt.Replace("@\"\"", "string.Empty");
             //src_txt = src_txt.Replace("\"\"", "string.Empty");
-            int i = 0;
+            //int i = 0;
             foreach (L eachRaw in RawStringResultsOfAll)
             {
-                eachRaw.AutoKey = string.Format("G.auto_{0}", i++);
+                eachRaw.AutoKey = string.Format("G.auto_{0}", L10NProject.Gindex++);
+                eachRaw.TmpFile = tmpFileName;
                 src_txt = ReplaceFirstOccurence(src_txt, eachRaw.Org, eachRaw.AutoKey, eachRaw);
             }
             File.WriteAllText(tmpFileName, src_txt);
-            
+            File.WriteAllText(targetFileName, src_txt);
             return this;
         }
 
         string GetText(string[] srcLines, L rawInfo)
         {
-            if (srcLines == null || rawInfo == null || rawInfo.S ==null || rawInfo.E==null)
+            if (srcLines == null || rawInfo == null || rawInfo.S == null || rawInfo.E == null)
                 return "";
             TextLocation? s = rawInfo.S;
             TextLocation? e = rawInfo.E;
@@ -757,25 +814,25 @@ namespace GSCM.FP.Common.UIL
 
             string buf = "";
             string in_the_line = "";
-            for(int line = start_line; line <= end_line; line++)
+            for (int line = start_line; line <= end_line; line++)
             {
-                string line_text = srcLines[line-1];
+                string line_text = srcLines[line - 1];
                 in_the_line = "";
-                if(line== start_line && line == end_line)
+                if (line == start_line && line == end_line)
                 {
-                    if (start_pos== end_pos)
+                    if (start_pos == end_pos)
                     {
                         return "";
                     }
-                    buf = line_text.Substring(start_pos-1, end_pos - start_pos);
+                    buf = line_text.Substring(start_pos - 1, end_pos - start_pos);
                     return buf;
                 }
-                else if(line == start_line && line != end_line)
+                else if (line == start_line && line != end_line)
                 {
-                    in_the_line = line_text.Substring(start_pos-1);
+                    in_the_line = line_text.Substring(start_pos - 1);
                     buf += in_the_line;
                 }
-                else if(line == end_line && line != start_line)
+                else if (line == end_line && line != start_line)
                 {
                     if (end_pos > 1)
                     {
@@ -820,9 +877,9 @@ namespace GSCM.FP.Common.UIL
                     return inputString.Remove(index, target.Length).Insert(index, replaceString);
                 }
             }
-            catch(Exception ee)
+            catch //(Exception ee)
             {
-                int x = 0;
+                //int x = 0;
             }
             return inputString;
             //throw new Exception("string not found");
@@ -830,7 +887,7 @@ namespace GSCM.FP.Common.UIL
 
         void ProcessSrcFile(string src_filename, string backup_suffix, Dictionary<string, string> dictRsc, Dictionary<string, string> grpRsc)
         {
-            string tmp_filename = src_filename + ".tmp";
+            string tmp_filename = src_filename + ".ltmp";
 
             if (!string.IsNullOrWhiteSpace(backup_suffix))
             {

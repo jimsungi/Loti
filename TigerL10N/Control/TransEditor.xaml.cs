@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TigerL10N.Biz;
 using static TigerL10N.ViewModels.MainWindowViewModel;
 
 namespace TigerL10N.Control
@@ -175,7 +176,7 @@ new PropertyMetadata(new DelegateCommand(DummyCmdProperty)));
             {
                 return "Shift+Enter";
             }
-            return null;
+            return "";
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

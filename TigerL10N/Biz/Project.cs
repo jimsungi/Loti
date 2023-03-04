@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using System.Xml;
 using System.Xml.Serialization;
 using TigerL10N.Service;
+using TigerL10N.Utils;
 using static System.Net.Mime.MediaTypeNames;
 using Path = System.IO.Path;
 
@@ -206,13 +207,14 @@ namespace TigerL10N.Biz
             }
         }
 
-        private string? _l10NFileName = "L10N";
-        public string L10NFileName
-        {
-            get => _l10NFileName ??= "";
-            set => SetProperty(ref _l10NFileName, value);
-        }
+        public string L10NFileName = "L";
+        public string L10NFolderName = "L10N";
+        public string ClrNamespace = "Local";
 
+        public string L10NGlobalFileName = "G";
+        public string L10NDesignerPath = string.Empty;
+        public string L10NResourcePath = string.Empty;
+        public string L10NGlobalPath = string.Empty;
 
         public void OneFileProc(string ChildSourceFile, string ChildTargetFile, ProcessOption option)
         {
@@ -223,11 +225,12 @@ namespace TigerL10N.Biz
 
                 if (ChildSourceFileLower.EndsWith(".csproj"))
                 {
-                    XmlDocument doc = new XmlDocument();
-                    doc.Load(ChildSourceFile);
+
 
                     if (option.IsPrepare)
                     {
+                        XmlDocument doc = new XmlDocument();
+                        doc.Load(ChildSourceFile);
                         // Read .csproj
                         //< Project Sdk = "Microsoft.NET.Sdk" >
 
@@ -261,8 +264,8 @@ namespace TigerL10N.Biz
                         {
                             FetchXmlText = PrintXml(root);
 
-                            List<XmlNode> itemGroupCompier = FindElement(root, 0, "ItemGroup", "Compile");
-                            List<XmlNode> itemGroupRsc = FindElement(root, 0, "ItemGroup", "EmbeddedResource");
+                            List<XmlNode> itemGroupCompier = Etc.FindElement(root, 0, "ItemGroup", "Compile");
+                            List<XmlNode> itemGroupRsc = Etc.FindElement(root, 0, "ItemGroup", "EmbeddedResource");
 
                             if (itemGroupCompier != null)
                             {
@@ -271,7 +274,7 @@ namespace TigerL10N.Biz
                                     XmlNode? updateNode = eachItem.SelectSingleNode("Update");
                                     if (updateNode != null && updateNode is XmlAttribute)
                                     {
-                                        string ExpectUpdatePath = "L10N\\" + L10NFileName + ".Designer.cs";
+                                        string ExpectUpdatePath = Path.Combine(L10NFolderName, L10NFileName)  + ".Designer.cs";
                                         if (updateNode.Value == ExpectUpdatePath)
                                         {
                                             option.HasL10NDesigner = true;
@@ -287,7 +290,7 @@ namespace TigerL10N.Biz
                                     XmlNode? updateNode = eachItem.SelectSingleNode("Update");
                                     if (updateNode != null && updateNode is XmlAttribute)
                                     {
-                                        string ExpectUpdatePath = "L10N\\" + L10NFileName + ".res";
+                                        string ExpectUpdatePath = Path.Combine(L10NFolderName, L10NFileName)  + ".res";
                                         if (updateNode.Value == ExpectUpdatePath)
                                         {
                                             option.HasL10NResource = true;
@@ -325,7 +328,8 @@ namespace TigerL10N.Biz
                         //</ ItemGroup >
 
                         //</ Project >
-
+                        XmlDocument doc = new XmlDocument();
+                        doc.Load(ChildSourceFile);
                         XmlElement? root = doc.DocumentElement;
                         string FetchXmlText = "";
                         if (root != null)
@@ -334,8 +338,9 @@ namespace TigerL10N.Biz
 
                             if (!option.HasL10NDesigner)
                             {
+                                // Adding Designer File information to project file
                                 XmlNode? itemGroup = null;
-                                List<XmlNode> item_groups = FindElement(root, 0, "ItemGroup", "Compile");
+                                List<XmlNode> item_groups = Etc.FindElement(root, 0, "ItemGroup", "Compile");
                                 if (item_groups?.Count > 0)
                                 {
                                     itemGroup = item_groups[0].ParentNode;
@@ -347,7 +352,7 @@ namespace TigerL10N.Biz
                                 if(itemGroup!=null)
                                 {
                                     XmlElement compileTag = doc.CreateElement("Compile");
-                                    compileTag.SetAttribute("Update", "L10N\\L10N.Designer.cs");
+                                    compileTag.SetAttribute("Update",Path.Combine(L10NFolderName, L10NFileName) +  ".Designer.cs");
                                     {
                                         XmlElement designTime = doc.CreateElement("DesignTime");
                                         designTime.InnerText = "True";
@@ -358,22 +363,23 @@ namespace TigerL10N.Biz
                                         compileTag.AppendChild(autoGen);
 
                                         XmlElement dpUpon = doc.CreateElement("DependentUpon");
-                                        dpUpon.InnerText = "L10N.resx";
+                                        dpUpon.InnerText = L10NFileName +".resx";
                                         compileTag.AppendChild(dpUpon);
 
                                     }
                                     itemGroup.AppendChild(compileTag);
                                     root.AppendChild(itemGroup);
                                 }
+                                // Create Designer File
                                 string? NewDesignerFile = Path.GetDirectoryName(ChildTargetFile);
                                 if (NewDesignerFile != null)
                                 {
-                                    NewDesignerFile = Path.Combine(NewDesignerFile, "L10N");
+                                    NewDesignerFile = Path.Combine(NewDesignerFile, L10NFolderName);
                                     Directory.CreateDirectory(NewDesignerFile);
                                     if (Directory.Exists(NewDesignerFile))
-                                    {
-                                        NewDesignerFile = Path.Combine(NewDesignerFile, "L10N.Designer.cs");
-                                        CreateNewDesignerFile(NewDesignerFile,"OKMM","L10N");
+                                    {                                        
+                                        NewDesignerFile = Path.Combine(NewDesignerFile, L10NFileName + ".Designer.cs");
+                                        L10NDesignerPath = NewDesignerFile;
                                     }
                                 }
 
@@ -381,8 +387,9 @@ namespace TigerL10N.Biz
 
                             if (!option.HasL10NResource)
                             {
+                                // Adding Resource File information to project file
                                 XmlNode? itemGroup = null;
-                                List<XmlNode> item_groups = FindElement(root, 0, "ItemGroup", "EmbeddedResource");
+                                List<XmlNode> item_groups = Etc.FindElement(root, 0, "ItemGroup", "EmbeddedResource");
                                 if (item_groups?.Count > 0)
                                 {
                                     itemGroup = item_groups[0].ParentNode;
@@ -394,32 +401,37 @@ namespace TigerL10N.Biz
                                 if(itemGroup !=null)
                                 {
                                     XmlElement embeddedResrc = doc.CreateElement("EmbeddedResource");
-                                    embeddedResrc.SetAttribute("Update", "L10N\\L10N.resx");
+                                    embeddedResrc.SetAttribute("Update", Path.Combine(L10NFolderName, L10NFileName) + ".resx");
                                     {
                                         XmlElement generator = doc.CreateElement("Generator");
                                         generator.InnerText = "ResXFileCodeGenerator";
                                         embeddedResrc.AppendChild(generator);
 
                                         XmlElement lastGenOutput = doc.CreateElement("LastGenOutput");
-                                        lastGenOutput.InnerText = "L10N.Designer.cs ";
+                                        lastGenOutput.InnerText = L10NFileName +  ".Designer.cs ";
                                         embeddedResrc.AppendChild(lastGenOutput);
                                     }
                                     itemGroup.AppendChild(embeddedResrc);
                                     root.AppendChild(itemGroup);
                                 }
+                                // Create Resource File
                                 string? NewDesignerFile = Path.GetDirectoryName(ChildTargetFile);
                                 if (NewDesignerFile != null)
                                 {
-                                    NewDesignerFile = Path.Combine(NewDesignerFile, "L10N");
+                                    NewDesignerFile = Path.Combine(NewDesignerFile, L10NFolderName);
                                     Directory.CreateDirectory(NewDesignerFile);
                                     if (Directory.Exists(NewDesignerFile))
                                     {
-                                        NewDesignerFile = Path.Combine(NewDesignerFile, "L10N.resx");
-                                        CreateNewResxFile(NewDesignerFile);
+                                        string tar_file_name = string.Empty;
+                                        tar_file_name = Path.Combine(NewDesignerFile, L10NFileName + ".resx");
+                                        L10NResourcePath = tar_file_name;
+                                        tar_file_name = Path.Combine(NewDesignerFile, L10NGlobalFileName + ".cs");
+                                        L10NGlobalPath = tar_file_name;
                                     }
                                 }
                             }
 
+                            // Save Project File
                             FetchXmlText = PrintXml(root);
                             using (StreamWriter writer = new StreamWriter(ChildTargetFile))
                             {
@@ -442,7 +454,20 @@ namespace TigerL10N.Biz
                 }
                 else if (ChildSourceFileLower.EndsWith(".cs"))
                 {
-                    if(option.IsPrepare==true)
+                    bool pass = false;
+                    string contents = File.ReadAllText(ChildSourceFileLower);
+                    if(ChildSourceFileLower.EndsWith(".designer.cs") 
+                        && File.Exists(ChildSourceFileLower.Replace(".designer.cs",".resx"))
+                        && !contents.Contains("private void InitializeComponent()"))
+                    {
+                        // Form.Designer.cs file might be process
+                        // Resource.cs file might not be process
+                        pass = true;
+                    }
+                    if(pass) 
+                    {
+                    }
+                    else if(option.IsPrepare==true)
                     {
                         StringParser p = StringParseService.CreateParser2()
     .SetResourceFile(ChildSourceFile)
@@ -472,234 +497,116 @@ namespace TigerL10N.Biz
 
         public Dictionary<string, StringParser> Parsers = new Dictionary<string, StringParser>();
         public Dictionary<string, string> Replaces = new Dictionary<string, string>();
-        private void CreateNewDesignerFile(string filenmae,string Pjmainclass, string Pjnamespace)
+
+
+
+
+        public List<WordItem> Words = new List<WordItem>();
+
+        public List<WordItem> BuildWords()
         {
-            string content = @"
-//------------------------------------------------------------------------------
-// <auto-generated>
-//     이 코드는 도구를 사용하여 생성되었습니다.
-//     런타임 버전:4.0.30319.42000
-//
-//     파일 내용을 변경하면 잘못된 동작이 발생할 수 있으며, 코드를 다시 생성하면
-//     이러한 변경 내용이 손실됩니다.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-namespace " + Pjmainclass + @" {
-    using System;
-    
-    
-    /// <summary>
-    ///   지역화된 문자열 등을 찾기 위한 강력한 형식의 리소스 클래스입니다.
-    /// </summary>
-    // 이 클래스는 ResGen 또는 Visual Studio와 같은 도구를 통해 StronglyTypedResourceBuilder
-    // 클래스에서 자동으로 생성되었습니다.
-    // 멤버를 추가하거나 제거하려면 .ResX 파일을 편집한 다음 /str 옵션을 사용하여 ResGen을
-    // 다시 실행하거나 VS 프로젝트를 다시 빌드하십시오.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""System.Resources.Tools.StronglyTypedResourceBuilder"", ""17.0.0.0"")]
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-    [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class " + Pjnamespace + @" {
-        
-        private static global::System.Resources.ResourceManager resourceMan;
-        
-        private static global::System.Globalization.CultureInfo resourceCulture;
-        
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(""Microsoft.Performance"", ""CA1811:AvoidUncalledPrivateCode"")]
-        internal " +Pjnamespace + @"() {
-        }
-        
-        /// <summary>
-        ///   이 클래스에서 사용하는 캐시된 ResourceManager 인스턴스를 반환합니다.
-        /// </summary>
-        [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
-            get {
-                if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager(""" + Pjmainclass + @"." + Pjnamespace + @""", typeof(" + Pjnamespace + @").Assembly);
-                    resourceMan = temp;
-                }
-                return resourceMan;
-            }
-        }
-        
-        /// <summary>
-        ///   이 강력한 형식의 리소스 클래스를 사용하여 모든 리소스 조회에 대해 현재 스레드의 CurrentUICulture 속성을
-        ///   재정의합니다.
-        /// </summary>
-        [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
-            get {
-                return resourceCulture;
-            }
-            set {
-                resourceCulture = value;
-            }
-        }
-    }
-}";
-            using (StreamWriter writer = new StreamWriter(filenmae))
+            List<WordItem> items = new List<WordItem>();
+            foreach (KeyValuePair<string, StringParser> p in Parsers)
             {
-                writer.Write(content);
-            }
-        }
+                string f = p.Key;
+                StringParser sp = p.Value;
 
-        private void CreateNewResxFile(string  filename)
-        {
-            string content = @"<?xml version=""1.0"" encoding=""utf-8""?>
-<root>
-	<!-- 
-		Microsoft ResX Schema
 
-		Version 1.3
-
-		The primary goals of this format is to allow a simple XML format 
-		that is mostly human readable. The generation and parsing of the 
-		various data types are done through the TypeConverter classes 
-		associated with the data types.
-
-		Example:
-
-		... ado.net/XML headers & schema ...
-		<resheader name=""resmimetype"">text/microsoft-resx</resheader>
-		<resheader name=""version"">1.3</resheader>
-		<resheader name=""reader"">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-		<resheader name=""writer"">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-		<data name=""Name1"">this is my long string</data>
-		<data name=""Color1"" type=""System.Drawing.Color, System.Drawing"">Blue</data>
-		<data name=""Bitmap1"" mimetype=""application/x-microsoft.net.object.binary.base64"">
-			[base64 mime encoded serialized .NET Framework object]
-		</data>
-		<data name=""Icon1"" type=""System.Drawing.Icon, System.Drawing"" mimetype=""application/x-microsoft.net.object.bytearray.base64"">
-			[base64 mime encoded string representing a byte array form of the .NET Framework object]
-		</data>
-
-		There are any number of ""resheader"" rows that contain simple 
-		name/value pairs.
-
-		Each data row contains a name, and value. The row also contains a 
-		type or mimetype. Type corresponds to a .NET class that support 
-		text/value conversion through the TypeConverter architecture. 
-		Classes that don't support this are serialized and stored with the 
-		mimetype set.
-
-		The mimetype is used for serialized objects, and tells the 
-		ResXResourceReader how to depersist the object. This is currently not 
-		extensible. For a given mimetype the value must be set accordingly:
-
-		Note - application/x-microsoft.net.object.binary.base64 is the format 
-		that the ResXResourceWriter will generate, however the reader can 
-		read any of the formats listed below.
-
-		mimetype: application/x-microsoft.net.object.binary.base64
-		value   : The object must be serialized with 
-			: System.Serialization.Formatters.Binary.BinaryFormatter
-			: and then encoded with base64 encoding.
-
-		mimetype: application/x-microsoft.net.object.soap.base64
-		value   : The object must be serialized with 
-			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-			: and then encoded with base64 encoding.
-
-		mimetype: application/x-microsoft.net.object.bytearray.base64
-		value   : The object must be serialized into a byte array 
-			: using a System.ComponentModel.TypeConverter
-			: and then encoded with base64 encoding.
-	-->
-	
-	<xsd:schema id=""root"" xmlns="""" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:msdata=""urn:schemas-microsoft-com:xml-msdata"">
-		<xsd:element name=""root"" msdata:IsDataSet=""true"">
-			<xsd:complexType>
-				<xsd:choice maxOccurs=""unbounded"">
-					<xsd:element name=""data"">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name=""value"" type=""xsd:string"" minOccurs=""0"" msdata:Ordinal=""1"" />
-								<xsd:element name=""comment"" type=""xsd:string"" minOccurs=""0"" msdata:Ordinal=""2"" />
-							</xsd:sequence>
-							<xsd:attribute name=""name"" type=""xsd:string"" msdata:Ordinal=""1"" />
-							<xsd:attribute name=""type"" type=""xsd:string"" msdata:Ordinal=""3"" />
-							<xsd:attribute name=""mimetype"" type=""xsd:string"" msdata:Ordinal=""4"" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name=""resheader"">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name=""value"" type=""xsd:string"" minOccurs=""0"" msdata:Ordinal=""1"" />
-							</xsd:sequence>
-							<xsd:attribute name=""name"" type=""xsd:string"" use=""required"" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name=""resmimetype"">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name=""version"">
-		<value>1.3</value>
-	</resheader>
-	<resheader name=""reader"">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name=""writer"">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-</root>
-";
-            using (StreamWriter writer = new StreamWriter(filename))
-            {
-                writer.Write(content);
-            }
-        }
-        public List<XmlNode> GetNodeList(XmlNodeList list)
-        {
-            List<XmlNode> nodes = new List<XmlNode>();
-            foreach(XmlNode node in list)
-            {
-                nodes.Add(node);
-            }
-            return nodes;
-        }
-
-        public List<XmlNode> FindElement(XmlNode node, int depth, params string[] pathNodeNames)
-        {
-            List<XmlNode> result = new List<XmlNode>();
-            if (pathNodeNames.Length > depth)
-            {
-                string node_name = pathNodeNames[depth];
-                List<XmlNode> list = GetNodeList(node.ChildNodes).Where(n => n.Name == pathNodeNames[depth]).ToList();
-                bool meetTargetLevel = false;
-                if (depth == pathNodeNames.Length - 1)
+                foreach (StringParser.L eachFileLn in sp.RawStringResultsOfAll)
                 {
-                    meetTargetLevel = true;
-                }
+                    int lines = Etc.CountLines(eachFileLn.Org);
 
-                if (list != null)
-                {
-                    int nd = depth + 1;
-                    foreach (XmlNode CC in list)
+                    bool useAuto = true;
+                    bool ignore = false;
+                    bool asId = false;
+                    string targetString = "";
+                    string finalId = "";
+                    string raw_string = eachFileLn.Org;
+                    int org_len = raw_string.Length;
+                    string org_string = string.Empty;
+                    if (raw_string.StartsWith("@"))
+                        org_string = raw_string.Substring(2, org_len - 3);
+                    else
+                        org_string = raw_string.Substring(1, org_len - 2);
+                    string code = LocService.OneOfCode(org_string);
+                    string prev_ref = "";
+                    string next_ref = "";
+                    string current_ref = "";
+
+
+                    int s = eachFileLn != null ? eachFileLn.S.Value.Line : 0;
+                    int e = eachFileLn != null ? eachFileLn.E.Value.Line : 0;
+                    if (s != 0 && e != 0)
                     {
-                        if (meetTargetLevel)
+                        int ss = s - 8;
+                        int ee = e + 8;
+                        if (ss < 1)
+                            ss = 1;
+                        string[] _lines = File.ReadAllLines(f);
+                        if (ee > _lines.Length)
+                            ee = _lines.Length;
+                        for (int i = ss; i < s; i++)
                         {
-                            result.Add(CC);
+                            prev_ref += "\r\n" + _lines[i - 1];
                         }
-                        else
+                        for (int k = s; k <= e; k++)
                         {
-                            
-                            List<XmlNode> cRes = FindElement(CC, nd, pathNodeNames);
-                            foreach (XmlNode n in cRes)
-                            {
-                                result.Add(n);
-                            }
+                            if (k != s)
+                                current_ref += "\r\n";
+                            current_ref += _lines[k - 1];
+
+                        }
+                        for (int j = e + 1; j < ee; j++)
+                        {
+                            next_ref += _lines[j - 1] + "\r\n";
+                        }
+
+                    }
+
+                    if (lines > 1)
+                    {
+                        ignore = true;
+                        targetString = org_string;
+                    }
+                    else if (code != "")
+                    {
+                        targetString = "";
+                        finalId = code;
+                        asId = true;
+                    }
+                    else
+                    {
+                        targetString = org_string;
+                        finalId = LocService.GetRecommandID(org_string, true, false);
+                        if (finalId.StartsWith("G."))
+                        {
+                            asId = true;
+                            targetString = "";
                         }
                     }
+                    WordItem item = new WordItem()
+                    {
+                        FileName = f,
+                        TmpFile = eachFileLn.TmpFile,
+                        SourceString = eachFileLn.Org,
+                        FinalId = finalId,
+                        TargetString = targetString,
+                        TargetId = eachFileLn.AutoKey,
+                        UseAuto = useAuto,
+                        Ignore = ignore,
+                        AsId = asId,
+                        PrevRef = prev_ref,
+                        NextRef = next_ref,
+                        CurrentRef = current_ref
+                    };
+                    items.Add(item);
                 }
-            }
-            return result;
-        }
 
+
+            }
+            return items;
+        }
+   
         //public List<XmlNode> GetPathNode(XmlNode rode, string A, string B, string C, params string[] pathNodeNames)
         //{
         //    List<XmlNode> result=new List<XmlNode>();
@@ -869,6 +776,7 @@ namespace " + Pjmainclass + @" {
             }
             return Ret + Line + PrevTab + "</" + node.Name + ">";
         }
+        public static int Gindex = 0;
 
         public void DirOneFileProc(string sDir, string tDir, ProcessOption option)
         {

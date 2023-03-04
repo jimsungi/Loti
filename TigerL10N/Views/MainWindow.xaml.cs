@@ -117,7 +117,7 @@ namespace TigerL10N.Views
             if (e.AddedItems.Count > 0)
             {
 
-                ListViewItem item = listview.ItemContainerGenerator.ContainerFromIndex(listview.SelectedIndex) as ListViewItem;
+                ListViewItem? item = listview.ItemContainerGenerator.ContainerFromIndex(listview.SelectedIndex) as ListViewItem;
                 if (item != null)
                 {
                     item.Focus();
@@ -147,6 +147,40 @@ namespace TigerL10N.Views
             {
                 // TextBox나 다른 컨트롤로 포커스를 이동시키기
                 Keyboard.Focus(projectTr2.txtE);
+            }
+        }
+
+        private void listview_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter && e.KeyboardDevice.Modifiers == ModifierKeys.Shift)
+            {
+                projectTr2.NextCmd.Execute();
+                e.Handled = true;
+            }
+            //else if (e.Key == Key.Down)
+            //{
+            //    NextCmd.Execute();
+            //    e.Handled = true;
+            //}
+            //else if (e.Key == Key.Up)
+            //{
+            //    PrevCmd.Execute();
+            //    e.Handled = true;
+            //}
+            else if (e.Key == Key.A && e.KeyboardDevice.Modifiers == ModifierKeys.Shift)
+            {
+                projectTr2.ApplyAllCmd.Execute();
+                e.Handled = true;
+            }
+            else if (e.Key == Key.I && e.KeyboardDevice.Modifiers == ModifierKeys.Shift)
+            {
+                projectTr2.IgnoreCmd.Execute();
+                e.Handled = true;
+            }
+            else if (e.Key == Key.U && e.KeyboardDevice.Modifiers == ModifierKeys.Shift)
+            {
+                projectTr2.AsIdCmd.Execute();
+                e.Handled = true;
             }
         }
     }

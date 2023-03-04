@@ -230,23 +230,24 @@ namespace TigerL10N.ViewModels
         }
 
 
-        private DelegateCommand? _asIdCmd = null;
-        public DelegateCommand AsIdCmd =>
-            _asIdCmd ??= new DelegateCommand(AsIdFunc);
-        void AsIdFunc()
-        {
-            // throw new NotImplementException();
-        }
+        //private DelegateCommand? _asIdCmd = null;
+        //public DelegateCommand AsIdCmd =>
+        //    _asIdCmd ??= new DelegateCommand(AsIdFunc);
+        //void AsIdFunc()
+        //{
+        //    // throw new NotImplementException();
+        //}
 
 
 
-        private DelegateCommand? _ignoreCmd = null;
-        public DelegateCommand IgnoreCmd =>
-            _ignoreCmd ??= new DelegateCommand(IgnoreFunc);
-        void IgnoreFunc()
-        {
-            // throw new NotImplementException();
-        }
+        //private DelegateCommand? _ignoreCmd = null;
+        //public DelegateCommand IgnoreCmd =>
+        //    _ignoreCmd ??= new DelegateCommand(IgnoreFunc);
+        //void IgnoreFunc()
+        //{
+
+        //    // throw new NotImplementException();
+        //}
 
 
         private DelegateCommand? _applyAllCmd = null;
@@ -269,7 +270,7 @@ namespace TigerL10N.ViewModels
                                 eachWord.TargetId = sItem.TargetId;
                                 eachWord.TargetString = sItem.TargetString;
                                 eachWord.FinalId = sItem.FinalId;
-
+                                eachWord.DupIdCount = sItem.DupIdCount;
                                 eachWord.UseAuto = sItem.UseAuto;
                                 eachWord.Ignore = sItem.Ignore;
                                 eachWord.AsId = sItem.AsId;
@@ -285,7 +286,7 @@ namespace TigerL10N.ViewModels
 
         public void MyUserControl_My(object sender, RoutedEventArgs e)
         {
-            MyEventArgs args = e as MyEventArgs;
+            MyEventArgs? args = e as MyEventArgs;
             if (args != null)
             {
                 //messageTextBlock.Text = args.Message;
@@ -400,6 +401,7 @@ namespace TigerL10N.ViewModels
             /// Copy From Source Project
             /// 
             string RawPath = project.RawPath;
+            L10NProject.Gindex = 0;
             if(Directory.Exists(RawPath))
             {
                 if (project.BackUp)
@@ -415,105 +417,13 @@ namespace TigerL10N.ViewModels
                 PO.IsPrepare = false;
                 project.DirOneFileProc(RawPath, project.OneLangPath, PO);
 
-                List<WordItem> items = new List<WordItem>();
-                foreach(KeyValuePair<string,StringParser> p in project.Parsers)
-                {
-                    string f = p.Key;
-                    StringParser sp = p.Value;
-
-                   
-                    foreach(StringParser.L eachFileLn in sp.RawStringResultsOfAll)
-                    {
-                        int lines = CountLines(eachFileLn.Org);
-
-                        bool useAuto = true;
-                        bool ignore = false;
-                        bool asId = false;
-                        string targetString = "";
-                        string finalId = "";
-                        string raw_string = eachFileLn.Org;
-                        int org_len = raw_string.Length;
-                        string org_string = string.Empty;
-                        if (raw_string.StartsWith("@"))
-                            org_string = raw_string.Substring(2, org_len - 3);
-                        else
-                            org_string = raw_string.Substring(1, org_len - 2);
-                        string code = OneOfCode(org_string);
-                        string prev_ref = "";
-                        string next_ref = "";
-                        string current_ref = "";
-                      
-                        
-                        int s = eachFileLn!=null ? eachFileLn.S.Value.Line : 0;
-                        int e  = eachFileLn != null ? eachFileLn.E.Value.Line : 0;
-                        if (s != 0 && e != 0)
-                        {
-                            int ss = s - 8;
-                            int ee = e + 8;
-                            if (ss < 1)
-                                ss = 1;
-                            string[] _lines = File.ReadAllLines(f);
-                            if (ee > _lines.Length)
-                                ee = _lines.Length;
-                            for(int i=ss; i<s; i++ )
-                            {
-                                prev_ref +="\r\n" + _lines[i - 1];
-                            }
-                            for (int k = s; k <= e; k++)
-                            {
-                                if (k != s)
-                                    current_ref += "\r\n";
-                                current_ref += _lines[k-1];
-
-                            }
-                            for (int j=e+1; j<ee; j++)
-                            {
-                                next_ref += _lines[j - 1] +"\r\n";
-                            }
-
-                        }
-
-                        if (lines > 1)
-                        {
-                            ignore = true;
-                            targetString = org_string;
-                        }
-                        else if(code !="")
-                        {
-                            targetString = org_string;
-                            finalId = code;
-                            asId = true;
-                        }
-                        else
-                        {
-                            targetString = org_string;
-                            finalId = LocService.GetRecommandID(eachFileLn.Org, true, false);
-                        }
-                        WordItem item = new WordItem()
-                        {
-                            FileName = f,
-                            SourceString = eachFileLn.Org,
-                            FinalId = finalId,
-                            TargetString = targetString,
-                            TargetId = eachFileLn.AutoKey,
-                            UseAuto= useAuto,
-                            Ignore= ignore,
-                            AsId=asId,
-                            PrevRef = prev_ref,
-                            NextRef = next_ref,
-                            CurrentRef = current_ref
-                        };
-                        items.Add(item);
-                    }
-                    
-
-                }
-
-                List<WordItem> sortedByName = items.OrderBy(w => w.SourceString).ToList();
+                project.Words = project.BuildWords();
+                List<WordItem> sortedByName = project.Words.OrderBy(w => w.SourceString).ToList();
                 this.LocalizationSource = sortedByName;
                 foreach(WordItem eachWord in sortedByName)
                 {
                     eachWord.init = true;
+                    eachWord.RefAll = sortedByName;
                 }
                 LocService.IdKey.Clear();
                 LocService.StringKey.Clear();
@@ -526,36 +436,10 @@ namespace TigerL10N.ViewModels
         }
 
 
-public static string ReadNthLine(string filePath, int n)
-    {
-        string[] lines = File.ReadAllLines(filePath);
-        if (n < 1 || n > lines.Length)
-        {
-            throw new ArgumentException("n is out of range");
-        }
-        return lines[n - 1];
-    }
 
-    public static string OneOfCode(string codeCandidate)
-        {
-            switch(codeCandidate)
-            {
-                case "": return "string.Empty";
-                case "<": return "G.Lo";
-                case ">": return "G.Le";
-                case " ": return "G.space";
-                case "\r\n": return "G.line";
-                case "\t": return "G.tab";
-                case "(": return "G.Qo";
-                case ")": return "G.Qe";
-            }
-            return string.Empty;
-        }
 
-        public static int CountLines(string inputString)
-        {
-            return inputString.Split('\n').Length;
-        }
+
+
         class IgnoreOption
         {
             public List<string> IgnoreFiles = new List<string>();
@@ -692,9 +576,75 @@ public static string ReadNthLine(string filePath, int n)
             _makeOneLanguageVersionCmd ??= new DelegateCommand(MakeOneLanguageVersionFunc);
         void MakeOneLanguageVersionFunc()
         {
+            L10NProject? cu = ProjectManageService.GetCurrentProject();
+            if (cu == null)
+            {
+                if (System.Windows.Forms.MessageBox.Show("You need project. Do you want to create one?", "Warning", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    NewProjectCommandFunc();
+                }
+                return;
+            }
+            //CreateFolders();
+            SaveFiles(cu);
+            LocalizedWord = 0;
             // throw new NotImplementException();
         }
 
+        void SaveFiles(L10NProject project)
+        {
+            /// 1. Backup
+            /// Copy From Source Project
+            /// 
+            if (this.LocalizationSource != null)
+            {
+                List<WordItem> saveWords = LocalizationSource.OrderBy(w => w.FileName).ToList();
+                string tmpFileName = "";
+                string targetFileName = "";
+                string contents = "";
+                foreach (WordItem eachWord in saveWords)
+                {
+                    if(string.IsNullOrWhiteSpace(tmpFileName) || tmpFileName != eachWord.TmpFile)
+                    {
+                        if(!string.IsNullOrWhiteSpace(tmpFileName))
+                        {                            
+                            File.WriteAllText(targetFileName, contents);
+                        }
+                        tmpFileName = eachWord.TmpFile;
+                        if (tmpFileName.Contains(".ltmp"))
+                        {
+                            targetFileName = tmpFileName.Substring(0, tmpFileName.Length - 5);
+                            contents = File.ReadAllText(tmpFileName);
+                        }
+                    }
+
+                    if (eachWord.Ignore == true)
+                    {
+                        contents = contents.Replace(eachWord.TargetId, eachWord.SourceString);
+
+                    }
+                    else if (eachWord.AsId)
+                    {
+                        contents = contents.Replace(eachWord.TargetId, eachWord.FinalId);
+                    }
+                    else if (!eachWord.AsId)
+                    {
+                        contents = contents.Replace(eachWord.TargetId, eachWord.FinalId);
+                    }
+                    // eachWord.TargetId => TargetString으로 바꾼다.
+                }
+                if (!string.IsNullOrWhiteSpace(tmpFileName))
+                {
+                    File.WriteAllText(targetFileName, contents);
+                }
+
+            }
+            //Directory.CreateDirectory(RawPath);
+            project.Words = this.LocalizationSource;
+            LocService.CreateNewDesignerFile(project);
+            LocService.CreateNewResxFile(project);
+            LocService.CreateNewIdFile(project);
+        }
         #endregion Translation Commands
     }
 

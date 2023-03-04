@@ -8,10 +8,11 @@ using Prism.Commands;
 using Prism.Mvvm;
 using TigerL10N.Service;
 
-namespace TigerL10N.Control
+namespace TigerL10N.Biz
 {
     public class WordItem : BindableBase
     {
+        public string TmpFile = "";
 
         private bool? _ignore;
         public bool Ignore
@@ -25,7 +26,11 @@ namespace TigerL10N.Control
         public bool UseAuto
         {
             get => _useAuto ??= false;
-            set => SetProperty(ref _useAuto, value);
+            set
+            {
+                SetProperty(ref _useAuto, value);
+
+            }
         }
 
         private DelegateCommand? _asIdCmd = null;
@@ -33,7 +38,7 @@ namespace TigerL10N.Control
             _asIdCmd ??= new DelegateCommand(AsIdFunc);
         void AsIdFunc()
         {
-            AsId = ! AsId;
+            AsId = !AsId;
             // throw new NotImplementException();
         }
 
@@ -41,7 +46,19 @@ namespace TigerL10N.Control
         public bool AsId
         {
             get => _asId ??= false;
-            set => SetProperty(ref _asId, value);
+            set
+            {
+                SetProperty(ref _asId, value);
+                if (_asId == true)
+                {
+                    FinalId = FinalId.Replace("L.", "G.");
+                   
+                }
+                else
+                {
+                    FinalId = FinalId.Replace("G.", "L.");
+                }
+            }
         }
 
 
@@ -99,7 +116,17 @@ namespace TigerL10N.Control
             _ignoreCmd ??= new DelegateCommand(IgnoreFunc);
         void IgnoreFunc()
         {
-            Ignore = !Ignore;
+
+            if (Ignore == true)
+            {
+                Ignore = false;
+                FinalId = LocService.GetRecommandID(TargetString, true, false);
+            }
+            else
+            {
+                Ignore = true;
+                FinalId = "";
+            }
             // throw new NotImplementException();
         }
         private DelegateCommand? _useTranslationCmd = null;
@@ -109,11 +136,11 @@ namespace TigerL10N.Control
         {
             UseAuto = !UseAuto;
         }
-    
+
         /// <summary>
         /// There is any touch alreay, you can refer this value as edited 
         /// </summary>
-        private bool? _dirty=false;
+        private bool? _dirty = false;
         public bool Dirty
         {
             get => _dirty ??= false;
@@ -132,7 +159,7 @@ namespace TigerL10N.Control
         /// init : white
         /// dirty : gray
         /// </summary>
-        private string? _statusColor="white";
+        private string? _statusColor = "white";
         public string StatusColor
         {
             get
@@ -158,16 +185,16 @@ namespace TigerL10N.Control
         {
             get => _targetString ??= "";
             set
-            {                
+            {
                 string set_value = value;
-                
-                if(_targetString == set_value)
+                SetProperty(ref _targetString, value);
+                if (_targetString == set_value)
                 {
                     // accept current value
-                    SetProperty(ref _targetString, value);
+
                     Dirty = true;
                 }
-                else  if (!string.IsNullOrWhiteSpace(_targetString))
+                else if (!string.IsNullOrWhiteSpace(_targetString))
                 {
                     if (UseAuto)
                         UseAuto = false;
@@ -177,16 +204,86 @@ namespace TigerL10N.Control
                         Ignore = false;
                     Dirty = true;
                 }
+                //int dupCount = 0;
+                if (!string.IsNullOrEmpty(FinalId))
+                {
+                    RefreshAllDupIds(FinalId, true);
+                }
+                //DupIdCount=dupCount;
             }
         }
+
+
+
+        private int? _dupIdCount = 0;
+        public int? DupIdCount
+        {
+            get => _dupIdCount;
+            set
+            {
+                SetProperty(ref _dupIdCount, value);
+                string _dupColor = "white";
+                if (_dupIdCount > 1)
+                    _dupColor = "red";
+                DupState = _dupColor;
+            }
+        }
+
+
+        private string? _dupState = "white";
+        public string DupState
+        {
+            get => _dupState ??= "";
+            set => SetProperty(ref _dupState, value);
+        }
+
 
 
         private string? _findalId;
         public string FinalId
         {
             get => _findalId ??= "";
-            set => SetProperty(ref _findalId, value);
+            set
+            {
+                SetProperty(ref _findalId, value);
+                //int dupCount = 0;
+                if (!string.IsNullOrEmpty(_findalId))
+                {
+                    RefreshAllDupIds(_findalId, true);
+                }
+                //DupIdCount = dupCount;
+            }
         }
+
+        public List<WordItem>? RefAll = null;
+
+        public void RefreshAllDupIds(string id, bool isString)
+        {
+            //int ret = 0;
+            if (RefAll != null)
+            {
+                List<string> matchingTargetString = new List<string>();
+                foreach (WordItem eachWord in RefAll)
+                {
+                    if (eachWord.FinalId == id && eachWord.Dirty)
+                    {
+                        if (!matchingTargetString.Contains(eachWord.SourceString))
+                        {
+                            matchingTargetString.Add(eachWord.SourceString);
+                        }
+                    }
+                }
+                int dupCount = matchingTargetString.Count();
+                foreach (WordItem eachWord in RefAll)
+                {
+                    if (eachWord.FinalId == id && eachWord.Dirty)
+                    {
+                        eachWord.DupIdCount = dupCount;
+                    }
+                }
+            }
+        }
+
 
         private Dictionary<string, string> LanguageStringDict = new Dictionary<string, string>();
 
@@ -202,7 +299,7 @@ namespace TigerL10N.Control
 
         public bool AcceptReturn
         {
-            get  { return !MultiLine;}
+            get { return !MultiLine; }
         }
 
 
