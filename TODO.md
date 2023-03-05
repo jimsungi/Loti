@@ -30,4 +30,6 @@ Small things
 * Your Id library can be loaded into id library and reused.
 * Your Id library can be saved as Global library (and there might be a way to use default Id Library)
 * Need some ".tmp" files. If any *.tmp file exists need some warning
-* L10N folder OK. resource name would be l.resx
+* L10N folder OK. resource name would be l.resx (o)
+* Solution based translation
+* Translation option of (L.resource, G.id, M.message) and M.message as network (sample one file .ASP and .PHP page, file based and MariaDB based)
