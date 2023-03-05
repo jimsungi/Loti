@@ -33,3 +33,4 @@ Small things
 * L10N folder OK. resource name would be l.resx (o)
 * Solution based translation
 * Translation option of (L.resource, G.id, M.message) and M.message as network (sample one file .ASP and .PHP page, file based and MariaDB based)
+* Test cases need
