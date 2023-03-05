@@ -53,3 +53,6 @@ Special Key
 Library
 - For Folder Open Dialog  https://github.com/ookii-dialogs/ookii-dialogs-wpf (https://www.ookii.org/software/dialogs/)
 - ConfigNet for easy user setting https://github.com/aloneguid/config
+- MagAoos.Mtro.IconPacks for icon
+- Prism for MVVM
+- Dirkster.AvalonDock for Visual Studio Look & Feel
