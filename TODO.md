@@ -22,6 +22,9 @@ Big Idea
 - L10N Bridge or middlewear : languages from static L10N resource, runtime L10N resource, database L10N resource (-)
 - L10N Bridge or middlewear : buffering / priority (-)
 
+- .L10N extension and same as solution filename : tool can select visual studio solution then go (make it vs thing) 
+- visual studio integration (create l10n project,etc)
+
 Small things
 
 * Version things ... Is there any library or code or tools. If code or anything, it can be integrated.(-)
