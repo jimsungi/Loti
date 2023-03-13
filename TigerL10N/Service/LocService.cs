@@ -139,9 +139,9 @@ namespace TigerL10N.Service
 
         //}
 
-        public static void CreateNewDesignerFile(L10NProject cProject, List<string>? language=null)
+        public static void CreateNewDesignerFile(LProject cProject, List<string>? language=null)
         {
-            L10NProject p = cProject;
+            LProject p = cProject;
             string filenmae = cProject.L10NDesignerPath;
             string Pjmainclass = cProject.L10NFileName;
             string Pjnamespace = cProject.ClrNamespace;
@@ -158,7 +158,7 @@ namespace TigerL10N.Service
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace " + Pjmainclass + @" {
+namespace " + Pjnamespace + "." + cProject.L10NFolderName + @" {
     using System;
     
     
@@ -172,14 +172,14 @@ namespace " + Pjmainclass + @" {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""System.Resources.Tools.StronglyTypedResourceBuilder"", ""17.0.0.0"")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class " + Pjnamespace + @" {
+    internal class " + Pjmainclass + @" {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute(""Microsoft.Performance"", ""CA1811:AvoidUncalledPrivateCode"")]
-        internal " + Pjnamespace + @"() {
+        internal " + cProject.L10NFileName + @"() {
         }
         
         /// <summary>
@@ -189,7 +189,7 @@ namespace " + Pjmainclass + @" {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager(""" + Pjmainclass + @"." + Pjnamespace + @""", typeof(" + Pjnamespace + @").Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager(""" + Pjnamespace + @"." + cProject.L10NFolderName+ @"."+ Pjmainclass + @""", typeof(" + Pjmainclass + @").Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -219,7 +219,7 @@ namespace " + Pjmainclass + @" {
                 writer.Write(content);
             }
         }
-        static string CreateResourceKeyList(L10NProject p)
+        static string CreateResourceKeyList(LProject p)
         {
             string ret = string.Empty;
             List<WordItem> items = p.Words;
@@ -254,7 +254,7 @@ namespace " + Pjmainclass + @" {
             return ret;
         }
 
-        static string CreateResourceKeyValueList(L10NProject p)
+        static string CreateResourceKeyValueList(LProject p)
         {
             string ret = string.Empty;
             List<WordItem> items = p.Words;
@@ -282,11 +282,59 @@ namespace " + Pjmainclass + @" {
             }
             return ret;
         }
-        public static void CreateNewResxFile(L10NProject p)
+
+
+        static string CreateLangResxFile(LProject p, Lang lang)
+        {
+            string ret = string.Empty;
+            List<WordItem>? items = p.Words;
+            if (items != null)
+            {
+                string eachWord = string.Empty;
+                string eachKey = string.Empty;
+                string eachValue = string.Empty;
+                List<string> registered = new List<string>();
+
+                foreach (WordItem w in items)
+                {
+                    eachKey = w.FinalId;
+                    eachValue = w.TargetString;
+                    w.LangCode = lang.Code;
+                    if (eachKey.StartsWith("L.") && !registered.Contains(eachKey))
+                    {
+                        registered.Add(eachKey);
+                        eachKey = eachKey.Substring(2, eachKey.Length - 2);
+
+                        eachWord = @"  <data name=""" + eachKey + @""" xml:space=""preserve"">
+    <value>" + eachValue + @"</value>
+  </data>0
+";
+                        ret += eachWord;
+                    }
+                }
+            }
+            return ret;
+        }
+        public static void CreateNewResxFile(LProject p)
         {
             string filename = p.L10NResourcePath;
-            string resources = CreateResourceKeyValueList(p);
-            string content = @"<?xml version=""1.0"" encoding=""utf-8""?>
+            string commonR = CreateResourceKeyValueList(p);
+            using (StreamWriter writer = new StreamWriter(filename))
+            {
+                writer.Write(commonR);
+            }
+            if (p.Solution != null)
+            {
+                List<Lang>? langs = p.Solution.Languages;
+                if (langs != null)
+                {
+                    foreach(Lang eachLang in langs)
+                    {
+                        if(eachLang.IsSelected)
+                        {
+                            
+                            string resources = CreateLangResxFile(p, eachLang);  //CreateResourceKeyValueList(p);
+                            string content = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <root>
 	<!-- 
 		Microsoft ResX Schema
@@ -389,16 +437,28 @@ namespace " + Pjmainclass + @" {
 @"
 </root>
 ";
-            using (StreamWriter writer = new StreamWriter(filename))
-            {
-                writer.Write(content);
+                            string eachLangResFileName = filename;
+                            eachLangResFileName = eachLangResFileName.Substring(0, eachLangResFileName.Length - 5);
+                            eachLangResFileName = eachLangResFileName + "." + eachLang.Code + ".resx";
+                            //filename = eachLangResFileName;
+                            using (StreamWriter writer = new StreamWriter(eachLangResFileName))
+                            {
+                                writer.Write(content);
+                            }
+                        }
+                    }
+                    
+
+                }
             }
+
+
         }
    
     
-        public static void CreateNewIdFile(L10NProject cProject)
+        public static void CreateNewIdFile(LProject cProject)
         {
-            L10NProject p = cProject;
+            LProject p = cProject;
             string filenmae = cProject.L10NGlobalPath;
             string Pjmainclass = cProject.L10NGlobalFileName;
             string Pjnamespace = cProject.ClrNamespace;
@@ -414,12 +474,12 @@ namespace " + Pjmainclass + @" {
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace " + Pjnamespace + @" {
+namespace " + Pjnamespace +"." + cProject.L10NFolderName  + @" {
     using System;
     
     internal class " + Pjmainclass + @" {
         
-        internal " + Pjnamespace + @"() {
+        internal " + Pjmainclass + @"() {
         }
 "
 + codesList
@@ -432,7 +492,7 @@ namespace " + Pjnamespace + @" {
             }
         }
 
-        static string CreateGlobalKeyValueList(L10NProject p)
+        static string CreateGlobalKeyValueList(LProject p)
         {
             string ret = string.Empty;
             List<WordItem> items = p.Words;

@@ -446,6 +446,12 @@ namespace GSCM.FP.Common.UIL
         }
 
         string _srcFileName = "";
+        LProject? Project = null;
+        public StringParser SetProject(LProject prj)
+        {
+            this.Project = prj;
+            return this;
+        }
         public StringParser SetResourceFile(string filename)
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -778,7 +784,7 @@ namespace GSCM.FP.Common.UIL
             return this;
         }
 
-        string[] lines;
+        string[] lines = new string[1];
         public StringParser SaveTempFile(string targetFileName)
         {
             string tmpFileName = targetFileName + ".ltmp";
@@ -790,12 +796,21 @@ namespace GSCM.FP.Common.UIL
             //int i = 0;
             foreach (L eachRaw in RawStringResultsOfAll)
             {
-                eachRaw.AutoKey = string.Format("G.auto_{0}", L10NProject.Gindex++);
+                eachRaw.AutoKey = string.Format("G.auto_{0}", LProject.Gindex++);
                 eachRaw.TmpFile = tmpFileName;
                 src_txt = ReplaceFirstOccurence(src_txt, eachRaw.Org, eachRaw.AutoKey, eachRaw);
             }
-            File.WriteAllText(tmpFileName, src_txt);
-            File.WriteAllText(targetFileName, src_txt);
+            string usingString = "using " + (Project != null ? Project.ClrNamespace : "Local") + "." + (Project != null ? Project.L10NFolderName : "L") + ";\r\n";
+            if (src_txt.StartsWith(usingString))
+            {
+                File.WriteAllText(tmpFileName, src_txt);
+                File.WriteAllText(targetFileName, src_txt);
+            }
+            else
+            {
+                File.WriteAllText(tmpFileName, usingString + src_txt);
+                File.WriteAllText(targetFileName, usingString + src_txt);
+            }
             return this;
         }
 

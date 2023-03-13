@@ -9,6 +9,11 @@ using System.Windows;
 using Ookii.Dialogs.Wpf;
 using Prism.Mvvm;
 using TigerL10N.Service;
+using System.IO;
+using TigerL10N.Biz;
+using System.Globalization;
+using TigerL10N.Utils;
+using MahApps.Metro.IconPacks;
 
 namespace TigerL10N.ViewModels
 {
@@ -17,7 +22,9 @@ namespace TigerL10N.ViewModels
 
         public NewProjectDlgViewModel()
         {
+            
 
+      
         }
 
         public event Action<IDialogResult>? RequestClose;
@@ -68,55 +75,110 @@ namespace TigerL10N.ViewModels
         }
 
 
-        private DelegateCommand? _selectFolderCmd = null;
-        public DelegateCommand SelectFolderCmd =>
-            _selectFolderCmd ??= new DelegateCommand(SelectFolderCmdFunc);
-        void SelectFolderCmdFunc()
+        //private DelegateCommand? _selectFolderCmd = null;
+        //public DelegateCommand SelectFolderCmd =>
+        //    _selectFolderCmd ??= new DelegateCommand(SelectFolderCmdFunc);
+        //void SelectFolderCmdFunc()
+        //{
+        //    VistaFolderBrowserDialog od = new();
+        //    var res = od.ShowDialog();
+        //    if (res == true)
+        //    {
+        //        ProjectPath = od.SelectedPath.ToString();
+        //    }
+        //}
+
+
+        private DelegateCommand? _selectSolutionCmd = null;
+        public DelegateCommand SelectSolutionCmd =>
+            _selectSolutionCmd ??= new DelegateCommand(SelectSolutionFunc);
+        void SelectSolutionFunc()
         {
-            VistaFolderBrowserDialog od = new();
-            var res = od.ShowDialog();
+            //// throw new NotImplementException();
+            //VistaFolderBrowserDialog od = new();
+            //var res = od.ShowDialog();
+            //if (res == true)
+            //{
+            //    ProjectPath = od.SelectedPath.ToString();
+            //}
+            VistaOpenFileDialog of = new();
+            var res = of.ShowDialog();
             if (res == true)
             {
-                ProjectPath = od.SelectedPath.ToString();
+                if(Solution !=null)
+                {
+
+                    string ProjectPath = of.FileName.ToString();
+                    string filename = Path.GetFileName(of.FileName);
+                    string ProjectName = filename.Substring(0, filename.Length - 4);
+                    string L10NProjectPath = ProjectPath.Substring(0, ProjectPath.Length - 4);
+                    L10NProjectPath = L10NProjectPath + ".ln";
+                    Solution.VsSolutionPath= ProjectPath;
+                    Solution.FilePath = L10NProjectPath;
+                    Solution.FileTitle = filename.Substring(0, filename.Length - 4);
+                }
             }
         }
 
 
-        private DelegateCommand? _selectTargetFolderCmd = null;
-        public DelegateCommand SelectTargetFolderCmd =>
-            _selectTargetFolderCmd ??= new DelegateCommand(SelectTargetFolderCmdFunc);
-        void SelectTargetFolderCmdFunc()
+        private string? _l10NProjectPath;
+        public string L10NProjectPath
         {
-            VistaFolderBrowserDialog od = new();
-            var res = od.ShowDialog();
-            if (res == true)
-            {
-                TargetPath= od.SelectedPath.ToString();
-            }
+            get => _l10NProjectPath ??= "";
+            set => SetProperty(ref _l10NProjectPath, value);
         }
+
+
+
+        //private DelegateCommand? _selectTargetFolderCmd = null;
+        //public DelegateCommand SelectTargetFolderCmd =>
+        //    _selectTargetFolderCmd ??= new DelegateCommand(SelectTargetFolderCmdFunc);
+        //void SelectTargetFolderCmdFunc()
+        //{
+        //    VistaFolderBrowserDialog od = new();
+        //    var res = od.ShowDialog();
+        //    if (res == true)
+        //    {
+        //        TargetPath= od.SelectedPath.ToString();
+        //    }
+        //}
 
         private DelegateCommand? _createProjectCmd = null;
 
         public DelegateCommand CreateProjectCmd =>
             _createProjectCmd ??= new DelegateCommand(CreateProjectFunc);
 
-        string IDialogAware.Title => throw new NotImplementedException();
+        string IDialogAware.Title
+        {
+            get => "GoGo";
+        }
+
+
+        private String? _title;
+        public String Title
+        {
+            get => _title ??= "New Project";
+            set => SetProperty(ref _title, value);
+        }
+
 
         void CreateProjectFunc()
         {
-            if (string.IsNullOrWhiteSpace(ProjectName))
+            if (string.IsNullOrWhiteSpace(ProjectPath) && File.Exists(ProjectPath))
             {
-                MessageBox.Show("ProjectName is required");
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(ProjectPath))
-            {
-                MessageBox.Show("ProjectPath is required");
+                MessageBox.Show("Select Solution file");
                 return;
             }
 
-            ProjectManageService.CreateProject(ProjectName, ProjectPath, TargetPath)
-                .SetCurrent().Save();
+            if (Solution != null)
+            {
+                Solution.Save();
+                ProjectManageService.Solution = Solution;
+            }
+            //ProjectManageService.CreateSolution(ProjectPath);
+
+            //ProjectManageService.CreateLproject(ProjectName, ProjectPath, TargetPath)
+            //    .SetCurrent().Save();
             ButtonResult result = ButtonResult.OK;
             RaiseRequestClose(new Prism.Services.Dialogs.DialogResult(result));
         }
@@ -140,5 +202,46 @@ namespace TigerL10N.ViewModels
         {
             Message = parameters.GetValue<string>("message");
         }
+
+
+        private bool? _optionOverwrite;
+        public bool OptionOverwrite
+        {
+            get => _optionOverwrite ??= false;
+            set => SetProperty(ref _optionOverwrite, value);
+        }
+
+
+        private bool? _optionForceNamespace;
+        public bool OptionForceNamespace
+        {
+            get => _optionForceNamespace ??= false;
+            set => SetProperty(ref _optionForceNamespace, value);
+        }
+
+
+        private string? _defaultNamespace;
+        public string DefaultNamespace
+        {
+            get => _defaultNamespace ??= "";
+            set => SetProperty(ref _defaultNamespace, value);
+        }
+
+
+        private int? _optionResourceType=0;
+        public int? OptionResourceType
+        {
+            get => _optionResourceType;
+            set => SetProperty(ref _optionResourceType, value);
+        }
+
+
+        private LSolution? _solution = new LSolution();
+        public LSolution? Solution
+        {
+            get => _solution;
+            set => SetProperty(ref _solution, value);
+        }
+
     }
 }

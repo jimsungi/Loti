@@ -26,12 +26,12 @@ namespace TigerL10N.Views
         public MainWindow()
         {
             InitializeComponent();
-            if (!string.IsNullOrEmpty(AppConfigService.Settings?.LastOpenFile))
-                txtSrcFile.Text = AppConfigService.Settings.LastOpenFile;
-            if (!string.IsNullOrEmpty(AppConfigService.Settings?.LastOpenFolder))
-                txtSrcFolder.Text = AppConfigService.Settings.LastOpenFolder;
-            if (!string.IsNullOrEmpty(AppConfigService.Settings?.LastSaveFile))
-                txtTarFile.Text = AppConfigService.Settings.LastSaveFile;
+            //if (!string.IsNullOrEmpty(AppConfigService.Settings?.LastOpenFile))
+            //    txtSrcFile.Text = AppConfigService.Settings.LastOpenFile;
+            //if (!string.IsNullOrEmpty(AppConfigService.Settings?.LastOpenFolder))
+            //    txtSrcFolder.Text = AppConfigService.Settings.LastOpenFolder;
+            //if (!string.IsNullOrEmpty(AppConfigService.Settings?.LastSaveFile))
+            //    txtTarFile.Text = AppConfigService.Settings.LastSaveFile;
 
             //projectTree.SetItem();
             //sourceTree.SetItem();
@@ -45,21 +45,21 @@ namespace TigerL10N.Views
             {
                 if (AppConfigService.Settings != null)
                 {
-                    AppConfigService.Settings.LastOpenFile =
-                        txtSrcFile.Text = od.FileName;
+                    //AppConfigService.Settings.LastOpenFile =
+                    //    txtSrcFile.Text = od.FileName;
                 }
             }
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            VistaOpenFileDialog od = new();
-            var  res = od.ShowDialog();
-            if (res == true)
-            {
-                AppConfigService.Settings.LastSaveFile = 
-                txtTarFile.Text = od.FileName;
-            }
+            //VistaOpenFileDialog od = new();
+            //var  res = od.ShowDialog();
+            //if (res == true)
+            //{
+            //    //AppConfigService.Settings.LastSaveFile = 
+            //    //txtTarFile.Text = od.FileName;
+            //}
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
@@ -68,45 +68,45 @@ namespace TigerL10N.Views
             var res = od.ShowDialog();
             if (res == true)
             {
-                AppConfigService.Settings.LastOpenFolder =
-                txtSrcFolder.Text = od.SelectedPath.ToString();
+                //AppConfigService.Settings.LastOpenFolder =
+                //txtSrcFolder.Text = od.SelectedPath.ToString();
             }
         }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
-            bool bCreateNewResource = false;
-            bool bFolderConversion = false;
-            string rsc_filename = txtTarFile.Text;
-            string src_filename = txtSrcFile.Text;
-            string src_foldername = txtSrcFolder.Text;
+            //bool bCreateNewResource = false;
+            //bool bFolderConversion = false;
+            //string rsc_filename = txtTarFile.Text;
+            //string src_filename = txtSrcFile.Text;
+            //string src_foldername = txtSrcFolder.Text;
             
-            if (!File.Exists(src_filename))
-            {
-                bFolderConversion = true;
-            }
+            //if (!File.Exists(src_filename))
+            //{
+            //    bFolderConversion = true;
+            //}
 
-            if (bFolderConversion && !Directory.Exists(src_foldername))
-            {
-                MessageBox.Show("바꿀 대상이 없습니다.");
-                return;
-            }
+            //if (bFolderConversion && !Directory.Exists(src_foldername))
+            //{
+            //    MessageBox.Show("바꿀 대상이 없습니다.");
+            //    return;
+            //}
 
-            if (!File.Exists(rsc_filename))
-            {
-                MessageBox.Show("새 파일에 결과를 저장합니다");
-                bCreateNewResource = true;
-            }
+            //if (!File.Exists(rsc_filename))
+            //{
+            //    MessageBox.Show("새 파일에 결과를 저장합니다");
+            //    bCreateNewResource = true;
+            //}
 
-            StringParseService.CreateParser()
-                .SetReplaceSource(chkReplace.IsChecked == true)
-                .SetReadResourceFile(chkNoread.IsChecked == true)
-                .SetSourceFile(src_filename)
-                .SetFolder(src_foldername)
-                .SetResourceFile(rsc_filename)
-                .SetFolderConversion(bFolderConversion)
-                .SetCreateNewResource(bCreateNewResource)
-                .RunParser();
+            //StringParseService.CreateParser()
+            //    .SetReplaceSource(chkReplace.IsChecked == true)
+            //    .SetReadResourceFile(chkNoread.IsChecked == true)
+            //    .SetSourceFile(src_filename)
+            //    .SetFolder(src_foldername)
+            //    .SetResourceFile(rsc_filename)
+            //    .SetFolderConversion(bFolderConversion)
+            //    .SetCreateNewResource(bCreateNewResource)
+            //    .RunParser();
         }
 
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)

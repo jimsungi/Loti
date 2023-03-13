@@ -20,19 +20,23 @@ namespace TigerL10N.Service
 
     public class ProjectManageService
     {
-        public static string ProjectExt = ".l10n.project";
-        public static L10NProject CreateProject(string name, string filePath, string targetPath)
+        public static string ProjectFolder = ".L10N";
+        public static string ProjectExt = ".l10n";
+        public static LSolution Solution = new LSolution();
+
+        public static LSolution CreateSolution(string vsProjectName)
         {
-            L10NProject pr = new(name, filePath)
-            {
-                RawPath = targetPath
-            };
-
-
-
-
-            return pr;
+            return new LSolution(vsProjectName);
         }
+
+        //public static LProject CreateLproject(string name, string filePath, string targetPath)
+        //{
+        //    LProject pr = new(name, filePath)
+        //    {
+        //        RawPath = targetPath
+        //    };
+        //    return pr;
+        //}
 
         static void DirSearch(GoItemNode node, string sDir, bool hideUnchecked, Dictionary<string, ProjectFile>? fileSettings)
         {
@@ -45,6 +49,7 @@ namespace TigerL10N.Service
                 node.IconKind = "Folder";
                 node.ItemType = "Directory";
                 node.Expand = true;
+                
                 //node.IsChecked = true;
                 switch (node.Name.ToLower())
                 {
@@ -52,6 +57,7 @@ namespace TigerL10N.Service
                     case "lib":
                     case "obj":
                     case ".vs":
+                    case ".ln":
                     case "properties":
                     case "img":
                     case "packages":
@@ -72,41 +78,42 @@ namespace TigerL10N.Service
                     }
                     else 
                     {
+                        foreach (string f in Directory.GetFiles(sDir))
+                        {
+                            GoItemNode file_node = new GoItemNode(f);
+                            file_node.IsFile = true;
+                            //file_node.IsChecked = false;
+                            file_node.ItemType = "File";
+                            file_node.IconKind = "FileOutline";
+                            string? ext = System.IO.Path.GetExtension(f)?.ToLower();
+                            switch (ext)
+                            {
+                                case ".cs":
+                                case ".xaml":
+                                    file_node.IsChecked = true;
+                                    break;
+                                default:
+                                    file_node.IsChecked = false;
+                                    break;
+                            }
+                            if (init != file_node.IsChecked)
+                            {
+                                state_checker = true;
+                            }
+
+                            if (file_node.IsChecked == false && hideUnchecked)
+                            {
+                                // pass to add
+                            }
+                            else
+                            {
+                                node.Children.Add(file_node);
+                            }
+                        }
                         foreach (string d in Directory.GetDirectories(sDir))
                         {
                             GoItemNode dir_node = new GoItemNode(d);
-                            foreach (string f in Directory.GetFiles(d))
-                            {
-                                GoItemNode file_node = new GoItemNode(f);
-                                file_node.IsFile = true;
-                                //file_node.IsChecked = false;
-                                file_node.ItemType = "File";
-                                file_node.IconKind = "FileOutline";
-                                string? ext = System.IO.Path.GetExtension(f)?.ToLower();
-                                switch (ext)
-                                {
-                                    case ".cs":
-                                    case ".xaml":
-                                        file_node.IsChecked = true;
-                                        break;
-                                    default:
-                                        file_node.IsChecked = false;
-                                        break;
-                                }
-                                if(init != file_node.IsChecked)
-                                {
-                                    state_checker = true;
-                                }
 
-                                if (file_node.IsChecked == false && hideUnchecked)
-                                {
-                                    // pass to add
-                                }
-                                else
-                                {
-                                    dir_node.Children.Add(file_node);
-                                }
-                            }
                             DirSearch(dir_node, d, hideUnchecked, fileSettings);
                             node.Children.Add(dir_node);
                             if (init != dir_node.IsChecked)
@@ -125,7 +132,7 @@ namespace TigerL10N.Service
             }
         }
 
-        public static List<GoItemNode> ListFileTree(L10NProject? project, string filepath, bool hideUnchecked)
+        public static List<GoItemNode> ListFileTree(LProject? project, string filepath, bool hideUnchecked)
         {
             List<GoItemNode> treeView = new List<GoItemNode>();
 
@@ -136,12 +143,149 @@ namespace TigerL10N.Service
             return treeView;
         }
 
-        public static L10NProject? GetCurrentProject()
+        public static List<GoItemNode> ListSolutionTree(LSolution? solution, string filepath, bool hideUnchecked)
+        {
+            List<GoItemNode> treeView = new List<GoItemNode>();
+
+            GoItemNode root = new GoItemNode(filepath);
+            
+            RecurseSolutionTree(solution,root, filepath, hideUnchecked);
+
+            treeView.Add(root);
+            return treeView;
+        }
+
+        static void RecurseSolutionTree(LSolution? solution,GoItemNode baseNode, string baseNodePath, bool hideUnchecked)
+        {
+            if (Directory.Exists(baseNodePath))
             {
-            return L10NProject.Current;
+                bool? init = false;
+                bool state_checker = false;
+                baseNode.Path = baseNodePath;
+                baseNode.IsFile = false;
+
+                baseNode.ItemType = "Directory";
+
+
+                //node.IsChecked = true;
+                switch (baseNode.Name.ToLower())
+                {
+                    case "bin":
+                    case "lib":
+                    case "obj":
+                    case ".vs":
+                    case ".ln":
+                    case "properties":
+                    case "img":
+                    case "packages":
+                    case "resources":
+                        baseNode.IconKind = "FolderHidden";
+                        baseNode.Expand = false;
+                        return;
+                        //node.IsChecked = false;
+                        //break;
+                    default:
+                        baseNode.IconKind = "Folder";
+                        baseNode.Expand = true;
+                        //node.IsChecked = true;
+                        break;
+                }
+                init = baseNode.IsChecked;
+                try
+                {
+                    if (baseNode.IsChecked == false && hideUnchecked)
+                    {
+                        // pass to add
+                    }
+                    else
+                    {
+                        foreach (string childFile in Directory.GetFiles(baseNodePath))
+                        {
+                            GoItemNode childFileNode = new GoItemNode(childFile);
+                            childFileNode.IsFile = true;
+                            //file_node.IsChecked = false;
+                            childFileNode.ItemType = "File";
+                            string? ext = System.IO.Path.GetExtension(childFile)?.ToLower();
+                            switch (ext)
+                            {
+                                case ".ln":
+                                    childFileNode.IconKind = "CheckBold";
+                                    childFileNode.IsChecked = true;
+                                    
+                                    break;
+                                case ".sln":
+                                    childFileNode.IconKind = "CheckAll";
+                                    childFileNode.IsChecked = true;
+                                    baseNode.IconKind = "AlphaSBoxOutline";
+                                    break;
+                                case ".csproj":
+                                    childFileNode.IconKind = "Check";
+                                    childFileNode.IsChecked = true;
+                                    baseNode.IconKind = "AlphaPBoxOutline";
+                                    if (solution != null && solution.Projects !=null)
+                                    {
+                                        LProject project = new LProject(childFile);
+                                        project.Solution = Solution;
+                                        baseNode.SetProject(project);
+                                        childFileNode.SetProject(project);
+                                        solution.Projects.Add(project);
+                                    }
+                                    break;
+                                case ".cs":
+                                    childFileNode.IconKind = "LanguageCsharp";
+                                    childFileNode.IsChecked = true;
+                                    break;
+                                case ".xaml":
+                                    childFileNode.IconKind = "LanguageXaml";
+                                    childFileNode.IsChecked = true;
+                                    break;
+                                default:
+                                    childFileNode.IconKind = "File";
+                                    childFileNode.IsChecked = false;
+                                    break;
+                            }
+                            if (init != childFileNode.IsChecked)
+                            {
+                                state_checker = true;
+                            }
+
+                            if (childFileNode.IsChecked == false && hideUnchecked)
+                            {
+                                // pass to add
+                            }
+                            else
+                            {
+                                baseNode.Children.Add(childFileNode);
+                            }
+                        }
+                        foreach (string childDirectoryNodePath in Directory.GetDirectories(baseNodePath))
+                        {
+                            GoItemNode childDirectoryNode = new GoItemNode(childDirectoryNodePath);
+
+                            RecurseSolutionTree(solution,childDirectoryNode, childDirectoryNodePath, hideUnchecked);
+                            baseNode.Children.Add(childDirectoryNode);
+                            if (init != childDirectoryNode.IsChecked)
+                                state_checker = true;
+                        }
+                    }
+                    if (state_checker == true)
+                    {
+                        baseNode.IsChecked = null;
+                    }
+                }
+                catch (System.Exception excpt)
+                {
+                    Console.WriteLine(excpt.Message);
+                }
+            }
+        }
+
+        public static LProject? GetCurrentProject()
+            {
+            return LProject.Current;
             }
 
-        public static L10NProject? LoadFromXml(string xmlFileName)
+        public static LProject? LoadFromXml(string xmlFileName)
         {
             var xml = File.ReadAllText(xmlFileName);
             System.Xml.XmlDocument doc = new XmlDocument();
@@ -177,8 +321,8 @@ namespace TigerL10N.Service
                 if(!string.IsNullOrWhiteSpace(projectFolder)
                     && !string.IsNullOrWhiteSpace(projectName))
                 {
-                    L10NProject project = new L10NProject(projectName, projectFolder);
-                    project.RawPath = targetFilesFolder;
+                    LProject project = new LProject(targetFilesFolder);
+                    //project.RawPath = targetFilesFolder;
 
                     return project;
                 }

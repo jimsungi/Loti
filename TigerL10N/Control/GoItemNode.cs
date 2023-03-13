@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using TigerL10N.Biz;
 
 namespace TigerL10N.Control
 {
@@ -22,6 +23,22 @@ namespace TigerL10N.Control
         }
 
         #region Properties
+
+
+
+        private object? _projectItem;
+        // Object which indicate
+        public object? ProjectItem
+        {
+            get => _projectItem;
+            set => SetProperty(ref _projectItem, value);
+        }
+
+        public void SetProject(LProject project)
+        {
+            ProjectItem = project;
+        }
+
 
         public string Name { get; private set; }
         public List<GoItemNode> Children { get; private set; }

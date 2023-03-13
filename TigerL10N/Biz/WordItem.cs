@@ -10,6 +10,7 @@ using TigerL10N.Service;
 
 namespace TigerL10N.Biz
 {
+    [Serializable]
     public class WordItem : BindableBase
     {
         public string TmpFile = "";
@@ -180,18 +181,56 @@ namespace TigerL10N.Biz
 
         public bool init = false;
 
+        private Dictionary<string, string> TargetStrings = new Dictionary<string, string>();
+
+
+        private string? _langCode;
+        public string LangCode
+        {
+            get => _langCode ??= "";
+            set
+            {
+                SetProperty(ref _langCode, value);
+                if (_langCode == null)                
+                    _langCode = "";
+                
+                else if (_langCode != null && TargetStrings.Keys.Contains(_langCode))
+                {
+                    TargetString = TargetStrings[_langCode];
+                }
+                else
+                {
+                    TargetStrings.Add(_langCode, TargetStrings[""]);
+                }
+            }
+        }
+
         private string? _targetString;
         public string TargetString
         {
-            get => _targetString ??= "";
+            get
+            {
+                if(_langCode != null)
+                    return TargetStrings[_langCode];
+                return "";
+            }
             set
             {
                 string set_value = value;
-                SetProperty(ref _targetString, value);
+                if (_langCode == null)
+                    _langCode = "";
+                if (!TargetStrings.Keys.Contains(_langCode))
+                {
+                    TargetStrings.Add(_langCode, set_value);
+                }
+                else
+                {
+                    TargetStrings[_langCode] = set_value;
+                }
+                SetProperty(ref _targetString, set_value);
                 if (_targetString == set_value)
                 {
                     // accept current value
-
                     Dirty = true;
                 }
                 else if (!string.IsNullOrWhiteSpace(_targetString))

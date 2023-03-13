@@ -8,6 +8,30 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Views\Icons\fatcow\cancel.png" />
+    <None Remove="Views\Icons\fatcow\document_page_next.png" />
+    <None Remove="Views\Icons\fatcow\document_page_previous.png" />
+    <None Remove="Views\Icons\fatcow\draw_eraser.png" />
+    <None Remove="Views\Icons\fatcow\find.png" />
+    <None Remove="Views\Icons\fatcow\gear_in.png" />
+    <None Remove="Views\Icons\fatcow\image_paste.png" />
+    <None Remove="Views\Icons\fatcow\inline_spellcheck.png" />
+    <None Remove="Views\Icons\fatcow\ocr.png" />
+    <None Remove="Views\Icons\fatcow\ocr_small.png" />
+    <None Remove="Views\Icons\fatcow\open.png" />
+    <None Remove="Views\Icons\fatcow\pilcrow_delete.png" />
+    <None Remove="Views\Icons\fatcow\rotate_ccw.png" />
+    <None Remove="Views\Icons\fatcow\rotate_cw.png" />
+    <None Remove="Views\Icons\fatcow\save.png" />
+    <None Remove="Views\Icons\fatcow\scan.png" />
+    <None Remove="Views\Icons\fatcow\tools.png" />
+    <None Remove="Views\Icons\fatcow\zoom_actual.png" />
+    <None Remove="Views\Icons\fatcow\zoom_fit.png" />
+    <None Remove="Views\Icons\fatcow\zoom_in.png" />
+    <None Remove="Views\Icons\fatcow\zoom_out.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Config.Net" Version="5.1.5" />
     <PackageReference Include="Dirkster.AvalonDock" Version="4.71.2" />
     <PackageReference Include="MahApps.Metro.IconPacks" Version="4.11.0" />
@@ -24,6 +48,30 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CSharpParser\CSharpParser.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Views\Icons\fatcow\cancel.png" />
+    <Resource Include="Views\Icons\fatcow\document_page_next.png" />
+    <Resource Include="Views\Icons\fatcow\document_page_previous.png" />
+    <Resource Include="Views\Icons\fatcow\draw_eraser.png" />
+    <Resource Include="Views\Icons\fatcow\find.png" />
+    <Resource Include="Views\Icons\fatcow\gear_in.png" />
+    <Resource Include="Views\Icons\fatcow\image_paste.png" />
+    <Resource Include="Views\Icons\fatcow\inline_spellcheck.png" />
+    <Resource Include="Views\Icons\fatcow\ocr.png" />
+    <Resource Include="Views\Icons\fatcow\ocr_small.png" />
+    <Resource Include="Views\Icons\fatcow\open.png" />
+    <Resource Include="Views\Icons\fatcow\pilcrow_delete.png" />
+    <Resource Include="Views\Icons\fatcow\rotate_ccw.png" />
+    <Resource Include="Views\Icons\fatcow\rotate_cw.png" />
+    <Resource Include="Views\Icons\fatcow\save.png" />
+    <Resource Include="Views\Icons\fatcow\scan.png" />
+    <Resource Include="Views\Icons\fatcow\tools.png" />
+    <Resource Include="Views\Icons\fatcow\zoom_actual.png" />
+    <Resource Include="Views\Icons\fatcow\zoom_fit.png" />
+    <Resource Include="Views\Icons\fatcow\zoom_in.png" />
+    <Resource Include="Views\Icons\fatcow\zoom_out.png" />
   </ItemGroup>
 
 </Project>

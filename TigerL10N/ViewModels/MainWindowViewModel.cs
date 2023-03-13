@@ -20,6 +20,7 @@ using TigerL10N.Biz;
 using Unity;
 using System.Windows.Controls;
 using System.Windows;
+using TigerL10N.Utils;
 
 namespace TigerL10N.ViewModels
 {
@@ -80,10 +81,14 @@ namespace TigerL10N.ViewModels
 
         void ShowSelected()
         {
-            if(LocalizationSource!=null && LocalizedWord >= 0)
+            if(Solution !=null && Solution.CurrentProject!=null && Solution.CurrentProject.Words!=null && LocalizedWord >= 0)
             {
-                if(LocalizationSource.Count >LocalizedWord)
-                    SelectedWord = LocalizationSource[LocalizedWord.Value];
+                if(Solution.CurrentProject.Words.Count >LocalizedWord)
+                    SelectedWord = Solution.CurrentProject.Words[LocalizedWord.Value];
+            }
+            else
+            {
+                SelectedWord = null;
             }
         }
 
@@ -108,7 +113,95 @@ namespace TigerL10N.ViewModels
 
         public DelegateCommand NewProjectCmd =>
             _newProjectCommandCmd ??= new DelegateCommand(NewProjectCommandFunc);
-        
+
+
+
+        private DelegateCommand? _saveTranslationAllCmd = null;
+        public DelegateCommand SaveTranslationAllCmd =>
+            _saveTranslationAllCmd ??= new DelegateCommand(SaveTranslationAllFunc);
+        void SaveTranslationAllFunc()
+        {
+            // throw new NotImplementException();
+        }
+
+        private DelegateCommand? _saveTranslationCmd = null;
+        public DelegateCommand SaveTranslationCmd =>
+            _saveTranslationCmd ??= new DelegateCommand(SaveTranslationFunc);
+        void SaveTranslationFunc()
+        {
+            // throw new NotImplementException();
+            /// 1. Backup
+            /// Copy From Source Project
+            /// 
+            if (this.Solution != null && this.Solution.CurrentProject !=null)
+            {
+                LProject project = Solution.CurrentProject;
+                //List<WordItem> saveWords = LocalizationSource.OrderBy(w => w.FileName).ToList();
+                string tmpFileName = "";
+                string targetFileName = "";
+                string contents = "";
+
+                // Read All text from file
+                List<WordItem>? saveWords = Solution.CurrentProject.Words;
+                if (saveWords != null)
+                {
+                    Dictionary<string, string> fileNameContentBuf = new Dictionary<string, string>();
+                    foreach (WordItem eachWord in saveWords)
+                    {
+                        tmpFileName = eachWord.TmpFile;
+                        if(!fileNameContentBuf.Keys.Contains(tmpFileName))
+                        {
+                            contents = File.ReadAllText(tmpFileName);
+                            fileNameContentBuf.Add(tmpFileName, contents);
+                        }
+                    }
+
+                    foreach (WordItem eachWord in saveWords)
+                    {
+                        tmpFileName = eachWord.TmpFile;
+                        contents = fileNameContentBuf[tmpFileName];
+
+
+                        if (eachWord.Ignore == true)
+                        {
+                            fileNameContentBuf[tmpFileName] = contents.Replace(eachWord.TargetId, eachWord.SourceString);
+                        }
+                        else if (eachWord.AsId)
+                        {
+                            fileNameContentBuf[tmpFileName] = contents.Replace(eachWord.TargetId, eachWord.FinalId);
+                        }
+                        else
+                        {
+                            fileNameContentBuf[tmpFileName] = contents.Replace(eachWord.TargetId, eachWord.FinalId);
+                        }
+                        // eachWord.TargetId => TargetString으로 바꾼다.
+                    }
+
+                    foreach(KeyValuePair<string,string> fileAndContens in fileNameContentBuf)
+                    {
+                        string fileaneme = fileAndContens.Key;
+                        string fContent = fileAndContens.Value;
+                        targetFileName = "";
+                        if (!string.IsNullOrWhiteSpace(tmpFileName))
+                        {
+                            if (tmpFileName.EndsWith(".ltmp"))
+                            {
+                                targetFileName = fileaneme.Substring(0, fileaneme.Length - 5);
+                                if(!string.IsNullOrWhiteSpace(targetFileName))
+                                {
+                                    File.WriteAllText(targetFileName, fContent);
+                                }
+                            }
+                        }
+                    }
+                }
+                LocService.CreateNewDesignerFile(project);
+                LocService.CreateNewResxFile(project);
+                LocService.CreateNewIdFile(project);
+            }
+        }
+
+
         private string message = "......";
         void NewProjectCommandFunc()
         {
@@ -117,6 +210,28 @@ namespace TigerL10N.ViewModels
             {
                 if (result.Result == ButtonResult.OK)
                 {
+                    SourceTreeData = ProjectManageService.ListSolutionTree(ProjectManageService.Solution, ProjectManageService.Solution.FolderPath, false);
+                    Solution = ProjectManageService.Solution;
+                    if (Solution.Projects?.Count > 0)
+                    {
+                        Solution.CurrentProject = Solution.Projects.First();
+                        foreach (LProject project in Solution.Projects)
+                        {
+                            project.BuildFileLang();
+                            project.BuildWords();
+
+
+                        }
+
+                        //List<WordItem> sortedByName = Solution.CurrentProject.Words.OrderBy(w => w.SourceString).ToList();
+                        //this.LocalizationSource = sortedByName;
+                        //foreach (WordItem eachWord in sortedByName)
+                        //{
+                        //    eachWord.init = true;
+                        //    eachWord.RefAll = sortedByName;
+                        //}
+                    }
+
                     //SrcFiles = CheckFileTreeModel.gettest();
                     // load 
                     //SrcFiles = CheckFileTreeModel.SetTree("ddd");
@@ -125,6 +240,9 @@ namespace TigerL10N.ViewModels
             });
         }
         #endregion
+
+
+
 
         #region Service
         private IContainerProvider _ic;
@@ -159,6 +277,16 @@ namespace TigerL10N.ViewModels
             // throw new NotImplementException();
         }
 
+        /// <summary>
+        /// Current Solution
+        /// you can get by ProjectManageService.Solution
+        /// </summary>
+        private LSolution? _solution;
+        public LSolution? Solution
+        {
+            get => _solution;
+            set => SetProperty(ref _solution, value);
+        }
 
 
         private DelegateCommand? _openProjectCmd = null;
@@ -170,12 +298,12 @@ namespace TigerL10N.ViewModels
             if(dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 string project_file_name = dlg.FileName;
-                L10NProject? p = ProjectManageService.LoadFromXml(project_file_name);
+                LProject? p = ProjectManageService.LoadFromXml(project_file_name);
                 if (p != null)
                 {
                     TargetTreeData = ProjectManageService.ListFileTree(p, p.RawPath, IsTargetChecked);
                     SourceTreeData = ProjectManageService.ListFileTree(null, p.ProjectPath, false);
-                    L10NProject.Current = p;
+                    LProject.Current = p;
                 }
             }
             // throw new NotImplementException();
@@ -187,7 +315,7 @@ namespace TigerL10N.ViewModels
             if (File.Exists(last_l18N_file))
             {
 
-                L10NProject? p = ProjectManageService.LoadFromXml(last_l18N_file);
+                LProject? p = ProjectManageService.LoadFromXml(last_l18N_file);
                 if (p != null)
                 {
                     p.Open();
@@ -195,7 +323,7 @@ namespace TigerL10N.ViewModels
                     ProjectName = p.ProjectName;
                     ProjectPath = p.ProjectPath;
                     RawPath = p.RawPath;
-                    L10NProject.Current = p;
+                    LProject.Current = p;
 
                     SourceTreeData = ProjectManageService.ListFileTree(null, p.ProjectPath, false);
                 }
@@ -230,24 +358,24 @@ namespace TigerL10N.ViewModels
         }
 
 
-        //private DelegateCommand? _asIdCmd = null;
-        //public DelegateCommand AsIdCmd =>
-        //    _asIdCmd ??= new DelegateCommand(AsIdFunc);
-        //void AsIdFunc()
-        //{
-        //    // throw new NotImplementException();
-        //}
+        private DelegateCommand? _asIdCmd = null;
+        public DelegateCommand AsIdCmd =>
+            _asIdCmd ??= new DelegateCommand(AsIdFunc);
+        void AsIdFunc()
+        {
+            // throw new NotImplementException();
+        }
 
 
 
-        //private DelegateCommand? _ignoreCmd = null;
-        //public DelegateCommand IgnoreCmd =>
-        //    _ignoreCmd ??= new DelegateCommand(IgnoreFunc);
-        //void IgnoreFunc()
-        //{
+        private DelegateCommand? _ignoreCmd = null;
+        public DelegateCommand IgnoreCmd =>
+            _ignoreCmd ??= new DelegateCommand(IgnoreFunc);
+        void IgnoreFunc()
+        {
 
-        //    // throw new NotImplementException();
-        //}
+            // throw new NotImplementException();
+        }
 
 
         private DelegateCommand? _applyAllCmd = null;
@@ -329,7 +457,7 @@ namespace TigerL10N.ViewModels
         {
             get => _isTargetChecked ??= false;
             set {
-                L10NProject? c = ProjectManageService.GetCurrentProject();
+                LProject? c = ProjectManageService.GetCurrentProject();
                 if (c != null)
                 {
                     TargetTreeData = ProjectManageService.ListFileTree(c, c.RawPath, value);
@@ -380,7 +508,7 @@ namespace TigerL10N.ViewModels
             _createAutoPrepareFilesCmd ??= new DelegateCommand(CreateAutoPrepareFilesFunc);
         void CreateAutoPrepareFilesFunc()
         {
-            L10NProject? cu = ProjectManageService.GetCurrentProject();
+            LProject? cu = ProjectManageService.GetCurrentProject();
             if(cu == null)
             {
                 if(System.Windows.Forms.MessageBox.Show("You need project. Do you want to create one?", "Warning", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes) 
@@ -395,13 +523,13 @@ namespace TigerL10N.ViewModels
             //LoadFiles();
         }
 
-        void CreateFiles(L10NProject project)
+        void CreateFiles(LProject project)
         {
             /// 1. Backup
             /// Copy From Source Project
             /// 
             string RawPath = project.RawPath;
-            L10NProject.Gindex = 0;
+            LProject.Gindex = 0;
             if(Directory.Exists(RawPath))
             {
                 if (project.BackUp)
@@ -409,9 +537,9 @@ namespace TigerL10N.ViewModels
                     string BackPath = project.BackupPath + Path.DirectorySeparatorChar + DateTime.Now.ToString("yyyyMMdd_HHmmss").ToString();
                     Directory.CreateDirectory(BackPath);
                     IgnoreOption Option = new IgnoreOption();
-                    CopyDirectory(RawPath, BackPath, Option);
+                    Etc.CopyDirectory(RawPath, BackPath, Option);
                 }
-                L10NProject.ProcessOption PO = new L10NProject.ProcessOption();
+                LProject.ProcessOption PO = new LProject.ProcessOption();
                 PO.IsPrepare = true;
                 project.DirOneFileProc(RawPath, project.OneLangPath, PO);
                 PO.IsPrepare = false;
@@ -435,65 +563,6 @@ namespace TigerL10N.ViewModels
 
         }
 
-
-
-
-
-
-        class IgnoreOption
-        {
-            public List<string> IgnoreFiles = new List<string>();
-            public List<string> IgnoreFolder = new List<string>();
-            public IgnoreOption() 
-            {
-                //gnoreFiles.Add(".dll");
-                IgnoreFiles.Add(".obj");
-
-                IgnoreFolder.Add("bin");
-                IgnoreFolder.Add("obj");                
-            }
-        }
-
-
-        static void CopyDirectory(string sDir, string tDir, IgnoreOption option)
-        {
-            if (Directory.Exists(sDir))
-            {
-                Directory.CreateDirectory(tDir);
-                try
-                {
-                    
-                    foreach (string ChildSourceDir in Directory.GetDirectories(sDir))
-                    {
-                        string? dirName = Path.GetDirectoryName(ChildSourceDir);
-                        dirName = Path.GetFileName(ChildSourceDir);
-                        if (dirName != null && !option.IgnoreFolder.Contains(dirName.ToLower()))
-                        {
-                            string ChildTargetDir = tDir + Path.DirectorySeparatorChar + dirName;
-                            CopyDirectory(ChildSourceDir, ChildTargetDir, option);
-                        }
-                    }
-
-                    foreach (string ChildSourceFile in Directory.GetFiles(sDir))
-                    {
-                        string fName = Path.GetFileName(ChildSourceFile);
-                        string ChildTargetFile = tDir + Path.DirectorySeparatorChar + fName;
-
-                        string? ext = System.IO.Path.GetExtension(ChildSourceFile)?.ToLower();
-                        if (ext != null && !option.IgnoreFiles.Contains(ext.ToLower()))
-                        {
-                            File.Copy(ChildSourceFile, ChildTargetFile, true);
-                        }
-                    }
-
-
-                }
-                catch (System.Exception excpt)
-                {
-                    Console.WriteLine(excpt.Message);
-                }
-            }
-        }
 
         /// <summary>
         /// Create All files to ready to translate
@@ -576,7 +645,7 @@ namespace TigerL10N.ViewModels
             _makeOneLanguageVersionCmd ??= new DelegateCommand(MakeOneLanguageVersionFunc);
         void MakeOneLanguageVersionFunc()
         {
-            L10NProject? cu = ProjectManageService.GetCurrentProject();
+            LProject? cu = ProjectManageService.GetCurrentProject();
             if (cu == null)
             {
                 if (System.Windows.Forms.MessageBox.Show("You need project. Do you want to create one?", "Warning", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
@@ -591,7 +660,7 @@ namespace TigerL10N.ViewModels
             // throw new NotImplementException();
         }
 
-        void SaveFiles(L10NProject project)
+        void SaveFiles(LProject project)
         {
             /// 1. Backup
             /// Copy From Source Project
@@ -640,7 +709,8 @@ namespace TigerL10N.ViewModels
 
             }
             //Directory.CreateDirectory(RawPath);
-            project.Words = this.LocalizationSource;
+            if(this.LocalizationSource!=null)
+                project.Words = this.LocalizationSource;
             LocService.CreateNewDesignerFile(project);
             LocService.CreateNewResxFile(project);
             LocService.CreateNewIdFile(project);
