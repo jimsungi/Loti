@@ -1,7 +1,12 @@
 # TigerL10N
 L10N resource creation tool (localization resource file creator)
 
-This is not productive stage - early idea stage - it's no help yet
+This is not productive stage - close to pre-alpha stage - it's no helpful yet - in pre-alpha you can only apply winform project only - xaml not support yet.
+
+version 0.1 is very close to release.
+
+- Tiger Localization Tool > Loc(k)-Of-Tiger > LoTi would be good for program name (In Korea, there is many place meaning l(r)ock of Tiger, pronounced BumBaWi, it's another candidate. I like that names calling country memory. Once there were many tigers in Korean, there are many place related tiger. Japanese invadors kill them all, then replacing killer position. )
+- Nsis would be installer for Loti. 
 
 Idears
 -See TODO
