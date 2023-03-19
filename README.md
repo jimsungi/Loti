@@ -1,29 +1,15 @@
 # TigerL10N
 L10N resource creation tool (localization resource file creator)
 
-This is not productive stage - early idea stage - it's no help yet
+This is not productive stage - close to pre-alpha stage - it's no helpful yet - in pre-alpha you can only apply winform project only - xaml not support yet.
+
+version 0.1 is very close to release.
+
+- Tiger Localization Tool > Loc(k)-Of-Tiger > LoTi would be good for program name (In Korea, there is many place meaning l(r)ock of Tiger, pronounced BumBaWi, it's another candidate. I like that names calling country memory. Once there were many tigers in Korean, there are many place related tiger. Japanese invadors kill them all, then replacing killer position. )
+- Nsis would be installer for Loti. 
 
 Idears
-- create resource file per CLR
-- from source file, extract all string and make it resource
-- may be support xaml too
-- xaml component content to be attributed (likely from <Button>Run</Button>  to <Button Content="Run"></Button>, but <Button Content="{res:TigerL10N.btn_run}"></Button>
-- src to res, res to src conversion might be supported
-
-- may be global resource might be supported too
-
-- language files created
-- resource to excel for tanslation tool (or tool supported format, maybe trados, transit, etc)
-
-- exceptional process support - by text itself with condition (file, comment - like // TLException Korea ), by idenfication rule (predefined prefix like txt, chbox, etc), by Xaml attribute like { preceded text,
-- use humanizer naming suggestions / maybe not(humanizer use English, but I prefer Korean) or optional?
-
-- providing UI, user can decide how to process
-- providing UI, like translation tool (load excel, edit data, Qa result) - It can be a grid like excel
-
-- simple library to load resource file - can be call L10N Bridge
-- L10N Bridge or middlewear : languages from static L10N resource, runtime L10N resource, database L10N resource
-- L10N Bridge or middlewear : buffering / priority
+-See TODO
 
 Special Key
 - Editing Box
@@ -53,3 +39,6 @@ Special Key
 Library
 - For Folder Open Dialog  https://github.com/ookii-dialogs/ookii-dialogs-wpf (https://www.ookii.org/software/dialogs/)
 - ConfigNet for easy user setting https://github.com/aloneguid/config
+- MagAoos.Mtro.IconPacks for icon
+- Prism for MVVM
+- Dirkster.AvalonDock for Visual Studio Look & Feel

@@ -22,6 +22,9 @@ Big Idea
 - L10N Bridge or middlewear : languages from static L10N resource, runtime L10N resource, database L10N resource (-)
 - L10N Bridge or middlewear : buffering / priority (-)
 
+- .L10N extension and same as solution filename : tool can select visual studio solution then go (make it vs thing) 
+- visual studio integration (create l10n project,etc)
+
 Small things
 
 * Version things ... Is there any library or code or tools. If code or anything, it can be integrated.(-)
@@ -30,4 +33,8 @@ Small things
 * Your Id library can be loaded into id library and reused.
 * Your Id library can be saved as Global library (and there might be a way to use default Id Library)
 * Need some ".tmp" files. If any *.tmp file exists need some warning
-* L10N folder OK. resource name would be l.resx
+* L10N folder OK. resource name would be l.resx (o)
+* Solution based translation
+* Translation option of (L.resource, G.id, M.message) and M.message as network (sample one file .ASP and .PHP page, file based and MariaDB based)
+* Test cases need
+* Need to specipy project NameSpace
