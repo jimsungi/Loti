@@ -1,4 +1,4 @@
-# TigerL10N
+#  Loti - C# I18N tool
 L10N resource creation tool (localization resource file creator)
 
 This is not productive stage - close to pre-alpha stage - it's no helpful yet - in pre-alpha you can only apply winform project only - xaml not support yet.
