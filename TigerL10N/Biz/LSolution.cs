@@ -325,31 +325,31 @@ namespace TigerL10N.Biz
             
                 List<Lang> langList = new List<Lang>();
 
-        var ko_kr = new Lang(new CultureInfo("ko-KR"));
+        var ko_kr = new Lang("ko-KR");
         ko_kr.IsSelected = true;
                 langList.Add(ko_kr);
 
-                var en_US = new Lang(new CultureInfo("en-US"));
+                var en_US = new Lang("en-US");
         en_US.IsSelected = true;
                 langList.Add(en_US);
 
-                langList.Add(new Lang(new CultureInfo("zh-CN")));
-                langList.Add(new Lang(new CultureInfo("ja-JP")));
+                langList.Add(new Lang("zh-CN"));
+                langList.Add(new Lang("ja-JP"));
 
-                var fr_FR = new Lang(new CultureInfo("fr-FR"));
+                var fr_FR = new Lang("fr-FR");
         fr_FR.IsSelected = true;
                 langList.Add(fr_FR);
-                langList.Add(new Lang(new CultureInfo("de-DE")));
-                langList.Add(new Lang(new CultureInfo("ru-RU")));
-                langList.Add(new Lang(new CultureInfo("zh-TW")));
-                langList.Add(new Lang(new CultureInfo("pl-PL")));
-                langList.Add(new Lang(new CultureInfo("hi-IN")));
-                langList.Add(new Lang(new CultureInfo("en-GB")));
-                langList.Add(new Lang(new CultureInfo("es-ES")));
-                langList.Add(new Lang(new CultureInfo("pt-BR")));
-                langList.Add(new Lang(new CultureInfo("en-CA")));
-                langList.Add(new Lang(new CultureInfo("fr-CA")));
-                langList.Add(new Lang(new CultureInfo("ko-KL")));
+                langList.Add(new Lang("de-DE"));
+                langList.Add(new Lang("ru-RU"));
+                langList.Add(new Lang("zh-TW"));
+                langList.Add(new Lang("pl-PL"));
+                langList.Add(new Lang("hi-IN"));
+                langList.Add(new Lang("en-GB"));
+                langList.Add(new Lang("es-ES"));
+                langList.Add(new Lang("pt-BR"));
+                langList.Add(new Lang("en-CA"));
+                langList.Add(new Lang("fr-CA"));
+                langList.Add(new Lang("ko-KL"));
 
             return  new System.Tuple<List<Lang>, Lang>(langList,ko_kr); ;
 
@@ -360,7 +360,7 @@ namespace TigerL10N.Biz
             {
                 List<Lang> tmp =
                 CultureInfo.GetCultures(CultureTypes.AllCultures)
-            .Select(culture => new Lang(culture))
+            .Select(culture => new Lang(culture.EnglishName))
             .ToList();
                 Etc.ToFirst(tmp, x => x.EngName == "ko-KR");
 

@@ -21,11 +21,79 @@ using Unity;
 using System.Windows.Controls;
 using System.Windows;
 using TigerL10N.Utils;
+using System.Xml.Serialization;
+using System.Diagnostics;
 
 namespace TigerL10N.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
+        #region View Visible Props
+
+
+        private bool? _isTranVisible;
+        public bool IsTranVisible
+        {
+            get => _isTranVisible ??= false;
+            set => SetProperty(ref _isTranVisible, value);
+        }
+
+
+        private bool? _isResourceVisible;
+        public bool IsResourceVisible
+        {
+            get => _isResourceVisible ??= false;
+            set => SetProperty(ref _isResourceVisible, value);
+        }
+
+
+        private bool? _isSolutionVisible;
+        public bool IsSolutionVisible
+        {
+            get => _isSolutionVisible ??= false;
+            set => SetProperty(ref _isSolutionVisible, value);
+        }
+
+
+        private bool? _isProjectVisible;
+        public bool IsProjectVisible
+        {
+            get => _isProjectVisible ??= false;
+            set => SetProperty(ref _isProjectVisible, value);
+        }
+
+
+
+
+        private bool? _isInfoVisible;
+        public bool IsInfoVisible
+        {
+            get => _isInfoVisible ??= false;
+            set => SetProperty(ref _isInfoVisible, value);
+        }
+
+
+
+
+        private bool? _isLangVisible;
+        public bool IsLangVisible
+        {
+            get => _isLangVisible ??= false;
+            set => SetProperty(ref _isLangVisible, value);
+        }
+
+
+
+
+        private bool? _isLogVisible;
+        public bool IsLogVisible
+        {
+            get => _isLogVisible ??= false;
+            set => SetProperty(ref _isLogVisible, value);
+        }
+
+
+        #endregion
         #region property
         private string? _baGo="";
         public string BaGo
@@ -33,10 +101,6 @@ namespace TigerL10N.ViewModels
             get => _baGo ??= "";
             set => SetProperty(ref _baGo, value);
         }
-
-        
-
-
 
         private List<GoItemNode>? _sourceTreeData;
         public List<GoItemNode>? SourceTreeData
@@ -219,8 +283,6 @@ namespace TigerL10N.ViewModels
                         {
                             project.BuildFileLang();
                             project.BuildWords();
-
-
                         }
 
                         //List<WordItem> sortedByName = Solution.CurrentProject.Words.OrderBy(w => w.SourceString).ToList();
@@ -231,6 +293,14 @@ namespace TigerL10N.ViewModels
                         //    eachWord.RefAll = sortedByName;
                         //}
                     }
+
+                    XmlSerializer se = new XmlSerializer(typeof(LSolution));
+                    string filename = Path.Combine(Solution.FolderPath, ".ln","translation");
+                    Directory.CreateDirectory(filename);
+                    filename = Path.Combine(filename, "solution.xml");
+                    StreamWriter writer = new StreamWriter(filename);
+                    se.Serialize(writer, Solution);
+                    writer.Close();
 
                     //SrcFiles = CheckFileTreeModel.gettest();
                     // load 
@@ -297,14 +367,49 @@ namespace TigerL10N.ViewModels
             System.Windows.Forms.OpenFileDialog dlg = new System.Windows.Forms.OpenFileDialog();
             if(dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                string project_file_name = dlg.FileName;
-                LProject? p = ProjectManageService.LoadFromXml(project_file_name);
-                if (p != null)
+                string translation_filename = dlg.FileName;
+                if (translation_filename != null)
                 {
-                    TargetTreeData = ProjectManageService.ListFileTree(p, p.RawPath, IsTargetChecked);
-                    SourceTreeData = ProjectManageService.ListFileTree(null, p.ProjectPath, false);
-                    LProject.Current = p;
+                    string? translation_folder = Path.GetDirectoryName(translation_filename);
+                    if (translation_folder != null)
+                    {
+                        string xml_file = Path.Combine(translation_folder, ".ln", "translation", "solution.xml");
+                        if (File.Exists(xml_file))
+                        {
+                            string? translation = File.ReadAllText(xml_file);
+                            if (!string.IsNullOrWhiteSpace(translation))
+                            {
+                                XmlSerializer se = new XmlSerializer(typeof(LSolution));
+                                
+                                using (StringReader reader = new StringReader(translation))
+                                {
+                                    var s = se.Deserialize(reader);
+                                    if (s != null)
+                                    {
+                                        Solution = (LSolution)s;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
+
+                
+                //string filename = Path.Combine(Solution.FolderPath, ".ln", "translation");
+                //Directory.CreateDirectory(filename);
+                //filename = Path.Combine(filename, "solution.xml");
+                //StreamWriter writer = new StreamWriter(filename);
+                //se.Serialize(writer, Solution);
+                //writer.Close();
+
+                //string project_file_name = dlg.FileName;
+                //LProject? p = ProjectManageService.LoadFromXml(project_file_name);
+                //if (p != null)
+                //{
+                //    TargetTreeData = ProjectManageService.ListFileTree(p, p.RawPath, IsTargetChecked);
+                //    SourceTreeData = ProjectManageService.ListFileTree(null, p.ProjectPath, false);
+                //    LProject.Current = p;
+                //}
             }
             // throw new NotImplementException();
         }
@@ -715,6 +820,86 @@ namespace TigerL10N.ViewModels
             LocService.CreateNewResxFile(project);
             LocService.CreateNewIdFile(project);
         }
+
+
+        private DelegateCommand? _buildProjectCmd = null;
+        public DelegateCommand BuildProjectCmd =>
+            _buildProjectCmd ??= new DelegateCommand(BuildProjectFunc);
+        void BuildProjectFunc()
+        {
+            // throw new NotImplementException();
+        }
+
+
+        private DelegateCommand? _openVSFileCmd = null;
+        public DelegateCommand OpenVSFileCmd =>
+            _openVSFileCmd ??= new DelegateCommand(OpenVSFileFunc);
+        void OpenVSFileFunc()
+        {
+            if (Solution != null)
+            {
+                string solution_file = Solution.VsSolutionPath;
+                if (File.Exists(solution_file))
+                {
+                    try
+                    {
+                        string vs_path = @"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\devenv.exe";
+                        Process.Start(vs_path, solution_file);
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+                }
+            }
+        }
+
+        private DelegateCommand? _testVSFileCmd = null;
+        public DelegateCommand TestVSFileCmd =>
+            _testVSFileCmd ??= new DelegateCommand(TestVSFileFunc);
+        void TestVSFileFunc()
+        {
+            // throw new NotImplementException();
+            if (Solution != null)
+            {
+                string solution_file = Path.Combine(Solution.FolderPath, ".ln", "translation", Solution.FileTitle + ".sln");
+                if(!File.Exists(solution_file) && File.Exists(Solution.VsSolutionPath))
+                {
+                    File.Copy(Solution.VsSolutionPath, solution_file);
+                }
+                if (File.Exists(solution_file))
+                {
+                    try
+                    {
+                        string vs_path = @"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\devenv.exe";
+                        Process.Start(vs_path, solution_file);
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+                }
+            }
+        }
+
+        private DelegateCommand? _buildTranslationCmd = null;
+        public DelegateCommand BuildTranslationCmd =>
+            _buildTranslationCmd ??= new DelegateCommand(BuildTranslationFunc);
+        void BuildTranslationFunc()
+        {
+            // throw new NotImplementException();
+        }
+
+
+        private DelegateCommand? _exitCmd = null;
+        public DelegateCommand ExitCmd =>
+            _exitCmd ??= new DelegateCommand(ExitFunc);
+        void ExitFunc()
+        {
+            System.Windows.Application.Current.Shutdown();
+        }
+
+
         #endregion Translation Commands
     }
 

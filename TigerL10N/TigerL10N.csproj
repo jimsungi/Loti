@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\loti.ico" />
     <None Remove="Views\Icons\fatcow\cancel.png" />
     <None Remove="Views\Icons\fatcow\document_page_next.png" />
     <None Remove="Views\Icons\fatcow\document_page_previous.png" />
@@ -29,6 +30,10 @@
     <None Remove="Views\Icons\fatcow\zoom_fit.png" />
     <None Remove="Views\Icons\fatcow\zoom_in.png" />
     <None Remove="Views\Icons\fatcow\zoom_out.png" />
+    <None Remove="Views\Icons\fontawsome\arrows-rotate-solid.png" />
+    <None Remove="Views\Icons\fontawsome\folder-open-solid.png" />
+    <None Remove="Views\Icons\fontawsome\folder-solid.png" />
+    <None Remove="Views\Icons\fontawsome\person-running-solid.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,14 +48,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\CSharpParser\CSharpParser.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\loti.ico" />
     <Resource Include="Views\Icons\fatcow\cancel.png" />
     <Resource Include="Views\Icons\fatcow\document_page_next.png" />
     <Resource Include="Views\Icons\fatcow\document_page_previous.png" />
@@ -72,6 +74,10 @@
     <Resource Include="Views\Icons\fatcow\zoom_fit.png" />
     <Resource Include="Views\Icons\fatcow\zoom_in.png" />
     <Resource Include="Views\Icons\fatcow\zoom_out.png" />
+    <Resource Include="Views\Icons\fontawsome\arrows-rotate-solid.png" />
+    <Resource Include="Views\Icons\fontawsome\folder-open-solid.png" />
+    <Resource Include="Views\Icons\fontawsome\folder-solid.png" />
+    <Resource Include="Views\Icons\fontawsome\person-running-solid.png" />
   </ItemGroup>
 
 </Project>

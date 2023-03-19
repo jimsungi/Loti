@@ -28,7 +28,7 @@ namespace TigerL10N.Biz
     {
         public static LProject? Current = null;
 
-        public Dictionary<string, ProjectFile> ProjectFiles = new Dictionary<string, ProjectFile>();
+        public XmlSerializableDictionary<string, ProjectFile> ProjectFiles = new XmlSerializableDictionary<string, ProjectFile>();
 
         private string? _name;
         public string ProjectName
@@ -52,6 +52,10 @@ namespace TigerL10N.Biz
             set => SetProperty(ref _rawPath, value);
         }
 
+        public LProject()
+        {
+
+        }
         //public LProject(string project, string filepath)
         //{
         //    ProjectName = project;
@@ -861,8 +865,8 @@ namespace TigerL10N.Biz
         }
 
 
-        public Dictionary<string, StringParser> Parsers = new Dictionary<string, StringParser>();
-        public Dictionary<string, string> Replaces = new Dictionary<string, string>();
+        public XmlSerializableDictionary<string, StringParser> Parsers = new XmlSerializableDictionary<string, StringParser>();
+        public XmlSerializableDictionary<string, string> Replaces = new XmlSerializableDictionary<string, string>();
 
 
         private string? _langCode;
@@ -1261,7 +1265,7 @@ namespace TigerL10N.Biz
         {
             
         }
-
+        [XmlIgnore]
         public LSolution? Solution = null;
 
         void PrepareProjectFile(string findFileFullPath, Step step)

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using Prism.Commands;
 using Prism.Mvvm;
 using TigerL10N.Service;
@@ -13,6 +15,10 @@ namespace TigerL10N.Biz
     [Serializable]
     public class WordItem : BindableBase
     {
+        public WordItem ()
+        {
+
+        }
         public string TmpFile = "";
 
         private bool? _ignore;
@@ -30,7 +36,6 @@ namespace TigerL10N.Biz
             set
             {
                 SetProperty(ref _useAuto, value);
-
             }
         }
 
@@ -293,7 +298,7 @@ namespace TigerL10N.Biz
                 //DupIdCount = dupCount;
             }
         }
-
+        [XmlIgnore]
         public List<WordItem>? RefAll = null;
 
         public void RefreshAllDupIds(string id, bool isString)

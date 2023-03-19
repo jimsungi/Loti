@@ -10,11 +10,13 @@
     xmlns:local="clr-namespace:TigerL10N"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:prism="http://prismlibrary.com/"
-    Title="{Binding ProjectMenuName}"
+    Title="Loti - CSharp Localization Tool"
+    Icon="/Resources/loti.ico"
     Width="800"
     Height="600"
     d:DataContext="{d:DesignInstance ViewModels:MainWindowViewModel}"
     prism:ViewModelLocator.AutoWireViewModel="True"
+    x:Name="mWin"
     mc:Ignorable="d">
 
     <Grid Margin="0">
@@ -77,28 +79,29 @@
                                 <MenuItem.Items>
                                     <MenuItem
                                         Command="{Binding NewProjectCmd}"
-                                        Header="New Project..."
+                                        Header="New Translation..."
                                         InputGestureText="Ctrl+N"
                                         Style="{StaticResource MenuItemStyle}" />
                                     <MenuItem
-                                        Command="{Binding NewProjectCmd}"
-                                        Header="Save Project..."
-                                        InputGestureText="Ctrl+N"
+                                        Command="{Binding OpenProjectCmd}"
+                                        Header="Open Translation..."
+                                        InputGestureText="Ctrl+O"
                                         Style="{StaticResource MenuItemStyle}" />
                                     <MenuItem
-                                        Command="{Binding NewProjectCmd}"
-                                        Header="Export Project..."
-                                        InputGestureText="Ctrl+N"
+                                        Command="{Binding SaveProjectCmd}"
+                                        Header="Save Translation"
+                                        InputGestureText="Ctrl+S"
                                         Style="{StaticResource MenuItemStyle}" />
                                     <MenuItem
-                                        Command="{Binding NewProjectCmd}"
-                                        Header="Close Project..."
-                                        InputGestureText="Ctrl+N"
+                                        Command="{Binding SaveAsProjectCmd}"
+                                        Header="Save Translation As ..."
+                                        InputGestureText="Ctrl+T"
                                         Style="{StaticResource MenuItemStyle}" />
+                                    <Separator />
                                     <MenuItem
-                                        Command="{Binding NewProjectCmd}"
-                                        Header="New Project..."
-                                        InputGestureText="Ctrl+N"
+                                        Command="{Binding ExitCmd}"
+                                        Header="Exit"
+                                        InputGestureText="Ctrl+X"
                                         Style="{StaticResource MenuItemStyle}" />
 
                                 </MenuItem.Items>
@@ -109,38 +112,38 @@
                                 Style="{StaticResource TopMenuStyle}">
                                 <MenuItem.Items>
                                     <MenuItem
-                                        Command="{Binding CreateAutoPrepareFilesCmd}"
-                                        Header="Create Translate Files(_C)"
+                                        Command="{Binding BuildTranslationCmd}"
+                                        Header="Apply Translate Files"
+                                        InputGestureText="Ctrl+N" />
+                                    <Separator/>
+                                    <MenuItem
+                                        Command="{Binding OpenVSFileCmd}"
+                                        Header="Run Solution (Shell)"
                                         InputGestureText="Ctrl+N" />
                                     <MenuItem
-                                        Command="{Binding MakeOneLanguageVersionCmd}"
-                                        Header="Save Translation"
+                                        Command="{Binding SaveTranslationCmd}"
+                                        Header="Test Translate Files(_C)"
                                         InputGestureText="Ctrl+N" />
                                     <MenuItem
-                                        Command="{Binding NewProjectCmd}"
-                                        Header="Save Translation"
-                                        InputGestureText="Ctrl+N" />
-                                    <MenuItem
-                                        Command="{Binding NewProjectCmd}"
-                                        Header="Reload Translation(_C)"
-                                        InputGestureText="Ctrl+N" />
-                                    <MenuItem
-                                        Command="{Binding NewProjectCmd}"
-                                        Header="Export Target Project"
+                                        Command="{Binding TestVSFileCmd}"
+                                        Header="Test Solution"
                                         InputGestureText="Ctrl+N" />
                                 </MenuItem.Items>
                             </MenuItem>
                             <MenuItem
                                 Height="20"
-                                Header="View(_V)"
+                                Header="View(_V)" 
                                 Style="{StaticResource TopMenuStyle}">
                                 <MenuItem.Items>
-                                    <MenuItem Command="{Binding NewProjectCmd}" Header="Translation View" />
-                                    <MenuItem Command="{Binding OpenProjectCmd}" Header="Project View" />
-                                    <MenuItem Command="{Binding NewProjectCmd}" Header="Source View" />
-                                    <MenuItem Command="{Binding OpenProjectCmd}" Header="Information View" />
-                                    <MenuItem Command="{Binding NewProjectCmd}" Header="Language View" />
-                                    <MenuItem Command="{Binding OpenProjectCmd}" Header="Log View" />
+                                    <MenuItem IsCheckable="true" IsChecked="{Binding IsTranVisible}" x:Name="tran_v" Click="tran_v_Click"  Header="Translation View" />
+                                    <MenuItem  IsCheckable="true" IsChecked="{Binding IsTranVisible}" x:Name="source_v" Click="source_v_Click"  Header="Resource View" />
+                                    <Separator />
+                                    <MenuItem IsCheckable="true" IsChecked="{Binding IsTranVisible}" x:Name="sol_v" Click="sol_v_Click"  Header="Solution View" />
+                                    <MenuItem IsCheckable="true" IsChecked="{Binding IsTranVisible}" x:Name="pro_v" Click="pro_v_Click"   Header="Project View" />
+                                    <MenuItem IsCheckable="true" IsChecked="{Binding IsTranVisible}" x:Name="info_v" Click="info_v_Click"  Header="Information View" />
+                                    <MenuItem  IsCheckable="true" IsChecked="{Binding IsTranVisible}" x:Name="lang_v" Click="lang_v_Click"  Header="Language View" />
+                                    <Separator />
+                                    <MenuItem IsCheckable="true" IsChecked="{Binding IsTranVisible}" x:Name="log_v" Click="log_v_Click"  Header="Log View" />
                                 </MenuItem.Items>
                             </MenuItem>
                         </Menu>
@@ -159,7 +162,7 @@
                                     <Image
                                     Width="36"
                                     Height="36"
-                                    Source="Icons/fatcow/open.png" />
+                                    Source="/Views/Icons/fontawsome/folder-solid.png" />
                                 </Button>
                                 <Button
                                 x:Name="buttonScan"
@@ -170,7 +173,7 @@
                                     x:Name="image2"
                                     Width="36"
                                     Height="36"
-                                    Source="Icons/fatcow/scan.png" />
+                                    Source="/Views/Icons/fontawsome/folder-open-solid.png" />
                                 </Button>
 
                                 <Separator />
@@ -214,7 +217,7 @@
                                     x:Name="imgCreate"
                                     Width="36"
                                     Height="36"
-                                    Source="Icons/fatcow/scan.png" />
+                                    Source="/Views/Icons/fontawsome/arrows-rotate-solid.png" />
                                 </Button>
                                 <Button
                                 x:Name="buttonCreateAll"                                        
@@ -225,10 +228,9 @@
                                     x:Name="imgCreateAll"
                                     Width="36"
                                     Height="36"
-                                    Source="Icons/fatcow/scan.png" />
+                                    Source="/Views/Icons/fontawsome/person-running-solid.png" />
                                 </Button>
-                                <Button Content="Button 2"/>
-                                <Button Content="Button 3"/>
+                             
                             </ToolBar>
                         </ToolBarTray>
                     </DockPanel>
@@ -264,7 +266,7 @@
                                         <avalondock:LayoutAnchorablePaneGroup>
 
                                             <avalondock:LayoutAnchorablePane>
-                                                <avalondock:LayoutAnchorable Title="Translation">
+                                                <avalondock:LayoutAnchorable Title="Translation" x:Name="tran_a">
 
                                                     <control:TransEditor
                                                         x:Name="projectTr2"
@@ -284,7 +286,7 @@
                                         <avalondock:LayoutAnchorablePaneGroup DockHeight="200">
 
                                             <avalondock:LayoutAnchorablePane>
-                                                <avalondock:LayoutAnchorable Title="Resources">
+                                                <avalondock:LayoutAnchorable Title="Resources" x:Name="resource_a">
 
                                                     <ListView
                                                         x:Name="listview"
@@ -398,7 +400,7 @@
                                     <avalondock:LayoutAnchorablePaneGroup DockWidth="300">
                                         <avalondock:LayoutAnchorablePane>
 
-                                            <avalondock:LayoutAnchorable Title="Solution">
+                                            <avalondock:LayoutAnchorable Title="Solution"   x:Name="solution_a">
                                                 <Grid>
                                                     <Label Grid.Row="0" Grid.Column="0">Solution:</Label>
                                                     <control:CheckFileTree
@@ -409,7 +411,7 @@
                                                         TreeSource="{Binding SourceTreeData}" />
                                                 </Grid>
                                             </avalondock:LayoutAnchorable>
-                                            <avalondock:LayoutAnchorable Title="Project">
+                                            <avalondock:LayoutAnchorable Title="Project"   x:Name="pro_a">
                                                 <Grid Grid.Column="0">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="20*" />
@@ -455,7 +457,7 @@
 
                                             </avalondock:LayoutAnchorable>
 
-                                            <avalondock:LayoutAnchorable Title="Information">
+                                            <avalondock:LayoutAnchorable Title="Information"  x:Name="info_a">
                                                 <Grid
                                                     Grid.Row="0"
                                                     Grid.Column="0"
@@ -483,7 +485,7 @@
                                                     </StackPanel>
                                                 </Grid>
                                             </avalondock:LayoutAnchorable>
-                                            <avalondock:LayoutAnchorable Title="Language">
+                                            <avalondock:LayoutAnchorable Title="Language"   x:Name="lang_a">
                                                 <Grid>
                                                     <Label>Project Command</Label>
                                                     <StackPanel
@@ -502,7 +504,7 @@
                                 <!--  출력창  -->
                                 <avalondock:LayoutAnchorablePaneGroup DockHeight="100">
                                     <avalondock:LayoutAnchorablePane>
-                                        <avalondock:LayoutAnchorable Title="Log" />
+                                        <avalondock:LayoutAnchorable Title="Log"   x:Name="log_a" />
                                     </avalondock:LayoutAnchorablePane>
                                 </avalondock:LayoutAnchorablePaneGroup>
                             </avalondock:LayoutPanel>

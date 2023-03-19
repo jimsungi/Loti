@@ -334,11 +334,15 @@ namespace TigerL10N.Service
             return null;
         }
     }
-
+    [Serializable]
     public class ProjectFile
     {
         //string FileName="";
         //bool Include=true;
+        public ProjectFile()
+        {
+
+        }
 
     }
 }

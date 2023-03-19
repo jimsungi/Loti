@@ -183,5 +183,41 @@ namespace TigerL10N.Views
                 e.Handled = true;
             }
         }
+
+        private void tran_v_Click(object sender, RoutedEventArgs e)
+        {
+            tran_a.IsVisible = !tran_a.IsVisible;
+        }
+
+        private void pro_v_Click(object sender, RoutedEventArgs e)
+        {
+            pro_a.IsVisible = !pro_a.IsVisible;
+        }
+
+        private void source_v_Click(object sender, RoutedEventArgs e)
+        {
+            resource_a.IsVisible = !resource_a.IsVisible;
+        }
+
+        private void info_v_Click(object sender, RoutedEventArgs e)
+        {
+            info_a.IsVisible = !info_a.IsVisible;
+        }
+
+        private void lang_v_Click(object sender, RoutedEventArgs e)
+        {
+            lang_a.IsVisible = !lang_a.IsVisible;
+
+        }
+
+        private void log_v_Click(object sender, RoutedEventArgs e)
+        {
+            log_a.IsVisible = !log_a.IsVisible;
+        }
+
+        private void sol_v_Click(object sender, RoutedEventArgs e)
+        {
+           solution_a.IsVisible = !solution_a.IsVisible;
+        }
     }
 }
