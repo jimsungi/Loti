@@ -9,7 +9,7 @@ version 0.1 is very close to release.
 - Nsis would be installer for Loti. 
 
 Idears
--See TODO
+-See TODO (https://github.com/jimsungi/TigerL10N/blob/main/TODO.md)
 
 Special Key
 - Editing Box
