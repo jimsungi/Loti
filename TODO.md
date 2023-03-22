@@ -41,3 +41,8 @@ Small things
 * M.message as network (sample one file .ASP and .PHP page, file based and MariaDB based) 
 * Test cases need
 * Need to specipy project NameSpace 
+* Select Tree Node to display words specified to that file
+* Load G.cs when create / open project
+* Term specification is need (Solution, Project, Translation, etc)
+* Translation Window might be splitted, especially Word editor
+* Adding [As Message] column to Resources Window
