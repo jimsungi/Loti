@@ -36,9 +36,12 @@ Special Key
 
 내 첫 프로그래머 커리어는 번역회사에서 시작했다. In house tool이라고 불렀는데, 그냥 번역 빨리할 수 있게 도와주는 자잘한 툴을 많이 만들었었다. 이것이 그런 In house tool이 될 것이다. Trados나 Transit이나 그런 In house tool이 발전해서 생긴 프로그램이다. 
 
-Library
-- For Folder Open Dialog  https://github.com/ookii-dialogs/ookii-dialogs-wpf (https://www.ookii.org/software/dialogs/)
-- ConfigNet for easy user setting https://github.com/aloneguid/config
-- MagAoos.Mtro.IconPacks for icon
-- Prism for MVVM
-- Dirkster.AvalonDock for Visual Studio Look & Feel
+Thanks to
+- Ookii.Dialogs.Wpf (https://github.com/ookii-dialogs/ookii-dialogs-wpf) (https://www.ookii.org/software/dialogs/) for beautiful Folder Open Dialog
+- ConfigNet (https://github.com/aloneguid/config) for easy user setting 
+- MahApps.Metro.IconPacks (https://github.com/MahApps/MahApps.Metro.IconPacks) for Icons
+- Prism (https://github.com/PrismLibrary/Prism) for MVVM
+- Dirkster.AvalonDock (https://github.com/Dirkster99/AvalonDock) for Visual Studio Look & Feel Docking management
+- Entiry Framework (https://github.com/dotnet/ef6/wiki)
+- Microsoft.VisualStudio.Setup.Configuration.Interop (https://visualstudio.microsoft.com) for detect Visual Studio
+- chatGpt (openai.com) for advices
