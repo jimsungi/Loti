@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AvalonDock.Properties;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -222,21 +223,23 @@ namespace " + Pjnamespace + "." + cProject.L10NFolderName + @" {
         static string CreateResourceKeyList(LProject p)
         {
             string ret = string.Empty;
-            List<WordItem> items = p.Words;
-
-            string eachWord = string.Empty;
-            string eachKey = string.Empty;
-            List<string> registered = new List<string>();
-
-            foreach (WordItem w in items)
+            if (p.Words != null)
             {
-                eachKey = w.FinalId;
-                if (eachKey.StartsWith("L.") && !registered.Contains(eachKey))
-                {
-                    registered.Add(eachKey);
-                    eachKey = eachKey.Substring(2, eachKey.Length - 2);
+                List<WordItem> items = p.Words;
 
-                    eachWord = @"        /// <summary>
+                string eachWord = string.Empty;
+                string eachKey = string.Empty;
+                List<string> registered = new List<string>();
+
+                foreach (WordItem w in items)
+                {
+                    eachKey = w.FinalId;
+                    if (eachKey.StartsWith("L.") && !registered.Contains(eachKey))
+                    {
+                        registered.Add(eachKey);
+                        eachKey = eachKey.Substring(2, eachKey.Length - 2);
+
+                        eachWord = @"        /// <summary>
         /// " + eachKey + @"  과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         internal static string " + eachKey + @"
@@ -247,40 +250,45 @@ namespace " + Pjnamespace + "." + cProject.L10NFolderName + @" {
             }
         }
 ";
- ret += eachWord;
+                        ret += eachWord;
+                    }
+
                 }
-               
+                return ret;
             }
-            return ret;
+            return "";
         }
 
         static string CreateResourceKeyValueList(LProject p)
         {
             string ret = string.Empty;
-            List<WordItem> items = p.Words;
+            List<WordItem>? items = p.Words;
 
             string eachWord = string.Empty;
             string eachKey = string.Empty;
             string eachValue = string.Empty;
             List<string> registered = new List<string>();
-
-            foreach (WordItem w in items)
+            if (items != null)
             {
-                eachKey = w.FinalId;
-                eachValue = w.TargetString;
-                if (eachKey.StartsWith("L.") && !registered.Contains(eachKey))
+                foreach (WordItem w in items)
                 {
-                    registered.Add(eachKey);
-                    eachKey = eachKey.Substring(2, eachKey.Length - 2);
-                    
-                    eachWord = @"  <data name=""" + eachKey + @""" xml:space=""preserve"">
+                    eachKey = w.FinalId;
+                    eachValue = w.TargetString;
+                    if (eachKey.StartsWith("L.") && !registered.Contains(eachKey))
+                    {
+                        registered.Add(eachKey);
+                        eachKey = eachKey.Substring(2, eachKey.Length - 2);
+
+                        eachWord = @"  <data name=""" + eachKey + @""" xml:space=""preserve"">
     <value>" + eachValue + @"</value>
-  </data>0
+  </data>
 ";
-                    ret += eachWord;
-                }                
+                        ret += eachWord;
+                    }
+                }
+                return ret;
             }
-            return ret;
+            return "";
         }
 
 
@@ -297,9 +305,9 @@ namespace " + Pjnamespace + "." + cProject.L10NFolderName + @" {
 
                 foreach (WordItem w in items)
                 {
+                    w.LangCode = lang.Code;
                     eachKey = w.FinalId;
                     eachValue = w.TargetString;
-                    w.LangCode = lang.Code;
                     if (eachKey.StartsWith("L.") && !registered.Contains(eachKey))
                     {
                         registered.Add(eachKey);
@@ -307,7 +315,7 @@ namespace " + Pjnamespace + "." + cProject.L10NFolderName + @" {
 
                         eachWord = @"  <data name=""" + eachKey + @""" xml:space=""preserve"">
     <value>" + eachValue + @"</value>
-  </data>0
+  </data>
 ";
                         ret += eachWord;
                     }
@@ -319,9 +327,11 @@ namespace " + Pjnamespace + "." + cProject.L10NFolderName + @" {
         {
             string filename = p.L10NResourcePath;
             string commonR = CreateResourceKeyValueList(p);
+            string contentR = contentBuilder(commonR);
+
             using (StreamWriter writer = new StreamWriter(filename))
             {
-                writer.Write(commonR);
+                writer.Write(contentR);
             }
             if (p.Solution != null)
             {
@@ -333,8 +343,25 @@ namespace " + Pjnamespace + "." + cProject.L10NFolderName + @" {
                         if(eachLang.IsSelected)
                         {
                             
-                            string resources = CreateLangResxFile(p, eachLang);  //CreateResourceKeyValueList(p);
-                            string content = @"<?xml version=""1.0"" encoding=""utf-8""?>
+                            string resources = CreateLangResxFile(p, eachLang);  //CreateResourceKeyValueList(p);                            
+                            string content = contentBuilder(resources);
+                            string eachLangResFileName = filename;
+                            eachLangResFileName = eachLangResFileName.Substring(0, eachLangResFileName.Length - 5);
+                            eachLangResFileName = eachLangResFileName + "." + eachLang.Code + ".resx";
+                            //filename = eachLangResFileName;
+                            using (StreamWriter writer = new StreamWriter(eachLangResFileName))
+                            {
+                                writer.Write(content);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+   
+        static string contentBuilder(string resources)
+        {
+            string content = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <root>
 	<!-- 
 		Microsoft ResX Schema
@@ -437,24 +464,8 @@ namespace " + Pjnamespace + "." + cProject.L10NFolderName + @" {
 @"
 </root>
 ";
-                            string eachLangResFileName = filename;
-                            eachLangResFileName = eachLangResFileName.Substring(0, eachLangResFileName.Length - 5);
-                            eachLangResFileName = eachLangResFileName + "." + eachLang.Code + ".resx";
-                            //filename = eachLangResFileName;
-                            using (StreamWriter writer = new StreamWriter(eachLangResFileName))
-                            {
-                                writer.Write(content);
-                            }
-                        }
-                    }
-                    
-
-                }
-            }
-
-
+            return content;
         }
-   
     
         public static void CreateNewIdFile(LProject cProject)
         {
@@ -495,28 +506,32 @@ namespace " + Pjnamespace +"." + cProject.L10NFolderName  + @" {
         static string CreateGlobalKeyValueList(LProject p)
         {
             string ret = string.Empty;
-            List<WordItem> items = p.Words;
+            List<WordItem>? items = p.Words;
 
-            string eachWord = string.Empty;
-            string eachKey = string.Empty;
-            string eachValue = string.Empty;
-            List<string> registered = new List<string>();
-
-            foreach (WordItem w in items)
+            if (items != null)
             {
-                eachKey = w.FinalId;
-                eachValue = w.TargetString;
-                if (eachKey.StartsWith("G.") && !registered.Contains(eachKey))
-                {
-                    registered.Add(eachKey);
-                    eachKey = eachKey.Substring(2, eachKey.Length - 2);
+                string eachWord = string.Empty;
+                string eachKey = string.Empty;
+                string eachValue = string.Empty;
+                List<string> registered = new List<string>();
 
-                    eachWord = @"  public static string " + eachKey + @" = """ + eachValue + @""";
+                foreach (WordItem w in items)
+                {
+                    eachKey = w.FinalId;
+                    eachValue = w.TargetString;
+                    if (eachKey.StartsWith("G.") && !registered.Contains(eachKey))
+                    {
+                        registered.Add(eachKey);
+                        eachKey = eachKey.Substring(2, eachKey.Length - 2);
+
+                        eachWord = @"  public static string " + eachKey + @" = """ + eachValue + @""";
 ";
-                    ret += eachWord;
+                        ret += eachWord;
+                    }
                 }
+                return ret;
             }
-            return ret;
+            return "";
         }
     }
 }

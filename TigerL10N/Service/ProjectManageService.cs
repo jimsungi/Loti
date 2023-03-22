@@ -24,9 +24,9 @@ namespace TigerL10N.Service
         public static string ProjectExt = ".l10n";
         public static LSolution Solution = new LSolution();
 
-        public static LSolution CreateSolution(string vsProjectName)
+        public static LSolution CreateSolution(string vsProjectName, LogDelegate _logFunc)
         {
-            return new LSolution(vsProjectName);
+            return new LSolution(vsProjectName, _logFunc);
         }
 
         //public static LProject CreateLproject(string name, string filePath, string targetPath)
@@ -143,19 +143,23 @@ namespace TigerL10N.Service
             return treeView;
         }
 
-        public static List<GoItemNode> ListSolutionTree(LSolution? solution, string filepath, bool hideUnchecked)
+        public static List<GoItemNode> ListSolutionTree(LSolution? solution, bool hideUnchecked, bool updateSolution)
         {
-            List<GoItemNode> treeView = new List<GoItemNode>();
+            if (solution != null)
+            {
+                List<GoItemNode> treeView = new List<GoItemNode>();
+                string filepath = solution.FolderPath;
+                GoItemNode root = new GoItemNode(filepath);
 
-            GoItemNode root = new GoItemNode(filepath);
-            
-            RecurseSolutionTree(solution,root, filepath, hideUnchecked);
+                RecurseSolutionTree(solution, root, filepath, hideUnchecked, updateSolution);
 
-            treeView.Add(root);
-            return treeView;
+                treeView.Add(root);
+                return treeView;
+            }
+            return null;
         }
 
-        static void RecurseSolutionTree(LSolution? solution,GoItemNode baseNode, string baseNodePath, bool hideUnchecked)
+        static void RecurseSolutionTree(LSolution? solution,GoItemNode baseNode, string baseNodePath, bool hideUnchecked, bool updateSolution)
         {
             if (Directory.Exists(baseNodePath))
             {
@@ -224,11 +228,14 @@ namespace TigerL10N.Service
                                     baseNode.IconKind = "AlphaPBoxOutline";
                                     if (solution != null && solution.Projects !=null)
                                     {
-                                        LProject project = new LProject(childFile);
+                                        LProject project = new LProject(childFile, solution.LogFunc);
                                         project.Solution = Solution;
                                         baseNode.SetProject(project);
                                         childFileNode.SetProject(project);
-                                        solution.Projects.Add(project);
+                                        if (updateSolution)
+                                        {
+                                            solution.Projects.Add(project);
+                                        }
                                     }
                                     break;
                                 case ".cs":
@@ -262,7 +269,7 @@ namespace TigerL10N.Service
                         {
                             GoItemNode childDirectoryNode = new GoItemNode(childDirectoryNodePath);
 
-                            RecurseSolutionTree(solution,childDirectoryNode, childDirectoryNodePath, hideUnchecked);
+                            RecurseSolutionTree(solution,childDirectoryNode, childDirectoryNodePath, hideUnchecked, updateSolution);
                             baseNode.Children.Add(childDirectoryNode);
                             if (init != childDirectoryNode.IsChecked)
                                 state_checker = true;
@@ -285,7 +292,7 @@ namespace TigerL10N.Service
             return LProject.Current;
             }
 
-        public static LProject? LoadFromXml(string xmlFileName)
+        public static LProject? LoadFromXml(string xmlFileName, LogDelegate LogFunc )
         {
             var xml = File.ReadAllText(xmlFileName);
             System.Xml.XmlDocument doc = new XmlDocument();
@@ -321,7 +328,7 @@ namespace TigerL10N.Service
                 if(!string.IsNullOrWhiteSpace(projectFolder)
                     && !string.IsNullOrWhiteSpace(projectName))
                 {
-                    LProject project = new LProject(targetFilesFolder);
+                    LProject project = new LProject(targetFilesFolder, LogFunc);
                     //project.RawPath = targetFilesFolder;
 
                     return project;

@@ -13,13 +13,8 @@ namespace TigerL10N.Biz
         string AuthClientSecret { get; }
 
         #region Process Extract Folder Position
-        string LastOpenFile { get; set; }
-        string LastOpenFolder { get; set; }
-        string LastSaveFolder { get; set; }
-        string LastSaveFile { get; set; }
-
-        string LastL18NFile { get; set; }
-        string LastLSolutionFile { get; set; }
+        string LastI18NFilePath { get; set; }
+        string LastStreamFilePath { get; set; }
         
         #endregion
 

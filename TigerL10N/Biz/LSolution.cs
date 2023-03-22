@@ -39,9 +39,11 @@ namespace TigerL10N.Biz
             SelectedLang = null;
             OptionLanguageList = 0;
         }
-        public LSolution(string vsSolutionFile)
+        [XmlIgnore]
+        public LogDelegate? LogFunc;
+        public LSolution(string vsSolutionFile, LogDelegate _logFunc)
         {
-
+            LogFunc = _logFunc;
         }
 
         public void Save()
@@ -71,6 +73,7 @@ namespace TigerL10N.Biz
                 if (File.Exists(FilePath))
                 {
                     ReadSolutionFile();
+                    AppConfigService.Settings.LastI18NFilePath = FilePath;
                 }
                 else
                 {
@@ -79,6 +82,21 @@ namespace TigerL10N.Biz
                     SaveSolutionFile();
                 }
             }
+        }
+
+        public void InitBuild()
+        {
+
+            if (Projects?.Count > 0)
+            {
+                CurrentProject = Projects.First();
+                foreach (LProject project in Projects)
+                {
+                    project.BuildFileLang();
+                    project.BuildWords();
+                }
+            }
+            SelectedLang = SelectedLang;
         }
 
         private bool? _optionBackupSource=true;
@@ -215,7 +233,11 @@ namespace TigerL10N.Biz
             get => _optionBackup ??= false;
             set => SetProperty(ref _optionBackup, value);
         }
-
+        public void AddLog(string title, string log)
+        {
+            if (LogFunc != null)
+                LogFunc(LogType.Dev, DateTime.Now, title, log, null);
+        }
 
         void CreateProjectFiles()
         {
@@ -224,7 +246,7 @@ namespace TigerL10N.Biz
             List<LProject> Projects = new List<LProject>();
             foreach (string csfile in csfiles)
             {
-                LProject p = new LProject(csfile);
+                LProject p = new LProject(csfile, LogFunc);
                 Projects.Add(p);
             }
             CurrentProject = null;
@@ -516,7 +538,8 @@ namespace TigerL10N.Biz
             }
 
             doc.Save(FilePath);
-            AppConfigService.Settings.LastL18NFile = FilePath;
+            AppConfigService.Settings.LastI18NFilePath = FilePath;
+            SaveStream();
         }
 
         string OutputOptions(int idex)
@@ -527,6 +550,41 @@ namespace TigerL10N.Biz
                 case 2: return "resource+id+message";
                 default: return "resource";
             }
+        }
+
+        public void SaveStream()
+        {
+            XmlSerializer se = new XmlSerializer(typeof(LSolution));
+            string filename = Path.Combine(FolderPath, ".ln", "translation");
+            Directory.CreateDirectory(filename);
+            filename = Path.Combine(filename, "solution.xml");
+            StreamWriter writer = new StreamWriter(filename);
+            se.Serialize(writer, this);
+            writer.Close();
+            AppConfigService.Settings.LastStreamFilePath = filename;
+        }
+        public static LSolution? LoadStream(string xml_file, LogDelegate _logFunc)
+        {
+            if (File.Exists(xml_file))
+            {
+                string? translation = File.ReadAllText(xml_file);
+                if (!string.IsNullOrWhiteSpace(translation))
+                {
+                    XmlSerializer se = new XmlSerializer(typeof(LSolution));
+
+                    using (StringReader reader = new StringReader(translation))
+                    {
+                        var s = se.Deserialize(reader);
+                        if (s != null)
+                        {
+                            LSolution ss = (LSolution)s;
+                            ss.LogFunc = _logFunc;
+                            return ss;
+                        }
+                    }
+                }
+            }
+            return null;
         }
     }
 }

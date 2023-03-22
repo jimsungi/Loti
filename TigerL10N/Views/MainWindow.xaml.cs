@@ -35,79 +35,69 @@ namespace TigerL10N.Views
 
             //projectTree.SetItem();
             //sourceTree.SetItem();
+            lang_a.IsVisible = false;
+            pro_a.IsVisible = false;
+            info_a.IsVisible = false;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            VistaOpenFileDialog od = new();
-            var res = od.ShowDialog();
-            if(res== true)
-            {
-                if (AppConfigService.Settings != null)
-                {
-                    //AppConfigService.Settings.LastOpenFile =
-                    //    txtSrcFile.Text = od.FileName;
-                }
-            }
-        }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            //VistaOpenFileDialog od = new();
-            //var  res = od.ShowDialog();
-            //if (res == true)
-            //{
-            //    //AppConfigService.Settings.LastSaveFile = 
-            //    //txtTarFile.Text = od.FileName;
-            //}
-        }
+        //private void Button_Click_1(object sender, RoutedEventArgs e)
+        //{
+        //    //VistaOpenFileDialog od = new();
+        //    //var  res = od.ShowDialog();
+        //    //if (res == true)
+        //    //{
+        //    //    //AppConfigService.Settings.LastSaveFile = 
+        //    //    //txtTarFile.Text = od.FileName;
+        //    //}
+        //}
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-            VistaFolderBrowserDialog od = new();
-            var res = od.ShowDialog();
-            if (res == true)
-            {
-                //AppConfigService.Settings.LastOpenFolder =
-                //txtSrcFolder.Text = od.SelectedPath.ToString();
-            }
-        }
+        //private void Button_Click_2(object sender, RoutedEventArgs e)
+        //{
+        //    VistaFolderBrowserDialog od = new();
+        //    var res = od.ShowDialog();
+        //    if (res == true)
+        //    {
+        //        //AppConfigService.Settings.LastOpenFolder =
+        //        //txtSrcFolder.Text = od.SelectedPath.ToString();
+        //    }
+        //}
 
-        private void Button_Click_3(object sender, RoutedEventArgs e)
-        {
-            //bool bCreateNewResource = false;
-            //bool bFolderConversion = false;
-            //string rsc_filename = txtTarFile.Text;
-            //string src_filename = txtSrcFile.Text;
-            //string src_foldername = txtSrcFolder.Text;
+        //private void Button_Click_3(object sender, RoutedEventArgs e)
+        //{
+        //    //bool bCreateNewResource = false;
+        //    //bool bFolderConversion = false;
+        //    //string rsc_filename = txtTarFile.Text;
+        //    //string src_filename = txtSrcFile.Text;
+        //    //string src_foldername = txtSrcFolder.Text;
             
-            //if (!File.Exists(src_filename))
-            //{
-            //    bFolderConversion = true;
-            //}
+        //    //if (!File.Exists(src_filename))
+        //    //{
+        //    //    bFolderConversion = true;
+        //    //}
 
-            //if (bFolderConversion && !Directory.Exists(src_foldername))
-            //{
-            //    MessageBox.Show("바꿀 대상이 없습니다.");
-            //    return;
-            //}
+        //    //if (bFolderConversion && !Directory.Exists(src_foldername))
+        //    //{
+        //    //    MessageBox.Show("바꿀 대상이 없습니다.");
+        //    //    return;
+        //    //}
 
-            //if (!File.Exists(rsc_filename))
-            //{
-            //    MessageBox.Show("새 파일에 결과를 저장합니다");
-            //    bCreateNewResource = true;
-            //}
+        //    //if (!File.Exists(rsc_filename))
+        //    //{
+        //    //    MessageBox.Show("새 파일에 결과를 저장합니다");
+        //    //    bCreateNewResource = true;
+        //    //}
 
-            //StringParseService.CreateParser()
-            //    .SetReplaceSource(chkReplace.IsChecked == true)
-            //    .SetReadResourceFile(chkNoread.IsChecked == true)
-            //    .SetSourceFile(src_filename)
-            //    .SetFolder(src_foldername)
-            //    .SetResourceFile(rsc_filename)
-            //    .SetFolderConversion(bFolderConversion)
-            //    .SetCreateNewResource(bCreateNewResource)
-            //    .RunParser();
-        }
+        //    //StringParseService.CreateParser()
+        //    //    .SetReplaceSource(chkReplace.IsChecked == true)
+        //    //    .SetReadResourceFile(chkNoread.IsChecked == true)
+        //    //    .SetSourceFile(src_filename)
+        //    //    .SetFolder(src_foldername)
+        //    //    .SetResourceFile(rsc_filename)
+        //    //    .SetFolderConversion(bFolderConversion)
+        //    //    .SetCreateNewResource(bCreateNewResource)
+        //    //    .RunParser();
+        //}
 
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -184,6 +174,7 @@ namespace TigerL10N.Views
             }
         }
 
+        #region Switch View
         private void tran_v_Click(object sender, RoutedEventArgs e)
         {
             tran_a.IsVisible = !tran_a.IsVisible;
@@ -218,6 +209,45 @@ namespace TigerL10N.Views
         private void sol_v_Click(object sender, RoutedEventArgs e)
         {
            solution_a.IsVisible = !solution_a.IsVisible;
+        }
+        #endregion
+
+        private void mWin_Loaded(object sender, RoutedEventArgs e)
+        {
+            ResizeAnchorablePane(5.0 / 6.0);
+        }
+
+        private void ResizeAnchorablePane(double fraction)
+        {
+            double screenWidth = SystemParameters.WorkArea.Width;
+            double screenHeight = SystemParameters.WorkArea.Height;
+
+            this.Width = screenWidth * fraction;
+            this.Height = screenHeight * fraction;
+
+            double windowWidth = this.ActualWidth;
+            double windowHeight = this.ActualHeight;
+
+            var full = dockManager.ActualHeight;
+            av_top.DockHeight = new GridLength(full - 200);
+            av_foot.DockHeight = new GridLength(200);
+
+            this.Left = (screenWidth - this.Width) / 2;
+            this.Top = (screenHeight - this.Height) / 2;
+        }
+
+        private void m_about_Click(object sender, RoutedEventArgs e)
+        {
+            AboutDialog a = new AboutDialog();
+            a.ShowDialog();
+        }
+
+    
+
+        private void m_help_Click(object sender, RoutedEventArgs e)
+        {
+            HelpDialog h = new HelpDialog();
+            h.ShowDialog();
         }
     }
 }

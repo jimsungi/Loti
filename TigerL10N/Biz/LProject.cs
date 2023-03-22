@@ -62,16 +62,20 @@ namespace TigerL10N.Biz
         //    ProjectPath = filepath;
         //}
         string ProjectFileName = string.Empty;
-        public LProject(string rawPath)
+        public LProject(string rawPath, LogDelegate logFunc)
         {
+            LogFunc = logFunc;
             RawPath = rawPath;
             ProjectFileName = Path.GetFileName(RawPath);
             string ext = Path.GetExtension(ProjectFileName);
-            if(!string.IsNullOrWhiteSpace(ext))
+            if (!string.IsNullOrWhiteSpace(ext))
             {
                 ProjectName = ProjectFileName.Replace(ext, string.Empty).Trim();
             }
         }
+
+        [XmlIgnore]
+        public LogDelegate? LogFunc=null;
 
         public LProject SetCurrent()
         {
@@ -124,7 +128,7 @@ namespace TigerL10N.Biz
 
         private void Save(string projectFileName)
         {
-            AppConfigService.Settings.LastL18NFile = projectFileName;
+            //AppConfigService.Settings.LastL18NFile = projectFileName;
             if (BackUp)
             {
                 if (File.Exists(projectFileName))
@@ -252,7 +256,7 @@ namespace TigerL10N.Biz
                 {
                     XamlProc(ChildSourceFile, ChildTargetFile, option);
                 }
-            
+
                 else if (_ChildSourceFileLower.EndsWith(".cs"))
                 {
                     CsProc(ChildSourceFile, ChildTargetFile, option);
@@ -535,7 +539,7 @@ namespace TigerL10N.Biz
         public void DoCsprojFile(string ChildSourceFile, string ChildTargetFile, Step step)
         {
             string ChildSourceFileLower = ChildSourceFile.ToLower();
-            if (step == Step.None)
+            if (step == Step.Project)
             {
                 XmlDocument doc = new XmlDocument();
                 doc.Load(ChildSourceFile);
@@ -568,7 +572,7 @@ namespace TigerL10N.Biz
 
                 //</ Project >
 
-                XmlElement ? root = doc.DocumentElement;
+                XmlElement? root = doc.DocumentElement;
                 string FetchXmlText = "";
                 if (root != null)
                 {
@@ -577,16 +581,16 @@ namespace TigerL10N.Biz
                     List<XmlNode> nameSpaceNode = Etc.FindElement(root, 0, "PropertyGroup", "RootNamespace");
                     List<XmlNode> itemGroupCompier = Etc.FindElement(root, 0, "ItemGroup", "Compile");
                     List<XmlNode> itemGroupRsc = Etc.FindElement(root, 0, "ItemGroup", "EmbeddedResource");
-                    if(nameSpaceNode != null)
+                    if (nameSpaceNode != null)
                     {
                         foreach (XmlNode eachItem in nameSpaceNode)
                         {
                             ClrNamespace = eachItem.InnerText;
-                        }                        
+                        }
                     }
-                    if(ClrNamespace == string.Empty)
+                    if (ClrNamespace == string.Empty)
                     {
-                        ClrNamespace = Path.GetFileName(ChildSourceFile).Replace(".csproj","");
+                        ClrNamespace = Path.GetFileName(ChildSourceFile).Replace(".csproj", "");
                     }
 
                     if (itemGroupCompier != null)
@@ -622,7 +626,7 @@ namespace TigerL10N.Biz
                     }
                 }
             }
-            else if(step == Step.Done) 
+            else if (step == Step.Done)
             {
                 // Read .csproj
                 //< Project Sdk = "Microsoft.NET.Sdk" >
@@ -672,8 +676,6 @@ namespace TigerL10N.Biz
                     }
                     if (!HasL10NDesigner)
                     {
-
-
                         // Adding Designer File information to project file
                         XmlNode? itemGroup = null;
                         List<XmlNode> item_groups = Etc.FindElement(root, 0, "ItemGroup", "Compile");
@@ -799,7 +801,7 @@ namespace TigerL10N.Biz
             {
                 string? tmpDir = "";
                 tmpDir = Path.GetDirectoryName(ChildTargetFile);
-                if(tmpDir!=null)
+                if (tmpDir != null)
                     Directory.CreateDirectory(tmpDir);
 
                 StringParser p = StringParseService.CreateParser2()
@@ -811,7 +813,7 @@ namespace TigerL10N.Biz
                 Parsers.Add(ChildSourceFileLower, p);
                 Replaces.Add(ChildSourceFileLower, ChildTargetFile);
             }
-            else if(step == Step.Done)
+            else if (step == Step.Done)
             {
                 //                        StringParser p = StringParseService.CreateParser2()
                 //.SetResourceFile(ChildSourceFile)
@@ -925,9 +927,9 @@ namespace TigerL10N.Biz
                     string next_ref = "";
                     string current_ref = "";
 
-                    if(eachFileLn!= null)
+                    if (eachFileLn != null)
                     {
-                        int s = eachFileLn != null ? (eachFileLn.S !=null ? eachFileLn.S.Value.Line  : 0) : 0;
+                        int s = eachFileLn != null ? (eachFileLn.S != null ? eachFileLn.S.Value.Line : 0) : 0;
                         int e = eachFileLn != null ? (eachFileLn.E != null ? eachFileLn.E.Value.Line : 0) : 0;
                         if (s != 0 && e != 0)
                         {
@@ -1011,7 +1013,7 @@ namespace TigerL10N.Biz
             Words = words;
             return Words;
         }
-   
+
         //public List<XmlNode> GetPathNode(XmlNode rode, string A, string B, string C, params string[] pathNodeNames)
         //{
         //    List<XmlNode> result=new List<XmlNode>();
@@ -1059,19 +1061,19 @@ namespace TigerL10N.Biz
         ////}
 
         public List<string> GetBList(string xmlFilePath, string aTagName, string bTagName)
-    {
-        List<string> bList = new List<string>();
-
-        // XML 파일을 로드합니다.
-        XmlDocument xml = new XmlDocument();
-        xml.Load(xmlFilePath);
-
-        // A 태그를 선택합니다.
-        XmlNodeList aNodeList = xml.GetElementsByTagName(aTagName);
-
-        // 각 A 태그의 B 태그 목록을 가져옵니다.
-        foreach (XmlNode aNode in aNodeList)
         {
+            List<string> bList = new List<string>();
+
+            // XML 파일을 로드합니다.
+            XmlDocument xml = new XmlDocument();
+            xml.Load(xmlFilePath);
+
+            // A 태그를 선택합니다.
+            XmlNodeList aNodeList = xml.GetElementsByTagName(aTagName);
+
+            // 각 A 태그의 B 태그 목록을 가져옵니다.
+            foreach (XmlNode aNode in aNodeList)
+            {
                 if (aNode != null)
                 {
                     XmlNodeList? bNodeList = aNode.SelectNodes(bTagName);
@@ -1085,39 +1087,39 @@ namespace TigerL10N.Biz
                         }
                     }
                 }
+            }
+
+            return bList;
         }
 
-        return bList;
-    }
 
+        //static void Main(string[] args)
+        //{
+        //    // Person 클래스 인스턴스 생성
+        //    Person person = new Person { Name = "John", Age = 30 };
 
-    //static void Main(string[] args)
-    //{
-    //    // Person 클래스 인스턴스 생성
-    //    Person person = new Person { Name = "John", Age = 30 };
+        //    // XmlSerializer 인스턴스 생성
+        //    XmlSerializer serializer = new XmlSerializer(typeof(Person));
 
-    //    // XmlSerializer 인스턴스 생성
-    //    XmlSerializer serializer = new XmlSerializer(typeof(Person));
+        //    // XmlSerializerNamespaces 인스턴스 생성
+        //    XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
+        //    ns.Add("", "");
 
-    //    // XmlSerializerNamespaces 인스턴스 생성
-    //    XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
-    //    ns.Add("", "");
+        //    // Person 클래스 인스턴스를 XmlElement로 변환
+        //    XmlDocument xmlDoc = new XmlDocument();
+        //    using (XmlWriter writer = xmlDoc.CreateNavigator().AppendChild())
+        //    {
+        //        serializer.Serialize(writer, person, ns);
+        //    }
+        //    XmlElement personElement = xmlDoc.DocumentElement;
 
-    //    // Person 클래스 인스턴스를 XmlElement로 변환
-    //    XmlDocument xmlDoc = new XmlDocument();
-    //    using (XmlWriter writer = xmlDoc.CreateNavigator().AppendChild())
-    //    {
-    //        serializer.Serialize(writer, person, ns);
-    //    }
-    //    XmlElement personElement = xmlDoc.DocumentElement;
-
-    //    // 변환된 XmlElement 출력
-    //    Console.WriteLine(personElement.OuterXml);
-    //}
+        //    // 변환된 XmlElement 출력
+        //    Console.WriteLine(personElement.OuterXml);
+        //}
 
 
 
-    string Line = "\r\n";
+        string Line = "\r\n";
         string PrintXml(XmlNode? node, int level = 0)
         {
             if (level == 0)
@@ -1183,58 +1185,6 @@ namespace TigerL10N.Biz
         }
         public static int Gindex = 0;
 
-        public void DirOneFileProc(string sDir, string tDir, ProcessOption option)
-        {
-            if (Directory.Exists(sDir))
-            {
-                Directory.CreateDirectory(tDir);
-                try
-                {
-                    // File First
-                    string[] files = Directory.GetFiles(sDir);
-                    // Process CsProj then others
-                    foreach (string ChildSourceFile in files)
-                    {
-                        string lowername = ChildSourceFile.ToLower();
-                        string fName = Path.GetFileName(ChildSourceFile);
-                        string ChildTargetFile = tDir + Path.DirectorySeparatorChar + fName;
-                        if (lowername.EndsWith(".csproj"))
-                        {
-                            OneFileProc(ChildSourceFile, ChildTargetFile, option);
-                        }
-                    }
-                    foreach (string ChildSourceFile in files)
-                    {
-                        string lowername = ChildSourceFile.ToLower();
-                        string fName = Path.GetFileName(ChildSourceFile);
-                        string ChildTargetFile = tDir + Path.DirectorySeparatorChar + fName;
-                        if (!lowername.EndsWith(".csproj"))
-                        {
-                            OneFileProc(ChildSourceFile, ChildTargetFile, option);
-                        }
-                    }
-
-                    // Directory Follows
-                    foreach (string ChildSourceDir in Directory.GetDirectories(sDir))
-                    {
-                        string? dirName = Path.GetDirectoryName(ChildSourceDir);
-                        dirName = Path.GetFileName(ChildSourceDir);
-                        if (dirName != null && !option.IgnoreFolder.Contains(dirName.ToLower()))
-                        {
-                            string ChildTargetDir = tDir + Path.DirectorySeparatorChar + dirName;
-                            DirOneFileProc(ChildSourceDir, ChildTargetDir, option);
-                        }
-                    }
-                   
-
-                }
-                catch (System.Exception excpt)
-                {
-                    Console.WriteLine(excpt.Message);
-                }
-            }
-        }
-
         private string? _oneLangPath;
         public string OneLangPath
         {
@@ -1261,9 +1211,9 @@ namespace TigerL10N.Biz
         //    //}
         //}
 
-        void PrepareProjectDir(string filename,Step step)
+        void PrepareProjectDir(string filename, Step step)
         {
-            
+
         }
         [XmlIgnore]
         public LSolution? Solution = null;
@@ -1278,18 +1228,25 @@ namespace TigerL10N.Biz
             else
                 return;
             string targetPath = findFileFullPath.Replace(Solution.FolderPath, targetBase);
-            string? targetDir =  Path.GetDirectoryName(targetPath);
-            if (targetDir != null) 
+            string? targetDir = Path.GetDirectoryName(targetPath);
+            if (targetDir != null)
                 Directory.CreateDirectory(targetDir);
-            
-            //if (step == Step.None)
-            //{
-                if (ext != null && ! option.IgnoreFiles.Contains(ext.ToLower()))
-                {
 
+            if (ext != null && !processOption.IgnoreFiles.Contains(ext.ToLower()))
+            {
+                if (step == Step.Project)
+                {
+                    if (lowerPath.EndsWith(".csproj") && step == Step.Project)
+                    {
+                        DoCsprojFile(findFileFullPath, targetPath, step);
+
+                    }
+                }
+                else
+                {
                     if (lowerPath.EndsWith(".csproj"))
                     {
-                        DoCsprojFile(findFileFullPath, targetPath,step);
+                        DoCsprojFile(findFileFullPath, targetPath, step);
 
                     }
                     else if (lowerPath.EndsWith(".xaml"))
@@ -1307,19 +1264,11 @@ namespace TigerL10N.Biz
                         {
                             File.Copy(findFileFullPath, targetPath, true);
                         }
-                        //if (!option.IsPrepare)
-                        //{
-                        //    File.Copy(ChildSourceFile, ChildTargetFile, true);
-                        //}
                     }
                 }
-            //}
-            //else
-            //{
-
-            //}
+            }
         }
-        IgnoreOption option = new IgnoreOption();
+        IgnoreOption processOption = new IgnoreOption();
 
         public void BuildFileLang()
         {
@@ -1333,41 +1282,154 @@ namespace TigerL10N.Biz
             LProject.Gindex = 0;
             if (Directory.Exists(rawPath))
             {
-                Action<string,Step> DirFucc = PrepareProjectDir;
+                Action<string, Step> DirFucc = PrepareProjectDir;
                 Action<string, Step> FileFunc = PrepareProjectFile;
 
                 LocService.IdKey.Clear();
                 LocService.StringKey.Clear();
 
-                Etc.RecurActionDirectory(rawPath, DirFucc, FileFunc, Step.None, option);
-                Etc.RecurActionDirectory(rawPath, DirFucc, FileFunc,Step.Done,option);
+                Etc.RecurActionDirectory(rawPath, DirFucc, FileFunc, Step.Project, processOption);
+                Etc.RecurActionDirectory(rawPath, DirFucc, FileFunc, Step.None, processOption);
+                Etc.RecurActionDirectory(rawPath, DirFucc, FileFunc, Step.Done, processOption);
 
                 BuildWords();
                 LocService.IdKey.Clear();
                 LocService.StringKey.Clear();
-
-                //LProject.ProcessOption PO = new LProject.ProcessOption();
-                //PO.IsPrepare = true;
-                //project.DirOneFileProc(RawPath, project.OneLangPath, PO);
-                //PO.IsPrepare = false;
-                //project.DirOneFileProc(RawPath, project.OneLangPath, PO);
-
-                //project.Words = project.BuildWords();
-                //List<WordItem> sortedByName = project.Words.OrderBy(w => w.SourceString).ToList();
-                //this.LocalizationSource = sortedByName;
-                //foreach (WordItem eachWord in sortedByName)
-                //{
-                //    eachWord.init = true;
-                //    eachWord.RefAll = sortedByName;
-                //}
-                //LocService.IdKey.Clear();
-                //LocService.StringKey.Clear();
-
             }
-            //Directory.CreateDirectory(RawPath);
+        }
+        public void AddLog(string title, string log)
+        {
+            if (LogFunc != null)
+                LogFunc(LogType.Dev, DateTime.Now, title, log, null);
+        }
+        public void SaveTranslation()
+        {
+            string tmpFileName = "";
+            string targetFileName = "";
+            string contents = "";
+            if (Words != null)
+            {
+                // Read All text from file
+                List<WordItem>? saveWords = Words;
+                if (saveWords != null)
+                {
+                    Dictionary<string, string> fileNameContentBuf = new Dictionary<string, string>();
+                    foreach (WordItem eachWord in saveWords)
+                    {
+                        contents = "";
+                        tmpFileName = eachWord.TmpFile;
+                        if (!fileNameContentBuf.Keys.Contains(tmpFileName))
+                        {
+                            contents = File.ReadAllText(tmpFileName);
+                            fileNameContentBuf.Add(tmpFileName, contents);
+                        }
+                    }
+
+                    foreach (WordItem eachWord in saveWords)
+                    {
+                        AddLog("", "Process +" + eachWord.TargetId + " " + eachWord.TargetString);
+                        tmpFileName = eachWord.TmpFile;
+                        contents = fileNameContentBuf[tmpFileName];
+
+                        if (eachWord.Ignore == true)
+                        {
+                            fileNameContentBuf[tmpFileName] = contents.Replace(eachWord.TargetId, eachWord.SourceString);
+                        }
+                        else if (eachWord.AsId)
+                        {
+                            fileNameContentBuf[tmpFileName] = contents.Replace(eachWord.TargetId, eachWord.FinalId);
+                        }
+                        else
+                        {
+                            fileNameContentBuf[tmpFileName] = contents.Replace(eachWord.TargetId, eachWord.FinalId);
+                        }
+                        // eachWord.TargetId => TargetString으로 바꾼다.
+                    }
+
+                    foreach (KeyValuePair<string, string> fileAndContens in fileNameContentBuf)
+                    {
+                        string fileaneme = fileAndContens.Key;
+                        string fContent = fileAndContens.Value;
+                        targetFileName = "";
+                        if (!string.IsNullOrWhiteSpace(tmpFileName))
+                        {
+                            if (tmpFileName.EndsWith(".ltmp"))
+                            {
+                                targetFileName = fileaneme.Substring(0, fileaneme.Length - 5);
+                                if (!string.IsNullOrWhiteSpace(targetFileName))
+                                {
+                                    File.WriteAllText(targetFileName, fContent);
+                                }
+                                AddLog("", "Process +" + tmpFileName);
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
 
+        void DeployDir(string filename, Step step)
+        {
 
+        }
+
+        void DeployFile(string findFileFullPath, Step step)
+        {
+            string? baseFolder = Path.GetDirectoryName(findFileFullPath);
+            if (Solution != null)
+            {
+                string gogoPath = findFileFullPath.Replace(Solution.FolderPath, "");
+                string targetPath = Path.Combine(Solution.FolderPath, ".ln", "translation");
+                gogoPath = findFileFullPath.Replace(targetPath, "");
+                string orgPath = Solution.FolderPath + gogoPath;
+                if (File.Exists(findFileFullPath))
+                {
+                    string ext = Path.GetExtension(findFileFullPath.ToLower());
+                    switch(ext)
+                    {
+                        case ".cs":
+                        case ".resx":
+                            // do copy
+                            break;
+                        case ".ltmp":
+                        case ".user":
+                        case ".xml":
+                        case ".sln":
+                        case ".ln":
+                            // ignore
+                            return;
+                        default:
+                            // ignore
+                            return;
+                    }
+                    string? dirname = Path.GetDirectoryName(orgPath);
+                    if (dirname != null)
+                        Directory.CreateDirectory(dirname);
+                    File.Copy(findFileFullPath, orgPath,true);
+                }
+            }
+            
+        }
+        public void Deploy()
+        {
+            IgnoreOption deployOption = new IgnoreOption();
+            string? rawPath = Path.GetDirectoryName(RawPath);
+            if (rawPath == null)
+                return;
+            if (Solution != null)
+            {
+                
+                string folderBase = Path.Combine(Solution.FolderPath, ".ln", "translation");// + gogoPath;
+                if (Directory.Exists(rawPath))
+                {
+                    Action<string, Step> DirFucc = DeployDir;
+                    Action<string, Step> FileFunc = DeployFile;
+
+                    Etc.RecurActionDirectory(folderBase, DirFucc, FileFunc, Step.Project, deployOption);
+
+                }
+            }
         }
     }
 }

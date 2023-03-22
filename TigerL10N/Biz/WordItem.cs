@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 using Prism.Commands;
 using Prism.Mvvm;
 using TigerL10N.Service;
+using TigerL10N.Utils;
 
 namespace TigerL10N.Biz
 {
@@ -186,10 +187,10 @@ namespace TigerL10N.Biz
 
         public bool init = false;
 
-        private Dictionary<string, string> TargetStrings = new Dictionary<string, string>();
+        public XmlSerializableDictionary<string, string> TargetStrings = new XmlSerializableDictionary<string, string>();
 
 
-        private string? _langCode;
+        private string? _langCode="";
         public string LangCode
         {
             get => _langCode ??= "";
@@ -205,7 +206,11 @@ namespace TigerL10N.Biz
                 }
                 else
                 {
-                    TargetStrings.Add(_langCode, TargetStrings[""]);
+                    string defStr = "";
+                    if (TargetStrings.Keys.Contains(""))
+                        defStr = TargetStrings[""];
+                    if(TargetStrings.Count > 0)
+                        TargetStrings.Add(_langCode, defStr);
                 }
             }
         }
@@ -380,5 +385,8 @@ namespace TigerL10N.Biz
             set => SetProperty(ref _targetId, value);
         }
 
+
+        [XmlIgnore]
+        public LogDelegate? LogFunc=null;
     }
 }

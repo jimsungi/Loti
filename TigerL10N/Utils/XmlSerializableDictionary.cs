@@ -3,12 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System;
-
-using System.Collections.Generic;
-
-using System.Text;
-
 using System.Xml.Serialization;
 
 using System.Runtime.Serialization;
@@ -118,11 +112,8 @@ namespace TigerL10N.Utils
         /// </returns>
 
         public System.Xml.Schema.XmlSchema GetSchema()
-
         {
-
-            return null;
-
+            return new System.Xml.Schema.XmlSchema();
         }
 
         /// <summary>

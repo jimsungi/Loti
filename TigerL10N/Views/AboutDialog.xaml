@@ -1,0 +1,44 @@
+﻿<Window x:Class="TigerL10N.Views.AboutDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TigerL10N.Views"
+        mc:Ignorable="d"
+        Title="About Loti v0.1 test" Height="466" Width="695" WindowStartupLocation="CenterScreen">
+    <DockPanel>
+        <StatusBar DockPanel.Dock="Bottom" Height="30" Background="AliceBlue">
+            <StatusBarItem>
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="300"></ColumnDefinition>
+                        <ColumnDefinition Width="100*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock HorizontalAlignment="Left">Loti is opensource app and free to use.</TextBlock>
+                    <TextBlock Grid.Column="1" HorizontalAlignment="Right">Visit <Hyperlink>https://github.com/jimsungi/TigerL10N</Hyperlink></TextBlock>
+                </Grid>
+            </StatusBarItem>
+        </StatusBar>
+        <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch" DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300*"></ColumnDefinition>
+                <ColumnDefinition Width="100*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="100"></RowDefinition>
+                <RowDefinition Height="110"></RowDefinition>
+                <RowDefinition Height="100*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Label FontSize="30" Foreground="BlueViolet">Loti</Label>
+            <StackPanel Orientation="Vertical" Grid.Row="1">
+                <Label>developed by TigerWord</Label>
+                <Label>Version 0.01-test</Label>
+                <Label>(c) 2023 TigerWord Corp.</Label>
+                <Label>All rights reserved</Label>
+            </StackPanel>
+            <Label Grid.Row="3" VerticalAlignment="Top">Thanks to</Label>
+            <TextBox Grid.Row="3" MaxLines="1000" Margin="0,30,0,0" Height="170" TextWrapping="Wrap"></TextBox>
+        </Grid>
+
+    </DockPanel>
+</Window>

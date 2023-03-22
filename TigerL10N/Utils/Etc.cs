@@ -128,6 +128,7 @@ namespace TigerL10N.Utils
         public enum Step
             {
             None = 0,
+            Project = 2,
             Done=1
         }
 

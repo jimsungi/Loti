@@ -8,23 +8,337 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:TigerL10N"
+    xmlns:biz="clr-namespace:TigerL10N.Biz"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:prism="http://prismlibrary.com/"
     Title="Loti - CSharp Localization Tool"
+    Loaded="mWin_Loaded"
     Icon="/Resources/loti.ico"
     Width="800"
     Height="600"
     d:DataContext="{d:DesignInstance ViewModels:MainWindowViewModel}"
     prism:ViewModelLocator.AutoWireViewModel="True"
     x:Name="mWin"
-    mc:Ignorable="d">
+    mc:Ignorable="d" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style TargetType="ItemsControl" x:Key="LogViewerStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <ScrollViewer CanContentScroll="True">
+                            <ItemsPresenter/>
+                        </ScrollViewer>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
 
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel IsItemsHost="True"/>
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DataTemplate DataType="{x:Type biz:LogEntry}">
+            <Grid IsSharedSizeScope="True">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition SharedSizeGroup="Index" Width="Auto"/>
+                    <ColumnDefinition SharedSizeGroup="Date" Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="{Binding DateTime}" Grid.Column="0"
+                       FontWeight="Bold" Margin="5,0,5,0"/>
+
+                <TextBlock Text="{Binding Index}" Grid.Column="1"
+                       FontWeight="Bold" Margin="0,0,2,0" />
+
+                <TextBlock Text="{Binding Message}" Grid.Column="2"
+                       TextWrapping="Wrap"/>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type biz:CollapsibleLogEntry}">
+            <Grid IsSharedSizeScope="True">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition SharedSizeGroup="Index" Width="Auto"/>
+                    <ColumnDefinition SharedSizeGroup="Date" Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="{Binding DateTime}" Grid.Column="0"
+                       FontWeight="Bold" Margin="5,0,5,0"/>
+
+                <TextBlock Text="{Binding Index}" Grid.Column="1"
+                       FontWeight="Bold" Margin="0,0,2,0" />
+
+                <TextBlock Text="{Binding Message}" Grid.Column="2"
+                       TextWrapping="Wrap"/>
+
+                <ToggleButton x:Name="Expander" Grid.Row="1" Grid.Column="0"
+                          VerticalAlignment="Top" Content="+" HorizontalAlignment="Right"/>
+
+                <ItemsControl ItemsSource="{Binding Contents}" Style="{StaticResource LogViewerStyle}"
+                          Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                          x:Name="Contents" Visibility="Collapsed"/>
+
+            </Grid>
+            <DataTemplate.Triggers>
+                <Trigger SourceName="Expander" Property="IsChecked" Value="True">
+                    <Setter TargetName="Contents" Property="Visibility" Value="Visible"/>
+                    <Setter TargetName="Expander" Property="Content" Value="-"/>
+                </Trigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </Window.Resources>
     <Grid Margin="0">
         <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
+            <RowDefinition Height="45" />
             <RowDefinition Height="100*" />
         </Grid.RowDefinitions>
+        <ToolBarPanel Grid.Row="0" Margin="0,-0,0,0" Background="Transparent">
+            <Menu
+                            Grid.Row="0"
+                            Grid.ColumnSpan="3"
+                            Height="20">
+                <Menu.Resources>
+                    <Style x:Key="MenuItemStyle" TargetType="{x:Type MenuItem}">
+                        <Setter Property="HeaderTemplate">
+                            <Setter.Value>
+                                <DataTemplate>
+                                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
 
-        <TabControl Grid.Row="0" Grid.Column="1">
+                                        <TextBlock
+                                                        Grid.Column="0"
+                                                        Width="150"
+                                                        Text="{Binding}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </Setter.Value>
+                        </Setter>
+
+
+                    </Style>
+                    <Style x:Key="TopMenuStyle" TargetType="{x:Type MenuItem}">
+                        <Setter Property="ItemContainerStyle">
+                            <Setter.Value>
+                                <Style TargetType="{x:Type MenuItem}" />
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Menu.Resources>
+                <MenuItem
+                                Height="20"
+                                Header="File(_F)"
+                                Style="{StaticResource TopMenuStyle}">
+                    <MenuItem.Items>
+                        <MenuItem
+                                        Command="{Binding NewProjectCmd}"
+                                        Header="New Translation..."
+                                        InputGestureText="Ctrl+N"
+                                        Style="{StaticResource MenuItemStyle}" />
+                        <MenuItem
+                                        Command="{Binding OpenProjectCmd}"
+                                        Header="Open Translation..."
+                                        InputGestureText="Ctrl+O"
+                                        Style="{StaticResource MenuItemStyle}" />
+                        <MenuItem
+                                        Command="{Binding SaveProjectCmd}"
+                                        Header="Save Translation"
+                                        InputGestureText="Ctrl+S"
+                                        Style="{StaticResource MenuItemStyle}" />
+                   <!--     <MenuItem
+                                        Command="{Binding SaveAsProjectCmd}"
+                                        Header="Save Translation As ..."
+                                        InputGestureText="Ctrl+T"
+                                        Style="{StaticResource MenuItemStyle}" /> -->
+                        <Separator />
+                        <MenuItem
+                                        Command="{Binding ExitCmd}"
+                                        Header="Exit"
+                                        InputGestureText="Ctrl+X"
+                                        Style="{StaticResource MenuItemStyle}" />
+
+                    </MenuItem.Items>
+                </MenuItem>
+                <MenuItem
+                                Height="20"
+                                Header="Edit(_E)"
+                                Style="{StaticResource TopMenuStyle}">
+                    <MenuItem.Items>
+                        <MenuItem
+                                        Command="{Binding BuildTranslationCmd}"
+                                        Header="Apply Translate Files"
+                                         />
+                        <MenuItem
+                                        Command="{Binding DeployCmd}"
+                                        Header="Deploy Translation"
+                                         />
+                        <MenuItem
+                                        Command="{Binding OpenVSFileCmd}"
+                                        Header="Run Visual Studio..."
+                                        InputGestureText="Ctrl+V" />
+                        <Separator/>
+                        <MenuItem
+                                        Command="{Binding SaveTranslationCmd}"
+                                        Header="Test Translate Files(_C)"
+                                         />
+                        <MenuItem
+                                        Command="{Binding TestVSFileCmd}"
+                                        Header="Test Visual Studio..."
+                                        InputGestureText="Ctrl+T" />
+                    </MenuItem.Items>
+                </MenuItem>
+                <MenuItem
+                                Height="20"
+                                Header="View(_V)" 
+                                Style="{StaticResource TopMenuStyle}">
+                    <MenuItem.Items>
+                        <MenuItem IsCheckable="true" IsChecked="True" x:Name="tran_v" Click="tran_v_Click"  Header="Translation View" />
+                        <MenuItem  IsCheckable="true" IsChecked="True" x:Name="source_v" Click="source_v_Click"  Header="Resource View" />
+                        <Separator />
+                        <MenuItem IsCheckable="true" IsChecked="True"  x:Name="sol_v" Click="sol_v_Click"  Header="Solution View" />
+                        <MenuItem IsCheckable="true"  x:Name="pro_v" Click="pro_v_Click"   Header="Project View" />
+                        <MenuItem IsCheckable="true"  x:Name="info_v" Click="info_v_Click"  Header="Information View" />
+                        <MenuItem  IsCheckable="true" x:Name="lang_v" Click="lang_v_Click"  Header="Language View" />
+                        <Separator />
+                        <MenuItem IsCheckable="true" IsChecked="True" x:Name="log_v" Click="log_v_Click"  Header="Log View" />
+                    </MenuItem.Items>
+                </MenuItem>
+                <MenuItem
+                                Height="20"
+                                Header="Help(_H)" 
+                                Style="{StaticResource TopMenuStyle}">
+                    <MenuItem.Items>
+                        <MenuItem x:Name="m_help" Click="m_help_Click" Header="Help" />
+                        <Separator/>
+                        <MenuItem x:Name="m_about" Click="m_about_Click"  Header="About..." />
+                    </MenuItem.Items>
+                </MenuItem>
+            </Menu>
+
+
+        </ToolBarPanel>
+        <DockPanel Grid.Row="1" Margin="0,0,0,0" LastChildFill="False" AllowDrop="True">
+            <ToolBarTray DockPanel.Dock="Left"  IsLocked="False" AllowDrop="True" >
+                <ToolBar x:Name="toolBar">
+                    <Button
+                                x:Name="buttonOpen"
+                                Height="38"
+                                VerticalAlignment="Top"
+                                Command="{Binding NewProjectCmd}"
+                                ToolTip="New Translation...">
+                        <Image
+                                    Width="36"
+                                    Height="36"
+                            ToolTip="Open Project"
+                                    Source="/Views/Icons/forkawsome/ForkAwesome-Folder.png" />
+                    </Button>
+                    <Button
+                                x:Name="buttonScan"
+                                VerticalAlignment="Top"
+                                Command="{Binding OpenProjectCmd}"
+                                ToolTip="Open Translation...">
+                        <Image
+                                    x:Name="image2"
+                                    Width="36"
+                                    Height="36"
+                                    Source="/Views/Icons/forkawsome/ForkAwesome-FolderOpen.png" />
+                    </Button>
+
+                    <Separator />
+                    <Label VerticalAlignment="Center">Project:</Label>
+                    <!--                                <ComboBox Width="150" ItemsSource="{Binding Solution.Projects}" SelectedItem="{Binding Mode=TwoWay, Path=Solution.CurrentProject}" >-->
+                    <ComboBox Width="150" ItemsSource="{Binding Solution.Projects}"  SelectedItem="{Binding Path=Solution.CurrentProject}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Width="1000" Height="25">
+                                    <Label FontSize="11" VerticalAlignment="top" Content="{Binding ProjectName}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <!--SelectionChanged="comboBoxPageNum_SelectionChanged"-->
+                    <Separator />
+                    <Label VerticalAlignment="Center">Language:</Label>
+                    <ComboBox Width="150" ItemsSource="{Binding Solution.Languages}" SelectedItem="{Binding Solution.SelectedLang}" >
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Width="1000" Height="25">
+                                    <CheckBox VerticalAlignment="Center" IsChecked="{Binding IsSelected}" />
+                                    <Label FontSize="11" VerticalAlignment="top" Content="{Binding DisplayName}" />
+                                    <Label FontSize="9" Foreground="Blue" VerticalAlignment="top" Content="{Binding Code}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <!--SelectionChanged="comboBoxPageNum_SelectionChanged"-->
+                    <Separator />
+                </ToolBar>
+            </ToolBarTray>
+            <ToolBarTray DockPanel.Dock="Left">
+                <ToolBar>
+                    <Button
+                                x:Name="buttonCreate"                                        
+                                VerticalAlignment="Top"
+                                Command="{Binding SaveTranslationCmd}"
+                                ToolTip="Test Translation Files">
+                        <Image
+                                    x:Name="imgCreate"
+                                    Width="36"
+                                    Height="36"
+                                    Source="/Views/Icons/picoicons/PicolIcons-DocumentSansRun.png" />
+                    </Button>
+                    <Button
+                                x:Name="buttonCreateAll"                                        
+                                VerticalAlignment="Top"
+                                Command="{Binding BuildTranslationCmd}"
+                                ToolTip="Apply Translation Files">
+                        <Image
+                                    x:Name="imgCreateAll"
+                                    Width="36"
+                                    Height="36"
+                                    Source="/Views/Icons/picoicons/PicolIcons-DocumentTextRun.png" />
+                    </Button>
+                    <Button
+                                x:Name="buttonDeploy"                                        
+                                VerticalAlignment="Top"
+                                Command="{Binding OpenVSFileCmd}"
+                                ToolTip="Deploy Translations">
+                        <Image
+                                    x:Name="imgCreateAll2"
+                                    Width="36"
+                                    Height="36"
+                                    Source="/Views/Icons/modern/Modern-ManSuitcaseRun.png" />
+                    </Button>
+                    <Button
+                                x:Name="buttonRunVs"                                        
+                                VerticalAlignment="Top"
+                                Command="{Binding DeployCmd}"
+                                ToolTip="Run Visual Studio...">
+                        <Image
+                                    x:Name="imgRunVs"
+                                    Width="36"
+                                    Height="36"
+                                    Source="/Views/Icons/picoicons/PicolIcons-BadgeRun.png" />
+                    </Button>
+                </ToolBar>
+            </ToolBarTray>
+        </DockPanel>
+
+        <TabControl Grid.Row="2" Grid.Column="1" BorderBrush="Transparent" Background="Wheat" Margin="0,-20,0,0">
             <TabControl.ItemContainerStyle>
                 <Style TargetType="{x:Type TabItem}">
                     <Setter Property="Visibility" Value="Hidden" />
@@ -33,207 +347,10 @@
             <TabItem Header="Dev">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="20" />
-                        <RowDefinition Height="45" />
+                        <RowDefinition Height="0" />
+                        <RowDefinition Height="0" />
                         <RowDefinition Height="20*" />
                     </Grid.RowDefinitions>
-                    <ToolBarPanel Grid.Row="0" Background="Beige">
-                        <Menu
-                            Grid.Row="0"
-                            Grid.ColumnSpan="3"
-                            Height="20">
-                            <Menu.Resources>
-                                <Style x:Key="MenuItemStyle" TargetType="{x:Type MenuItem}">
-                                    <Setter Property="HeaderTemplate">
-                                        <Setter.Value>
-                                            <DataTemplate>
-                                                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition />
-                                                        <ColumnDefinition />
-                                                    </Grid.ColumnDefinitions>
-
-                                                    <TextBlock
-                                                        Grid.Column="0"
-                                                        Width="150"
-                                                        Text="{Binding}" />
-                                                </Grid>
-                                            </DataTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-
-
-                                </Style>
-                                <Style x:Key="TopMenuStyle" TargetType="{x:Type MenuItem}">
-                                    <Setter Property="ItemContainerStyle">
-                                        <Setter.Value>
-                                            <Style TargetType="{x:Type MenuItem}" />
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Menu.Resources>
-                            <MenuItem
-                                Height="20"
-                                Header="File(_F)"
-                                Style="{StaticResource TopMenuStyle}">
-                                <MenuItem.Items>
-                                    <MenuItem
-                                        Command="{Binding NewProjectCmd}"
-                                        Header="New Translation..."
-                                        InputGestureText="Ctrl+N"
-                                        Style="{StaticResource MenuItemStyle}" />
-                                    <MenuItem
-                                        Command="{Binding OpenProjectCmd}"
-                                        Header="Open Translation..."
-                                        InputGestureText="Ctrl+O"
-                                        Style="{StaticResource MenuItemStyle}" />
-                                    <MenuItem
-                                        Command="{Binding SaveProjectCmd}"
-                                        Header="Save Translation"
-                                        InputGestureText="Ctrl+S"
-                                        Style="{StaticResource MenuItemStyle}" />
-                                    <MenuItem
-                                        Command="{Binding SaveAsProjectCmd}"
-                                        Header="Save Translation As ..."
-                                        InputGestureText="Ctrl+T"
-                                        Style="{StaticResource MenuItemStyle}" />
-                                    <Separator />
-                                    <MenuItem
-                                        Command="{Binding ExitCmd}"
-                                        Header="Exit"
-                                        InputGestureText="Ctrl+X"
-                                        Style="{StaticResource MenuItemStyle}" />
-
-                                </MenuItem.Items>
-                            </MenuItem>
-                            <MenuItem
-                                Height="20"
-                                Header="Edit(_E)"
-                                Style="{StaticResource TopMenuStyle}">
-                                <MenuItem.Items>
-                                    <MenuItem
-                                        Command="{Binding BuildTranslationCmd}"
-                                        Header="Apply Translate Files"
-                                        InputGestureText="Ctrl+N" />
-                                    <Separator/>
-                                    <MenuItem
-                                        Command="{Binding OpenVSFileCmd}"
-                                        Header="Run Solution (Shell)"
-                                        InputGestureText="Ctrl+N" />
-                                    <MenuItem
-                                        Command="{Binding SaveTranslationCmd}"
-                                        Header="Test Translate Files(_C)"
-                                        InputGestureText="Ctrl+N" />
-                                    <MenuItem
-                                        Command="{Binding TestVSFileCmd}"
-                                        Header="Test Solution"
-                                        InputGestureText="Ctrl+N" />
-                                </MenuItem.Items>
-                            </MenuItem>
-                            <MenuItem
-                                Height="20"
-                                Header="View(_V)" 
-                                Style="{StaticResource TopMenuStyle}">
-                                <MenuItem.Items>
-                                    <MenuItem IsCheckable="true" IsChecked="{Binding IsTranVisible}" x:Name="tran_v" Click="tran_v_Click"  Header="Translation View" />
-                                    <MenuItem  IsCheckable="true" IsChecked="{Binding IsTranVisible}" x:Name="source_v" Click="source_v_Click"  Header="Resource View" />
-                                    <Separator />
-                                    <MenuItem IsCheckable="true" IsChecked="{Binding IsTranVisible}" x:Name="sol_v" Click="sol_v_Click"  Header="Solution View" />
-                                    <MenuItem IsCheckable="true" IsChecked="{Binding IsTranVisible}" x:Name="pro_v" Click="pro_v_Click"   Header="Project View" />
-                                    <MenuItem IsCheckable="true" IsChecked="{Binding IsTranVisible}" x:Name="info_v" Click="info_v_Click"  Header="Information View" />
-                                    <MenuItem  IsCheckable="true" IsChecked="{Binding IsTranVisible}" x:Name="lang_v" Click="lang_v_Click"  Header="Language View" />
-                                    <Separator />
-                                    <MenuItem IsCheckable="true" IsChecked="{Binding IsTranVisible}" x:Name="log_v" Click="log_v_Click"  Header="Log View" />
-                                </MenuItem.Items>
-                            </MenuItem>
-                        </Menu>
-                        
-                        
-                    </ToolBarPanel>
-                    <DockPanel Grid.Row="1" LastChildFill="False" AllowDrop="True">
-                        <ToolBarTray DockPanel.Dock="Left"  IsLocked="False" AllowDrop="True" >
-                            <ToolBar x:Name="toolBar">
-                                <Button
-                                x:Name="buttonOpen"
-                                Height="38"
-                                VerticalAlignment="Top"
-                                Command="ApplicationCommands.Open"
-                                ToolTip="">
-                                    <Image
-                                    Width="36"
-                                    Height="36"
-                                    Source="/Views/Icons/fontawsome/folder-solid.png" />
-                                </Button>
-                                <Button
-                                x:Name="buttonScan"
-                                VerticalAlignment="Top"
-                                
-                                ToolTip="">
-                                    <Image
-                                    x:Name="image2"
-                                    Width="36"
-                                    Height="36"
-                                    Source="/Views/Icons/fontawsome/folder-open-solid.png" />
-                                </Button>
-
-                                <Separator />
-                                <Label VerticalAlignment="Center">Project:</Label>
-                                <!--                                <ComboBox Width="150" ItemsSource="{Binding Solution.Projects}" SelectedItem="{Binding Mode=TwoWay, Path=Solution.CurrentProject}" >-->
-                                <ComboBox Width="150" ItemsSource="{Binding Solution.Projects}"  SelectedItem="{Binding Path=Solution.CurrentProject}">
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" Width="1000" Height="25">
-                                                <Label FontSize="11" VerticalAlignment="top" Content="{Binding ProjectName}" />
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
-                                <!--SelectionChanged="comboBoxPageNum_SelectionChanged"-->
-                                <Separator />
-                                <Label VerticalAlignment="Center">Language:</Label>
-                                <ComboBox Width="150" ItemsSource="{Binding Solution.Languages}" SelectedItem="{Binding Solution.SelectedLang}" >
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" Width="1000" Height="25">
-                                                <CheckBox VerticalAlignment="Center" IsChecked="{Binding IsSelected}" />
-                                                <Label FontSize="11" VerticalAlignment="top" Content="{Binding DisplayName}" />
-                                                <Label FontSize="9" Foreground="Blue" VerticalAlignment="top" Content="{Binding Code}" />
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
-                                <!--SelectionChanged="comboBoxPageNum_SelectionChanged"-->
-                                <Separator />
-                            </ToolBar>
-                        </ToolBarTray>
-                        <ToolBarTray DockPanel.Dock="Left">
-                            <ToolBar>
-                                <Button
-                                x:Name="buttonCreate"                                        
-                                VerticalAlignment="Top"
-                                Command="{Binding SaveTranslationCmd}"
-                                ToolTip="Save translation and resource for current project">
-                                    <Image
-                                    x:Name="imgCreate"
-                                    Width="36"
-                                    Height="36"
-                                    Source="/Views/Icons/fontawsome/arrows-rotate-solid.png" />
-                                </Button>
-                                <Button
-                                x:Name="buttonCreateAll"                                        
-                                VerticalAlignment="Top"
-                                Command="{Binding SaveTranslationCmd}"
-                                ToolTip="Save translation and resource for all project of solution">
-                                    <Image
-                                    x:Name="imgCreateAll"
-                                    Width="36"
-                                    Height="36"
-                                    Source="/Views/Icons/fontawsome/person-running-solid.png" />
-                                </Button>
-                             
-                            </ToolBar>
-                        </ToolBarTray>
-                    </DockPanel>
                     <!--
                     <StackPanel Margin="5">
                         <Button Command="{Binding CreateAutoPrepareFilesCmd}">Create Translate File Automatic (Use machine option)</Button>
@@ -250,18 +367,18 @@
                     <StackPanel Margin="2">
                         <Button Command="{Binding MakeOneLanguageVersionCmd}">Make your working version</Button>
                     </StackPanel>                    -->
-                    <avalondock:DockingManager x:Name="dockManager" Grid.Row="2">
+                    <avalondock:DockingManager x:Name="dockManager" Grid.Row="2" Background="BlanchedAlmond">
                         <avalondock:LayoutRoot>
-                            <avalondock:LayoutPanel DockHeight="600" Orientation="Vertical">
+                            <avalondock:LayoutPanel x:Name="av_root" Orientation="Vertical">
 
                                 <!--  [s] 가로로 정렬  -->
-                                <avalondock:LayoutPanel Orientation="Horizontal">
+                                <avalondock:LayoutAnchorablePaneGroup Orientation="Horizontal" x:Name="av_top"  >
 
                                     <!--  Left Panel (N/A Now)  -->
-                                    <avalondock:LayoutAnchorablePaneGroup>
+                                    <avalondock:LayoutAnchorablePaneGroup x:Name="av_top_LFace">
                                         <avalondock:LayoutAnchorablePane />
                                     </avalondock:LayoutAnchorablePaneGroup>
-                                    <avalondock:LayoutPanel Orientation="Vertical">
+                                    <avalondock:LayoutAnchorablePaneGroup Orientation="Vertical" x:Name="av_top_MFace">
                                         <!--  Main Panel (Center)  -->
                                         <avalondock:LayoutAnchorablePaneGroup>
 
@@ -283,7 +400,7 @@
                                             </avalondock:LayoutAnchorablePane>
 
                                         </avalondock:LayoutAnchorablePaneGroup>
-                                        <avalondock:LayoutAnchorablePaneGroup DockHeight="200">
+                                        <avalondock:LayoutAnchorablePaneGroup>
 
                                             <avalondock:LayoutAnchorablePane>
                                                 <avalondock:LayoutAnchorable Title="Resources" x:Name="resource_a">
@@ -394,10 +511,10 @@
                                             </avalondock:LayoutAnchorablePane>
 
                                         </avalondock:LayoutAnchorablePaneGroup>
-                                    </avalondock:LayoutPanel>
+                                    </avalondock:LayoutAnchorablePaneGroup>
 
                                     <!--  Tool Panel (Right)  -->
-                                    <avalondock:LayoutAnchorablePaneGroup DockWidth="300">
+                                    <avalondock:LayoutAnchorablePaneGroup x:Name="av_top_RFace">
                                         <avalondock:LayoutAnchorablePane>
 
                                             <avalondock:LayoutAnchorable Title="Solution"   x:Name="solution_a">
@@ -413,98 +530,48 @@
                                             </avalondock:LayoutAnchorable>
                                             <avalondock:LayoutAnchorable Title="Project"   x:Name="pro_a">
                                                 <Grid Grid.Column="0">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="20*" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <Label Grid.Row="2" Grid.Column="2">Raw File List:</Label>
-
-                                                    <StackPanel
-                                                        Height="20"
-                                                        HorizontalAlignment="Right"
-                                                        VerticalAlignment="Top"
-                                                        Orientation="Horizontal">
-                                                        <Button
-                                                            Width="50"
-                                                            Margin="5,0,5,0"
-                                                            Command="{Binding SaveTargetSetsCmd}">
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <TextBlock>Save</TextBlock>
-                                                                <iconPacks:PackIconMaterial
-                                                                    HorizontalAlignment="Center"
-                                                                    VerticalAlignment="Center"
-                                                                    Kind="File" />
-                                                            </StackPanel>
-                                                        </Button>
-                                                        <Button
-                                                            Width="50"
-                                                            Margin="5,0,5,0"
-                                                            Command="{Binding ClearTargetSetsCmd}">
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <TextBlock>Clear</TextBlock>
-                                                                <iconPacks:PackIconMaterial
-                                                                    HorizontalAlignment="Center"
-                                                                    VerticalAlignment="Center"
-                                                                    Kind="File" />
-                                                            </StackPanel>
-                                                        </Button>
-                                                        <CheckBox IsChecked="{Binding IsTargetChecked}">Hide Uncheck</CheckBox>
-                                                    </StackPanel>
-                                                    <control:CheckFileTree
-                                                        x:Name="projectTree"
-                                                        Margin="0,20,0,0"
-                                                        TreeSource="{Binding TargetTreeData}" />
+                                                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Not implemented</TextBlock>
                                                 </Grid>
 
                                             </avalondock:LayoutAnchorable>
 
                                             <avalondock:LayoutAnchorable Title="Information"  x:Name="info_a">
-                                                <Grid
-                                                    Grid.Row="0"
-                                                    Grid.Column="0"
-                                                    Grid.ColumnSpan="3"
-                                                    Margin="3,3,3,3"
-                                                    Background="Beige">
-                                                    <Label>Project Information</Label>
-                                                    <StackPanel Margin="0,30,0,0" Orientation="Vertical">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <Label Width="100">Project Name:</Label>
-                                                            <TextBox Width="150" Text="{Binding ProjectName}" />
-                                                        </StackPanel>
-                                                        <Label>Where translated file located:</Label>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <Label Width="100">Project Path</Label>
-                                                            <TextBox Width="150" Text="{Binding ProjectPath}" />
-                                                        </StackPanel>
-                                                        <Label>Files you will translate:</Label>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <Label Width="100">Target Path:</Label>
-                                                            <TextBox Width="150" Text="{Binding RawPath}" />
-                                                        </StackPanel>
-                                                        <Label>dsadfsdf</Label>
-                                                        <Label>dsadfsdf</Label>
-                                                    </StackPanel>
-                                                </Grid>
+                                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Not implemented</TextBlock>
+
                                             </avalondock:LayoutAnchorable>
                                             <avalondock:LayoutAnchorable Title="Language"   x:Name="lang_a">
                                                 <Grid>
-                                                    <Label>Project Command</Label>
-                                                    <StackPanel
-                                                        Margin="0,20,0,0"
-                                                        Background="Wheat"
-                                                        Orientation="Vertical" />
-
+                                                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Not implemented</TextBlock>
                                                 </Grid>
                                             </avalondock:LayoutAnchorable>
                                         </avalondock:LayoutAnchorablePane>
                                     </avalondock:LayoutAnchorablePaneGroup>
-                                </avalondock:LayoutPanel>
+                                </avalondock:LayoutAnchorablePaneGroup>
                                 <!--  [e] 가로로 정렬  -->
 
                                 <!--  [s] 세로로 정렬  -->
                                 <!--  출력창  -->
-                                <avalondock:LayoutAnchorablePaneGroup DockHeight="100">
-                                    <avalondock:LayoutAnchorablePane>
-                                        <avalondock:LayoutAnchorable Title="Log"   x:Name="log_a" />
+                                <avalondock:LayoutAnchorablePaneGroup x:Name="av_foot">
+                                    <avalondock:LayoutAnchorablePane x:Name="av_foot_logFace">
+                                        <avalondock:LayoutAnchorable Title="Log"   x:Name="log_a" >
+
+                                            <Grid>
+                                                <ItemsControl x:Name="itemsBookmark" ItemsSource="{Binding LogGo}" Style="{StaticResource LogViewerStyle}">
+                                                    <ItemsControl.Template>
+                                                        <ControlTemplate>
+                                                            <ScrollViewer CanContentScroll="True">
+                                                                <ItemsPresenter/>
+                                                            </ScrollViewer>
+                                                        </ControlTemplate>
+                                                    </ItemsControl.Template>
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <VirtualizingStackPanel IsItemsHost="True"/>
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                </ItemsControl>
+                                            </Grid>
+                                        </avalondock:LayoutAnchorable>
                                     </avalondock:LayoutAnchorablePane>
                                 </avalondock:LayoutAnchorablePaneGroup>
                             </avalondock:LayoutPanel>

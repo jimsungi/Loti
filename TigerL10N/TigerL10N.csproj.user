@@ -16,7 +16,16 @@
     <Compile Update="Control\TransEditor.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\AboutDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\HelpDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\NewProjectDlg.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\VSSelector.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -30,10 +39,19 @@
     <Page Update="Control\TransEditor.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Views\AboutDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\HelpDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\MainWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\NewProjectDlg.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\VSSelector.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
