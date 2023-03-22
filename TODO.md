@@ -46,3 +46,5 @@ Small things
 * Term specification is need (Solution, Project, Translation, etc)
 * Translation Window might be splitted, especially Word editor
 * Adding [As Message] column to Resources Window
+* Remember latest window layout
+* Remove latest window layout
