@@ -1,5 +1,5 @@
 #  Loti - C# I18N tool
-L10N resource creation tool (localization resource file creator)
+I18N resource creation tool (internationalization resource file creator)
 
 test version 0.0.1 is released
 
